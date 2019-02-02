@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 
 import parser
 from parser import *
@@ -61,19 +62,42 @@ def parse_text(text: str) -> list:
 
 	return binds
 
-def main():
-	print('macro parser loaded :)')
+def get_arguments():
+	import argparse
+	parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
+	parser.add_argument('--source', required=True, help='Path to the source file of lambda script')
+	parser.add_argument('--dest', required=True, help='Path to the output file')
+
+	group = parser.add_mutually_exclusive_group()
+	group.add_argument('--show-debug', dest='show_debug', action='store_true', help='Include debug information')
+	group.add_argument('--no-show-debug', dest='show_debug', action='store_false', help='Do not include debug information')
+	group.set_defaults(show_debug=False)
+
+	return parser.parse_args()
+
+def processone(args):
 	text = ''
-	with open('note.txt', 'r') as r:
+	source = args.source
+
+	with open(source, 'r') as r:
 		text = r.read()
+
 	binds = parse_text(text)
 	for o in binds:
 		print('{}=\n{}\n\n'.format(o.name, o.target.print(0)))
-	
-	import writer
-	writer.write_some('generated.cc', binds)
 
+	import writer
+	writer.show_debug = args.show_debug
+	dest = args.dest
+	writer.write_some(dest, binds)
+
+def main():
+	print('macro parser loaded :)')
+
+	args = get_arguments()
+	processone(args)
+	
 if __name__ == '__main__':
 	main()
 

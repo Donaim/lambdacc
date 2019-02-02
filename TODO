@@ -1,0 +1,6 @@
+[x] lazy evaluation
+[ ] representation: find a good way to print numbers, strings
+[ ] stackoverflow: use queue instead
+[ ] memoryleaks: add Delete_NAME(ff) functions (simmilar to Init_NAME)
+[ ] multithreading: consider evaluating each leaf at the same time
+[ ] code quality: rewrite everything in haskell

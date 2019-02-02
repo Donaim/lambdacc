@@ -55,14 +55,14 @@ def split_binding_and_def(cline: ClassifiedLine) -> SplittedLine:
 	return SplittedLine (pre=pre, post=post, all=cline.all)
 	
 def join_lines(lines: iter) -> iter:
-	prev = ''
+	prev = None
 	for o in lines:
 		if  o.startswith('\t') or o.startswith('    '):
 			prev += ' ' + o.strip()
 			yield ''
 		else:
-			prev = prev.strip()
-			if prev: yield prev
+			if not prev is None:
+				yield prev
 			prev = o
 	prev = prev.strip()
 	if prev: yield prev

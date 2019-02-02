@@ -167,7 +167,7 @@ def get_ovv(out: SplittedOut, le: Leaf) -> str:
 def init_children(le: Leaf, parent_lambda_name: str) -> str:
 	members = get_fields(le=le)
 	st_members = ''
-	ret = '	if (me->x == nullptr) {\n'
+	ret = '\n'
 	for field in members:
 		name_m = field.name
 		l = field.leaf
@@ -176,18 +176,18 @@ def init_children(le: Leaf, parent_lambda_name: str) -> str:
 		if t is Lambda or t is Bind or t is Leaf:
 			name = get_leaf_name(l)
 
-			mem += '		me->{} = ALLOC({});\n'.format(name_m, name)
-			mem += '		me->{}->parent = me;\n'.format(name_m)
-			mem += '		me->{}->x = nullptr;\n'.format(name_m)
+			mem += '	me->{} = ALLOC({});\n'.format(name_m, name)
+			mem += '	me->{}->parent = me;\n'.format(name_m)
+			mem += '	me->{}->x = nullptr;\n'.format(name_m)
 
 			init_name = get_leaf_name(CFunction(name, 'init'))
-			mem += '		{}(me->{});\n'.format(init_name, name_m)
+			mem += '	{}(me->{});\n'.format(init_name, name_m)
 		elif t is Argument:
 			continue
 		else:
 			raise Exception('Unexpected member type {}'.format(type(l)))
 		ret += mem
-	ret += '	}\n'
+	ret += '\n'
 	return ret
 def get_exec_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 	exec_name = get_leaf_name(CFunction(lambda_name, 'exec'))

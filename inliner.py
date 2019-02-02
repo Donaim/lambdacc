@@ -24,7 +24,7 @@ def get_leaf_text(le: Leaf) -> str:
 		ret = LAMBDA_DECL + le.arg.name + ' ' + LAMBDA_SYMBOL + ' '
 		leafs = list(map(get_leaf_text, le.leafs))
 		ret += ' '.join(leafs)
-		return '(((' + ret + ')))'
+		return '(' + ret + ')'
 	if t is Argument:
 		return le.name
 	if t is Bind:
@@ -42,6 +42,6 @@ def get_leaf_text(le: Leaf) -> str:
 	if t is Leaf:
 		leafs = list(map(get_leaf_text, le.leafs))
 		ret = ' '.join(leafs)
-		return '(((' + ret + ')))'
+		return '(' + ret + ')'
 	else:
 		raise Exception("Unexpected leaf type: {}".format(t))

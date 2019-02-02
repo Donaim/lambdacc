@@ -21,7 +21,7 @@ def find_next_bracket(s: str):
     count = 0
     for i, c in enumerate(s):
         if c == '(': count += 1
-        if c == ')':
+        elif c == ')':
             count -= 1
             if count == 0:
                 return i
@@ -143,6 +143,7 @@ def transformMultipleLambdas(s: str) -> str:
     buff = ''
     for i, c in enumerate(s):
         if last_lambda:
+            buff += c
             if s.endswith(LAMBDA_SYMBOL, 0, i + 1):
                 buff = buff[:-(len(LAMBDA_SYMBOL))].strip()
                 buff = buff.replace(' ', ' {} \\'.format(LAMBDA_SYMBOL)) + ' '
@@ -150,8 +151,6 @@ def transformMultipleLambdas(s: str) -> str:
                 
                 buff = ''
                 last_lambda = False
-            else:
-                buff += c
         else:
             if c == '\\':
                 last_lambda = True
@@ -191,17 +190,17 @@ def parse_structure(b: Branch, scope: list, binds: list) -> Leaf:
 
 # expr = r'   \    a -> \    b ->    (\x    ->    b hello)    a  '
 # expr = r'   \    a b ->    (\x    ->    b hello)    a  '
-expr = r'\n f x -> n (\g h -> h (g f h)) (\u -> x) (\u ->u)'
+expr = r'\n f x -> n(\g h -> h (g f h)) (\u -> x) (\u ->u)'
 # expr = r'x y z\k -> y z x'
 # expr = r'\f -> (\x -> x x)(\x -> f(x x))'
-# expr = r'\x y -> x'
+# expr = r'\x->x y'
 
 expr = trimSpaces(expr)
 print(expr)
 expr = transformMultipleLambdas(expr)
 print(expr)
-p = parse_tokens(expr)
 
+p = parse_tokens(expr)
 p = parse_structure(p, [], [Bind('x', Leaf([])), Bind('y', Leaf([])), Bind('z', Leaf([]))])
 t = p.print(0)
 print(t)

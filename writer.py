@@ -285,9 +285,9 @@ def write_some(config: OutConfig, binds: list):
 	out = SplittedOut(config)
 
 	if out.config.show_debug:
-		out.header += '#define SHOW_DEBUG'
+		out.header += '#define SHOW_DEBUG\n'
 	if out.config.use_typeid:
-		out.header += '#define USE_TYPEID'
+		out.header += '#define USE_TYPEID\n'
 
 	proper_binds = []
 	exec_expr = []

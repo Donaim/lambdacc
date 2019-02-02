@@ -1,3 +1,4 @@
+import string
 
 import parser
 from parser import *
@@ -43,6 +44,24 @@ class StructField:
 		self.name = name
 		self.t = type(leaf)
 
+allowed_chars = string.ascii_letters + string.digits + '_'
+def bind_is_valid_char(c):
+	return c in allowed_chars
+def bind_fix_name(bind: Bind):
+	ret = 'BindInval_' + str(bind.unique_id) + '_'
+	for c in bind.name:
+		if bind_is_valid_char(c):
+			ret += c.lower()
+		else:
+			ret += 'X'
+	return ret
+
+def bind_get_valid_name(bind: Bind):
+	if all( map (bind_is_valid_char, bind.name) ):
+		return 'Bind_' + bind.name
+	else:
+		return bind_fix_name(bind)
+
 def get_leaf_name(le) -> str:
 	if type(le) is Leaf:
 		return 'Leaf_' + str(le.unique_id)
@@ -51,7 +70,8 @@ def get_leaf_name(le) -> str:
 	if type(le) is Lambda:
 		return 'Lambda_' + str(le.unique_id)
 	if type(le) is Bind:
-		return 'Bind_' + str(le.name)
+		valid = bind_get_valid_name(le)
+		return valid
 	if type(le) is CFunction:
 		if le.t == 'exec':
 			return "Exec_" + str(le.name)

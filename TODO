@@ -2,7 +2,7 @@
 [x] fix unique lambda members (each member should have its own argument x)
 [ ] inline bindings: do not introduce overhead from bindings (think of implications to call-trace)
 [ ] representation: find a good way to print numbers, strings
-[ ] make more names legal
+[x] make more names legal
 [ ] stackoverflow: use queue instead
 [ ] memoryleaks: add Delete_NAME(ff) functions (simmilar to Init_NAME)
 [ ] multithreading: consider evaluating each leaf at the same time

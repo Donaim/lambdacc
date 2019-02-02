@@ -28,6 +28,8 @@ der(debug_id) {
 	}
 };
 static debug_id debug_id_instance{};
+static debug_id * did = &debug_id_instance;
+
 der(error_not_lambda) {
 	error_not_lambda() : fun(nullptr) {}
 	ovv {
@@ -207,7 +209,7 @@ der(Bind_is0) {
 	Bind_is0() : fun(nullptr) {}
 
 	ovv {
-		return ((&m_Bind_if)->eval(((&m_Bind_fst)->eval(this->x)))->eval((&m_Bind_true))->eval((&m_Bind_false)));
+		return ((&m_Bind_if)->eval(&m_Bind_false)->eval((&m_Bind_true))->eval((&m_Bind_false)));
 	}
 };
 der(Bind_assert) {
@@ -232,7 +234,7 @@ der(EXPR_0) {
 };
 int main() {
 	puts("start");
-	EXPR_0{}.eval(&debug_id_instance)->eval(&error_not_lambda_instance)->eval(&error_not_lambda_instance); 
+	EXPR_0{}.eval(did)->eval(did); 
 	puts("end");
 	return 0; 
 }

@@ -28,6 +28,8 @@ der(debug_id) {
 	}
 };
 static debug_id debug_id_instance{};
+static debug_id * did = &debug_id_instance;
+
 der(error_not_lambda) {
 	error_not_lambda() : fun(nullptr) {}
 	ovv {

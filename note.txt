@@ -34,7 +34,7 @@ pred = \n -> snd n
 
 get0 = \n -> if (is0 n) n (get0 (pred n))
 
-assert = \b -> if b $print_true $print_false
+assert = \b -> b $print_true $print_false
 
 # assert false
 # assert (is0 (zero))
@@ -47,7 +47,7 @@ assert = \b -> if b $print_true $print_false
 
 # false (kek id) (is0 zero)
 
-assert (is0 (get0 (suc zero)))
+assert (is0 (pred (suc (get0 (suc (suc (suc (suc zero))))))))
 
 # assert (is0 (suc zero))
 # assert (get0 zero)

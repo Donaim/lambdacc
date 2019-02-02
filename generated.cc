@@ -155,6 +155,11 @@ struct EXPR_0;
 struct Leaf_68;
 struct Leaf_69;
 struct Leaf_70;
+struct Leaf_71;
+struct Leaf_72;
+struct Leaf_73;
+struct Leaf_74;
+struct Leaf_75;
 
 
 
@@ -190,6 +195,11 @@ int Init_EXPR_0                    (struct EXPR_0 *me);
 int Init_Leaf_68                   (struct Leaf_68 *me);
 int Init_Leaf_69                   (struct Leaf_69 *me);
 int Init_Leaf_70                   (struct Leaf_70 *me);
+int Init_Leaf_71                   (struct Leaf_71 *me);
+int Init_Leaf_72                   (struct Leaf_72 *me);
+int Init_Leaf_73                   (struct Leaf_73 *me);
+int Init_Leaf_74                   (struct Leaf_74 *me);
+int Init_Leaf_75                   (struct Leaf_75 *me);
 
 
 ff Exec_Bind_id                   (ff me_abs, ff x);
@@ -223,6 +233,11 @@ ff Exec_EXPR_0                    (ff me_abs, ff x);
 ff Exec_Leaf_68                   (ff me_abs, ff x);
 ff Exec_Leaf_69                   (ff me_abs, ff x);
 ff Exec_Leaf_70                   (ff me_abs, ff x);
+ff Exec_Leaf_71                   (ff me_abs, ff x);
+ff Exec_Leaf_72                   (ff me_abs, ff x);
+ff Exec_Leaf_73                   (ff me_abs, ff x);
+ff Exec_Leaf_74                   (ff me_abs, ff x);
+ff Exec_Leaf_75                   (ff me_abs, ff x);
 
 
 der(Bind_id) {
@@ -386,7 +401,6 @@ der(Leaf_60) {
 };
 
 der(Bind_assert) {
-	Bind_if                        * m_Bind_if;
 	Bind_print_true                * m_Bind_print_true;
 	Bind_print_false               * m_Bind_print_false;
 
@@ -408,7 +422,7 @@ der(Leaf_68) {
 };
 
 der(Leaf_69) {
-	Bind_get0                      * m_Bind_get0;
+	Bind_pred                      * m_Bind_pred;
 	Leaf_70                        * m_Leaf_70;
 
 	const char * tostr() override { return "Leaf_69"; }
@@ -416,9 +430,44 @@ der(Leaf_69) {
 
 der(Leaf_70) {
 	Bind_suc                       * m_Bind_suc;
-	Bind_zero                      * m_Bind_zero;
+	Leaf_71                        * m_Leaf_71;
 
 	const char * tostr() override { return "Leaf_70"; }
+};
+
+der(Leaf_71) {
+	Bind_get0                      * m_Bind_get0;
+	Leaf_72                        * m_Leaf_72;
+
+	const char * tostr() override { return "Leaf_71"; }
+};
+
+der(Leaf_72) {
+	Bind_suc                       * m_Bind_suc;
+	Leaf_73                        * m_Leaf_73;
+
+	const char * tostr() override { return "Leaf_72"; }
+};
+
+der(Leaf_73) {
+	Bind_suc                       * m_Bind_suc;
+	Leaf_74                        * m_Leaf_74;
+
+	const char * tostr() override { return "Leaf_73"; }
+};
+
+der(Leaf_74) {
+	Bind_suc                       * m_Bind_suc;
+	Leaf_75                        * m_Leaf_75;
+
+	const char * tostr() override { return "Leaf_74"; }
+};
+
+der(Leaf_75) {
+	Bind_suc                       * m_Bind_suc;
+	Bind_zero                      * m_Bind_zero;
+
+	const char * tostr() override { return "Leaf_75"; }
 };
 
 
@@ -668,6 +717,46 @@ int Init_Leaf_69                   (struct Leaf_69 *me) {
 int Init_Leaf_70                   (struct Leaf_70 *me) {
 	if (me->eval_now == NULL) {
 		me->eval_now = Exec_Leaf_70;
+	}
+
+	return 0;
+}
+
+int Init_Leaf_71                   (struct Leaf_71 *me) {
+	if (me->eval_now == NULL) {
+		me->eval_now = Exec_Leaf_71;
+	}
+
+	return 0;
+}
+
+int Init_Leaf_72                   (struct Leaf_72 *me) {
+	if (me->eval_now == NULL) {
+		me->eval_now = Exec_Leaf_72;
+	}
+
+	return 0;
+}
+
+int Init_Leaf_73                   (struct Leaf_73 *me) {
+	if (me->eval_now == NULL) {
+		me->eval_now = Exec_Leaf_73;
+	}
+
+	return 0;
+}
+
+int Init_Leaf_74                   (struct Leaf_74 *me) {
+	if (me->eval_now == NULL) {
+		me->eval_now = Exec_Leaf_74;
+	}
+
+	return 0;
+}
+
+int Init_Leaf_75                   (struct Leaf_75 *me) {
+	if (me->eval_now == NULL) {
+		me->eval_now = Exec_Leaf_75;
 	}
 
 	return 0;
@@ -1003,9 +1092,6 @@ ff Exec_Bind_assert               (ff me_abs, ff x) {
 	struct Bind_assert * me = (struct Bind_assert *)me_abs;
 	printf ("Lam [%s] got [%s]\n", me->tostr(), x->tostr());
 	if (me->x == NULL) {
-		me->m_Bind_if = new Bind_if;
-		me->m_Bind_if->parent = me;
-		Init_Bind_if(me->m_Bind_if);
 		me->m_Bind_print_true = new Bind_print_true;
 		me->m_Bind_print_true->parent = me;
 		Init_Bind_print_true(me->m_Bind_print_true);
@@ -1014,11 +1100,11 @@ ff Exec_Bind_assert               (ff me_abs, ff x) {
 		Init_Bind_print_false(me->m_Bind_print_false);
 	}
 	me->x = x;
-	return ((me->m_Bind_if)->eval(me->x)->eval((me->m_Bind_print_true))->eval((me->m_Bind_print_false)));
+	return (me->x->eval((me->m_Bind_print_true))->eval((me->m_Bind_print_false)));
 }
 
-ff Exec_Leaf_70                   (ff me_abs, ff x) {
-	struct Leaf_70 * me = (struct Leaf_70 *)me_abs;
+ff Exec_Leaf_75                   (ff me_abs, ff x) {
+	struct Leaf_75 * me = (struct Leaf_75 *)me_abs;
 	printf ("Lam [%s] got [%s]\n", me->tostr(), x->tostr());
 	if (me->x == NULL) {
 		me->m_Bind_suc = new Bind_suc;
@@ -1032,19 +1118,94 @@ ff Exec_Leaf_70                   (ff me_abs, ff x) {
 	return ((me->m_Bind_suc)->eval((me->m_Bind_zero)))->eval(x);
 }
 
-ff Exec_Leaf_69                   (ff me_abs, ff x) {
-	struct Leaf_69 * me = (struct Leaf_69 *)me_abs;
+ff Exec_Leaf_74                   (ff me_abs, ff x) {
+	struct Leaf_74 * me = (struct Leaf_74 *)me_abs;
+	printf ("Lam [%s] got [%s]\n", me->tostr(), x->tostr());
+	if (me->x == NULL) {
+		me->m_Bind_suc = new Bind_suc;
+		me->m_Bind_suc->parent = me;
+		Init_Bind_suc(me->m_Bind_suc);
+		me->m_Leaf_75 = new Leaf_75;
+		me->m_Leaf_75->parent = me;
+		Init_Leaf_75(me->m_Leaf_75);
+	}
+	me->x = x;
+	return ((me->m_Bind_suc)->eval((me->m_Leaf_75)))->eval(x);
+}
+
+ff Exec_Leaf_73                   (ff me_abs, ff x) {
+	struct Leaf_73 * me = (struct Leaf_73 *)me_abs;
+	printf ("Lam [%s] got [%s]\n", me->tostr(), x->tostr());
+	if (me->x == NULL) {
+		me->m_Bind_suc = new Bind_suc;
+		me->m_Bind_suc->parent = me;
+		Init_Bind_suc(me->m_Bind_suc);
+		me->m_Leaf_74 = new Leaf_74;
+		me->m_Leaf_74->parent = me;
+		Init_Leaf_74(me->m_Leaf_74);
+	}
+	me->x = x;
+	return ((me->m_Bind_suc)->eval((me->m_Leaf_74)))->eval(x);
+}
+
+ff Exec_Leaf_72                   (ff me_abs, ff x) {
+	struct Leaf_72 * me = (struct Leaf_72 *)me_abs;
+	printf ("Lam [%s] got [%s]\n", me->tostr(), x->tostr());
+	if (me->x == NULL) {
+		me->m_Bind_suc = new Bind_suc;
+		me->m_Bind_suc->parent = me;
+		Init_Bind_suc(me->m_Bind_suc);
+		me->m_Leaf_73 = new Leaf_73;
+		me->m_Leaf_73->parent = me;
+		Init_Leaf_73(me->m_Leaf_73);
+	}
+	me->x = x;
+	return ((me->m_Bind_suc)->eval((me->m_Leaf_73)))->eval(x);
+}
+
+ff Exec_Leaf_71                   (ff me_abs, ff x) {
+	struct Leaf_71 * me = (struct Leaf_71 *)me_abs;
 	printf ("Lam [%s] got [%s]\n", me->tostr(), x->tostr());
 	if (me->x == NULL) {
 		me->m_Bind_get0 = new Bind_get0;
 		me->m_Bind_get0->parent = me;
 		Init_Bind_get0(me->m_Bind_get0);
+		me->m_Leaf_72 = new Leaf_72;
+		me->m_Leaf_72->parent = me;
+		Init_Leaf_72(me->m_Leaf_72);
+	}
+	me->x = x;
+	return ((me->m_Bind_get0)->eval((me->m_Leaf_72)))->eval(x);
+}
+
+ff Exec_Leaf_70                   (ff me_abs, ff x) {
+	struct Leaf_70 * me = (struct Leaf_70 *)me_abs;
+	printf ("Lam [%s] got [%s]\n", me->tostr(), x->tostr());
+	if (me->x == NULL) {
+		me->m_Bind_suc = new Bind_suc;
+		me->m_Bind_suc->parent = me;
+		Init_Bind_suc(me->m_Bind_suc);
+		me->m_Leaf_71 = new Leaf_71;
+		me->m_Leaf_71->parent = me;
+		Init_Leaf_71(me->m_Leaf_71);
+	}
+	me->x = x;
+	return ((me->m_Bind_suc)->eval((me->m_Leaf_71)))->eval(x);
+}
+
+ff Exec_Leaf_69                   (ff me_abs, ff x) {
+	struct Leaf_69 * me = (struct Leaf_69 *)me_abs;
+	printf ("Lam [%s] got [%s]\n", me->tostr(), x->tostr());
+	if (me->x == NULL) {
+		me->m_Bind_pred = new Bind_pred;
+		me->m_Bind_pred->parent = me;
+		Init_Bind_pred(me->m_Bind_pred);
 		me->m_Leaf_70 = new Leaf_70;
 		me->m_Leaf_70->parent = me;
 		Init_Leaf_70(me->m_Leaf_70);
 	}
 	me->x = x;
-	return ((me->m_Bind_get0)->eval((me->m_Leaf_70)))->eval(x);
+	return ((me->m_Bind_pred)->eval((me->m_Leaf_70)))->eval(x);
 }
 
 ff Exec_Leaf_68                   (ff me_abs, ff x) {

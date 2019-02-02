@@ -1,6 +1,6 @@
 
 #define der(name)    struct name : fun
-#define ovv(x)       ff eval(ff x) override
+#define ovv      ff eval_now(ff x) override
 // #define dlajdkladjlkasjdla {}
 
 class fun;
@@ -8,111 +8,118 @@ typedef fun * ff;
 
 class fun {
 protected:
-    fun() {}
+    fun(ff p) : parent{p} {}
 public:
-    virtual ff eval(ff x) = 0;
+    const fun * const  parent;
+    ff x;
+    ff eval(ff x) {
+        this->x = x;
+        return eval_now(x);
+    }
+    virtual ff eval_now(ff x) = 0;
 };
 
 // 1)
 der(id) {
-    ovv(x) {
+    id() : fun{nullptr} {}
+    ovv {
         return x;
     }
 };
 
 // 2)
 der (t1) {
-    fun * a;
-    ovv(b) {
-        return a;
+    t1(ff p) : fun{p} {}
+    ovv {
+        return parent->x;
     }
 };
 der(t) {
-    t1 next;
-    ovv(a) {
-        next.a = a;
-        return &next;
+    t() : fun{nullptr}, leaf_0{this} {}
+    t1 leaf_0;
+    ovv {
+        return &leaf_0;
     }
 };
 // 3)
 der (f1) {
-    ovv(b) {
-        return b;
+    f1(ff p) : fun{p} {}
+    ovv {
+        return x;
     }
 };
 der(f) {
-    f1 next;
-    ovv(a) {
-        return &next;
+    f() : fun{nullptr}, leaf_0{this} {}
+    f1 leaf_0;
+    ovv {
+        return &leaf_0;
     }
 };
 // 4)
 der(neg) {
-    f fff;
-    t ttt;
-    fun * bbb;
-    ovv(b) {
-        bbb = b;
-        return bbb->eval(&fff)->eval(&ttt);
+    neg() : fun{nullptr} {}
+    f leaf_0;
+    t leaf_1;
+    ovv {
+        return x->eval(&leaf_0)->eval(&leaf_1);
     }
 };
 
 // 6)
-der(kek3) {
-    fun * b;
-    ovv(x) {
-        return b;
+der(kek2) {
+    kek2(ff p) : fun{p} {}
+    ovv {
+        return parent->x;
     }
 };
-der(kek2) {
-    fun * a;
-    kek3 k3;
-    ovv(b) {
-        k3.b = b;
-        return k3.eval(a);
+der(kek1) {
+    kek1(ff p) : fun{p}, leaf_0{this} {}
+    kek2 leaf_0;
+    ovv {
+        return leaf_0.eval( parent->x );
     }
 };
 der(kek) {
-    kek2 next;
-    ovv(a) {
-        next.a = a;
-        return &next;
+    kek() : fun{nullptr}, leaf_0{this} {}
+    kek1 leaf_0;
+    ovv {
+        return &leaf_0;
     }
 };
 
-// 7)
-der(pair2) {
-    fun * a;
-    fun * b;
-    ovv(f) {
-        return f->eval(a)->eval(b);
-    }
-};
-der(pair1) {
-    fun * a;
-    pair2 next;
-    ovv(b) {
-        next.a = a;
-        next.b = b;
-        return &next;
-    }
-};
-der(pair) {
-    pair1 next;
-    ovv(a) {
-        next.a = a;
-        return &next;
-    }
-};
-der(fst) {
-    t tt;
-    ovv(p) {
-        return p->eval(&tt);
-    }
-};
-der(snd) {
-    f fal;
-    ovv(p) {
-        return p->eval(&fal);
-    }
-};
+// // 7)
+// der(pair2) {
+//     fun * a;
+//     fun * b;
+//     ovv(f) {
+//         return f->eval(a)->eval(b);
+//     }
+// };
+// der(pair1) {
+//     fun * a;
+//     pair2 next;
+//     ovv(b) {
+//         next.a = a;
+//         next.b = b;
+//         return &next;
+//     }
+// };
+// der(pair) {
+//     pair1 next;
+//     ovv(a) {
+//         next.a = a;
+//         return &next;
+//     }
+// };
+// der(fst) {
+//     t tt;
+//     ovv(p) {
+//         return p->eval(&tt);
+//     }
+// };
+// der(snd) {
+//     f fal;
+//     ovv(p) {
+//         return p->eval(&fal);
+//     }
+// };

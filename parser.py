@@ -89,6 +89,10 @@ class Leaf:
         i_str = '\t' * indent
         l_str = '\n'.join(map ( lambda l: l.print(indent + 1), self.leafs))
         return l_str
+    def __eq__(self, other) -> bool:
+        return self.unique_id == other.unique_id
+    def __ne__(self, other) -> bool:
+        return not self == other
 
 class Lambda(Leaf):
     def __init__(self, scope: list, arg, leafs: list, parent: Leaf):

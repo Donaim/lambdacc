@@ -1,12 +1,12 @@
-der(Lambda_7) {
-	Argument_6 * Argument_6_m;
+der(Lambda_5) {
 	Bind_1 Bind_1_m;
-	Bind_3 Bind_3_m;
-	ovv(x) {
-		return Argument_6_m->eval((&Bind_1_m))->eval((&Bind_3_m));
+	ovv {
+		return (&Bind_1_m)->eval(this->parent->x);
 	}
 };
-// bind Bind_1 to be done
-
-// bind Bind_3 to be done
-
+der(Lambda_3) {
+	Lambda_5 Lambda_5_m;
+	ovv {
+		return (&Lambda_5_m);
+	}
+};

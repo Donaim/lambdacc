@@ -2,10 +2,11 @@
 LAMBDA_SYMBOL = '->'
 LAMBDA_DECL   = '\\'
 
-def find_first_char(s: str, chars: list):
-	for i, c in enumerate(s):
-		for k in chars:
-			if c == k:
+def find_first_char(s: str, stops: list):
+	for i in range(len(s)):
+		sub = s[i:]
+		for k in stops:
+			if sub.startswith(k):
 				return i
 	return -1
 def find_first_sub(s: str, subs: list, start: int = 0):
@@ -38,7 +39,7 @@ class Branch:
 		expr = expr.strip()
 		# print('branch="{}"'.format(expr))
 
-		is_lambda = expr[0] == LAMBDA_DECL
+		is_lambda = expr.startswith(LAMBDA_DECL)
 
 		re = Branch(None, [], is_lambda=is_lambda, is_token=False, is_arg=False)
 
@@ -49,7 +50,7 @@ class Branch:
 			argname = expr[1:stop]
 			re.branches.append( Branch(argname, [], is_lambda=False, is_token=True, is_arg=True) )
 			expr = expr[stop:]
-		
+
 		while len(expr) > 0:
 			if expr[0].isspace():   # skip
 				expr = expr[1:]
@@ -57,7 +58,7 @@ class Branch:
 			elif expr.startswith(LAMBDA_SYMBOL):     # skip
 				expr = expr[len(LAMBDA_SYMBOL):]
 				continue
-			elif expr[0] == LAMBDA_DECL:     # lambda
+			elif expr.startswith(LAMBDA_DECL):       # lambda
 				re.branches.append(Branch.from_text(expr))
 				expr = ''
 			elif expr[0] == '(':    # another branch

@@ -162,8 +162,6 @@ struct Leaf_74;
 struct Leaf_75;
 
 
-
-
 int Init_Bind_id                   (struct Bind_id *me);
 int Init_Lambda_7                  (struct Lambda_7 *me);
 int Init_Bind_true                 (struct Bind_true *me);
@@ -469,8 +467,6 @@ der(Leaf_75) {
 
 	const char * tostr() override { return "Leaf_75"; }
 };
-
-
 
 
 

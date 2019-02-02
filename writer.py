@@ -10,11 +10,9 @@ class SplittedOut:
 
 		self.template = ''
 		self.struct_declarations = ''
-		self.leafs_declarations = ''
 		self.init_declarations = ''
 		self.exec_declarations = ''
 		self.struct_definitions = ''
-		self.leafs_definitions = ''
 		self.init_definitions = ''
 		self.exec_definitions = ''
 		self.footer = ''
@@ -24,11 +22,9 @@ class SplittedOut:
 			for t in [
 					self.template,
 					self.struct_declarations,
-					self.leafs_declarations,
 					self.init_declarations,
 					self.exec_declarations,
 					self.struct_definitions,
-					self.leafs_definitions,
 					self.init_definitions,
 					self.exec_definitions,
 					self.footer,

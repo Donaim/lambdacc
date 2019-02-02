@@ -1,4 +1,6 @@
 
+#include <cstdio>
+
 #define der(name)    struct name : fun
 #define ovv      ff eval_now(ff x) override
 // #define dlajdkladjlkasjdla {}
@@ -15,6 +17,15 @@ public:
 	fun * parent = nullptr;
 	ff x;
 	ff eval(ff x) {
+		// if (x->eval_now == nullptr) {
+		// 	printf ("My x value is uninitialized!\n");
+		// 	printf ("My it's named : %s !\n", x->tostr());
+		// }
+
+		// if (eval_now == nullptr) {
+		// 	puts ("ERROR uninitialized type:");
+		// 	printf ("%d", this->typeuuid);
+		// }
 		return eval_now(this, x);
 	}
 	exec_t eval_now;
@@ -27,8 +38,6 @@ public:
 	virtual const char * tostr() = 0;
 #endif
 };
-
-#include <cstdio>
 
 /* *** MEMORY POOL *** */
 
@@ -96,7 +105,7 @@ inline uint8_t * ALLOC_GET(int size)
 #if TRACK_ALLOCS
 #define ALLOC(x) ((x*)ALLOC_GET(sizeof(x), QUOTE(x)))
 #else
-#define ALLOC(x) ((x*)ALLOC_GET(sizeof(x)))
+#define ALLOC(x) (new x{})
 #endif
 
 static void ALLOC_INIT()

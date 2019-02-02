@@ -1,7 +1,8 @@
 
 ff Exec_Bind_error (ff me_abs, ff x) {
 	puts("ERROR: This is not supposed to be evaluated!");
-	return NULL;
+	me_abs->x = x;
+	return me_abs;
 }
 
 #define BIND_ERROR_TYPEUUID (-4)

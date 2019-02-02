@@ -310,6 +310,7 @@ def write_some(config: OutConfig, binds: list):
 	footer += '\tputs("start");\n'
 	footer += '\tALLOC_INIT();\n'
 	footer += '\tbind_err = ALLOC(Bind_error);\n'
+	footer += '\tInit_Bind_error(bind_err);\n'
 	footer += '\n'
 	for e in exec_expr:
 		init_name = get_leaf_name(CFunction(e.name, 'init'))

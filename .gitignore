@@ -8,3 +8,4 @@ rawc/
 *.cc
 *.cpp
 *.c++
+*.inline.ini

@@ -27,3 +27,5 @@ snd = \p -> p false
 # 8)
 zero = pair true id
 
+id not true
+true

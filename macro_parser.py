@@ -53,13 +53,11 @@ def parse_text(text: str) -> list:
     toks = map(lambda p: (p[0], parse_tokens(p[1])), tuples)
 
     binds = []
-    structs = []
     for (name, br) in toks:
         s = parse_structure( b=br, scope=[], binds=binds, parent=None )
-        structs.append( s )
         binds.append( Bind( name=name, target=s ) )
 
-    return (structs, binds)
+    return binds
 
 def main():
     print('macro parser loaded :)')
@@ -67,10 +65,9 @@ def main():
     text = ''
     with open('note.txt', 'r') as r:
         text = r.read()
-    (structs, binds) = parse_text(text)
-    for o in structs:
-        p = o.print(0)
-        print(p)
+    binds = parse_text(text)
+    for o in binds:
+        print('{}=\n{}\n\n'.format(o.name, o.target.print(0)))
     
     import writer
     writer.write_some('tttt.cc', binds)

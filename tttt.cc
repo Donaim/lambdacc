@@ -19,6 +19,49 @@ public:
     virtual ff eval_now(ff x) = 0;
 };
 
+#include <cstdio>
+
+static bool debug_id_muted = false;
+static int debug_id_counter = 0;
+der(debug_id) {
+	debug_id() : fun(nullptr) {}
+	ovv {
+		++debug_id_counter;
+		if (debug_id_muted);
+		else {
+			printf("[debug id called %d times]\n", debug_id_counter);
+		}
+		return (this->x);
+	}
+};
+static debug_id * debug_id_instance = new debug_id{};
+
+der(error_fun) {
+	error_fun() : fun(nullptr) {}
+	ovv {
+		printf("error: not supposed to be evaluated");
+		return nullptr;
+	}
+};
+static error_fun * error_fun_instance = new error_fun{};
+
+der(print_true_id) {
+	print_true_id() : fun(nullptr) {}
+	ovv {
+		printf("TRUE\n");
+		return error_fun_instance;
+	}
+};
+static print_true_id * print_true_id_instance = new print_true_id{};
+der(print_false_id) {
+	print_false_id() : fun(nullptr) {}
+	ovv {
+		printf("FALSE\n");
+		return error_fun_instance;
+	}
+};
+static print_false_id * print_false_id_instance = new print_false_id{};
+
 /* END OF TEMPLATE */
 der(Bind_id) {
 	Bind_id(ff p) : fun(p) {}
@@ -161,68 +204,35 @@ der(Bind_zero) {
 		return ((&Bind_pair_m)->eval((&Bind_true_m))->eval((&Bind_id_m)));
 	}
 };
+der(EXPR_0) {
+	Bind_id Bind_id_m;
+	Bind_not Bind_not_m;
+	Bind_true Bind_true_m;
+	EXPR_0(ff p) : fun(p), Bind_id_m(this), Bind_not_m(this), Bind_true_m(this) {}
 
-/// testing
-
-#include <iostream>
-#include <cstdio>
-using std::cout;
-using std::endl;
-
-der(white) {
-private:
-    static int counter;
-public:
-    const int id;
-    white() : id{counter++}, fun{nullptr} {}
-    ovv {
-        cout << "white id is: " << id << "; " << endl;
-    }
-};
-der(black) {
-private:
-    static int counter;
-public:
-    const int id;
-    black() : id{counter++}, fun{nullptr} {}
-    ovv {
-        cout << "black id is: " << id << "; " << endl;
-    }
-};
-int black::counter = 0;
-int white::counter = 0;
-
-static bool debug_id_muted = false;
-static int debug_id_counter = 0;
-der(debug_id) {
-	debug_id() : fun(nullptr) {}
 	ovv {
-		if (debug_id_muted);
-		else {
-			printf("[debug id called]\n");
-			++debug_id_counter;
-		}
-		return (this->x);
+		return ((&Bind_id_m)->eval((&Bind_not_m))->eval((&Bind_true_m)));
 	}
 };
-static debug_id * debug_id_instance = new debug_id{};
+der(EXPR_1) {
+	Bind_true Bind_true_m;
+	EXPR_1(ff p) : fun(p), Bind_true_m(this) {}
 
-void test_pair() {
-    white * a = new white{};
-    black * b = new black{};
-    
-    fun * p = Bind_pair{nullptr}.eval(a)->eval(b);
-    fun * fs = Bind_fst{nullptr}.eval(p);
-    fun * sn = Bind_snd{nullptr}.eval(p);
-    
-    fs->eval(debug_id_instance);
-    sn->eval(debug_id_instance);
+	ovv {
+		return ((&Bind_true_m));
+	}
+};
+void assert(fun * b) {
+	Bind_if iff{nullptr};
+	iff.eval(b)->eval(print_true_id_instance)->eval(print_false_id_instance)->eval(error_fun_instance);
 }
-
-
 int main() {
-	cout << "testing tttt" << endl;
-	test_pair();
+	printf("start\n");
 
-	return 0;
+	auto fff = new Bind_true {nullptr};
+	auto nnn = new Bind_not{nullptr};
+	assert( nnn->eval(nnn->eval(fff)) );
+
+	printf("end\n");
+	return 0; 
 }

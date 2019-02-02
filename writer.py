@@ -94,9 +94,6 @@ def write_lambda(file, le: Leaf):
     name = get_leaf_name(le)
     return write_named_lambda(file=file, le=le, lambda_name=name)
 
-def write_bind(file, le: Leaf):
-    name = get_leaf_name(le)
-    file.write("// bind {} to be done\n\n".format(name))
 def write(file, le: Leaf):
     if type(le) is Lambda:
         return write_lambda(file, le)
@@ -110,8 +107,29 @@ def write_some(filepath: str, binds: list):
     with open('template.cc', 'r') as r:
         template = r.read()
         file.write(template)
+
+    proper_binds = []
+    exec_expr = []
+    expr_count = 0
     for b in binds:
+        if b.name is None:
+            b.name = 'EXPR_' + str(expr_count)
+            expr_count += 1
+            exec_expr.append(b)
+        else:
+            proper_binds.append(b)
+            
+    for b in proper_binds:
         write(file=file, le=b)
+    for e in exec_expr:
+        write_named_lambda(file=file, le=e.target, lambda_name=e.name)
+    
+    file.write('int main() {\n')
+    file.write('\tprintf("start\\n");\n')
+    for e in exec_expr:
+        file.write('\t' + e.name + '{nullptr}.eval(debug_id_instance); \n')
+    file.write('\tprintf("end\\n");\n')
+    file.write('\treturn 0; \n }')
 
     file.close()
     print('write some ended')

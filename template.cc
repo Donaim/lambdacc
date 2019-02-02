@@ -19,4 +19,34 @@ public:
     virtual ff eval_now(ff x) = 0;
 };
 
-/* END OF TEMPLATE */
+#include <cstdio>
+
+der(error_fun) {
+	error_fun() : fun(nullptr) {}
+	ovv {
+		printf("error: not supposed to be evaluated");
+		return nullptr;
+	}
+};
+static error_fun * error_fun_instance = new error_fun{};
+
+//IMPL
+
+struct IPrintable : fun {
+	virtual const char * text() const = 0;
+	ovv {
+		puts(this->text());
+		return x;
+	}
+};
+
+struct Text_True : IPrintable {
+	const char * text() const override {
+		return "TRUE";
+	}
+};
+struct Text_False : IPrintable {
+	const char * text() const override {
+		return "TRUE";
+	}
+};

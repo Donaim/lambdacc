@@ -191,7 +191,7 @@ def parse_token(token: Branch, scope: list, binds: list) -> Leaf:
 		re = Bind(name, None)
 		re.predefined = True
 		return re
-	for arg in scope:
+	for arg in reversed(scope):
 		if arg.name == token.text:
 			return arg
 	for b in binds:
@@ -200,9 +200,6 @@ def parse_token(token: Branch, scope: list, binds: list) -> Leaf:
 	raise Exception('not defined binding "{}" in scope = {} and bindings = {}'.format(token.text, scope, list(map(lambda b: b.name, binds))))
 
 def add_scope_argument(current_scope: list, new_arg: Branch, parent: Leaf) -> list:
-	for arg in current_scope:
-		if arg.name == new_arg.text:
-			return current_scope
 	return current_scope + [Argument(new_arg.text, parent=parent)]
 
 def parse_leafs(b: Branch, scope: list, binds: list, parent: Leaf) -> list:

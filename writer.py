@@ -66,7 +66,8 @@ def write_lambda(file, le: Leaf):
     name = get_leaf_name(le)
     file.write('der({}) {{\n'.format(name))
     
-    constructor = '\t{}(ff p) : fun(p)'.format(name)
+    have_parent = not le.parent is None
+    constructor = '\t{}({}) : fun({})'.format(name, 'ff p' if have_parent else '', 'p' if have_parent else 'nullptr')
     
     for l in le.leafs:
         if type(l) is Lambda or type(l) is Bind:

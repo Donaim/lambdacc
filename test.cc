@@ -8,7 +8,7 @@ der(Lambda_5) {
 };
 der(Lambda_3) {
 	Lambda_5 Lambda_5_m;
-	Lambda_3(ff p) : fun(p), Lambda_5_m(this) {}
+	Lambda_3() : fun(nullptr), Lambda_5_m(this) {}
 
 	ovv {
 		return (&Lambda_5_m);

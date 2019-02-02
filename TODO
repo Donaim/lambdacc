@@ -3,4 +3,5 @@
 [ ] stackoverflow: use queue instead
 [ ] memoryleaks: add Delete_NAME(ff) functions (simmilar to Init_NAME)
 [ ] multithreading: consider evaluating each leaf at the same time
+[ ] maybe use C instead of C++ (faster compile-time, maybe better optimisations)
 [ ] code quality: rewrite everything in haskell

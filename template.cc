@@ -50,21 +50,21 @@ struct Bind_print_false : fun {
 };
 
 ff Exec_Bind_print_true (ff me_abs, ff x) {
-	puts("ITS TRUE!");
+	puts("TRUE");
 	return NULL;
 }
 
 ff Exec_Bind_print_false (ff me_abs, ff x) {
-	puts("ITS FALSE!");
+	puts("FALSE");
 	return NULL;
 }
 
 int Init_Bind_print_true (ff me) {
-	puts ("TRUE INITED");
+	// puts ("TRUE INITED");
 	me->eval_now = Exec_Bind_print_true;
 }
 int Init_Bind_print_false (ff me) {
-	puts ("FALS INITED");
+	// puts ("FALS INITED");
 	me->eval_now = Exec_Bind_print_false;
 }
 

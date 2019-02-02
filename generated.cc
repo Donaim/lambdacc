@@ -49,21 +49,22 @@ struct Bind_print_false : fun {
 	Bind_print_false() {}
 };
 
-
 ff Exec_Bind_print_true (ff me_abs, ff x) {
-	puts("ITS TRUE!");
+	puts("TRUE");
+	return NULL;
 }
 
 ff Exec_Bind_print_false (ff me_abs, ff x) {
-	puts("ITS FALSE!");
+	puts("FALSE");
+	return NULL;
 }
 
 int Init_Bind_print_true (ff me) {
-	puts ("TRUE INITED");
+	// puts ("TRUE INITED");
 	me->eval_now = Exec_Bind_print_true;
 }
 int Init_Bind_print_false (ff me) {
-	puts ("FALS INITED");
+	// puts ("FALS INITED");
 	me->eval_now = Exec_Bind_print_false;
 }
 
@@ -101,6 +102,8 @@ struct Lambda_59;
 struct Bind_get0;
 struct Bind_assert;
 struct EXPR_0;
+struct EXPR_1;
+struct EXPR_2;
 
 
 int Init_Bind_id                   (struct Bind_id *me);
@@ -128,6 +131,8 @@ int Init_Lambda_59                 (struct Lambda_59 *me);
 int Init_Bind_get0                 (struct Bind_get0 *me);
 int Init_Bind_assert               (struct Bind_assert *me);
 int Init_EXPR_0                    (struct EXPR_0 *me);
+int Init_EXPR_1                    (struct EXPR_1 *me);
+int Init_EXPR_2                    (struct EXPR_2 *me);
 
 
 ff Exec_Bind_id                   (ff me_abs, ff x);
@@ -155,6 +160,8 @@ ff Exec_Lambda_59                 (ff me_abs, ff x);
 ff Exec_Bind_get0                 (ff me_abs, ff x);
 ff Exec_Bind_assert               (ff me_abs, ff x);
 ff Exec_EXPR_0                    (ff me_abs, ff x);
+ff Exec_EXPR_1                    (ff me_abs, ff x);
+ff Exec_EXPR_2                    (ff me_abs, ff x);
 
 
 der(Bind_id) {
@@ -313,6 +320,23 @@ der(EXPR_0) {
 
 	Bind_assert                    * m_Bind_assert;
 	Bind_false                     * m_Bind_false;
+};
+der(EXPR_1) {
+
+	EXPR_1()  {}
+
+	Bind_assert                    * m_Bind_assert;
+	Bind_is0                       * m_Bind_is0;
+	Bind_zero                      * m_Bind_zero;
+};
+der(EXPR_2) {
+
+	EXPR_2()  {}
+
+	Bind_assert                    * m_Bind_assert;
+	Bind_is0                       * m_Bind_is0;
+	Bind_suc                       * m_Bind_suc;
+	Bind_zero                      * m_Bind_zero;
 };
 
 
@@ -511,6 +535,22 @@ int Init_Bind_assert               (struct Bind_assert *me) {
 int Init_EXPR_0                    (struct EXPR_0 *me) {
 	if (me->eval_now == NULL) {
 		me->eval_now = Exec_EXPR_0;
+	}
+
+	return 0;
+}
+
+int Init_EXPR_1                    (struct EXPR_1 *me) {
+	if (me->eval_now == NULL) {
+		me->eval_now = Exec_EXPR_1;
+	}
+
+	return 0;
+}
+
+int Init_EXPR_2                    (struct EXPR_2 *me) {
+	if (me->eval_now == NULL) {
+		me->eval_now = Exec_EXPR_2;
 	}
 
 	return 0;
@@ -814,14 +854,58 @@ ff Exec_EXPR_0                    (ff me_abs, ff x) {
 	return ((me->m_Bind_assert)->eval((me->m_Bind_false)))->eval(x);
 }
 
+ff Exec_EXPR_1                    (ff me_abs, ff x) {
+	struct EXPR_1 * me = (struct EXPR_1 *)me_abs;
+	if (me->x == NULL) {
+		me->m_Bind_assert = new Bind_assert;
+		me->m_Bind_assert->parent = me;
+		Init_Bind_assert(me->m_Bind_assert);
+		me->m_Bind_is0 = new Bind_is0;
+		me->m_Bind_is0->parent = me;
+		Init_Bind_is0(me->m_Bind_is0);
+		me->m_Bind_zero = new Bind_zero;
+		me->m_Bind_zero->parent = me;
+		Init_Bind_zero(me->m_Bind_zero);
+	}
+	me->x = x;
+	return ((me->m_Bind_assert)->eval(((me->m_Bind_is0)->eval(((me->m_Bind_zero))))))->eval(x);
+}
+
+ff Exec_EXPR_2                    (ff me_abs, ff x) {
+	struct EXPR_2 * me = (struct EXPR_2 *)me_abs;
+	if (me->x == NULL) {
+		me->m_Bind_assert = new Bind_assert;
+		me->m_Bind_assert->parent = me;
+		Init_Bind_assert(me->m_Bind_assert);
+		me->m_Bind_is0 = new Bind_is0;
+		me->m_Bind_is0->parent = me;
+		Init_Bind_is0(me->m_Bind_is0);
+		me->m_Bind_suc = new Bind_suc;
+		me->m_Bind_suc->parent = me;
+		Init_Bind_suc(me->m_Bind_suc);
+		me->m_Bind_zero = new Bind_zero;
+		me->m_Bind_zero->parent = me;
+		Init_Bind_zero(me->m_Bind_zero);
+	}
+	me->x = x;
+	return ((me->m_Bind_assert)->eval(((me->m_Bind_is0)->eval(((me->m_Bind_suc)->eval((me->m_Bind_zero)))))))->eval(x);
+}
+
 
 
 int main() {
 	puts("start");
+	struct EXPR_0 * EXPR_0_var = new EXPR_0;
+	Init_EXPR_0(EXPR_0_var);
+	EXPR_0_var->eval(nullptr);
 
-	struct EXPR_0 * e = new EXPR_0;
-	Init_EXPR_0(e);
-	e->eval(nullptr);
+	struct EXPR_1 * EXPR_1_var = new EXPR_1;
+	Init_EXPR_1(EXPR_1_var);
+	EXPR_1_var->eval(nullptr);
+
+	struct EXPR_2 * EXPR_2_var = new EXPR_2;
+	Init_EXPR_2(EXPR_2_var);
+	EXPR_2_var->eval(nullptr);
 
 	puts("end");
 	return 0; 

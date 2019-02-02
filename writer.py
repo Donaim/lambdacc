@@ -248,7 +248,11 @@ def write_some(filepath: str, binds: list):
 	footer += ('int main() {\n')
 	footer += ('\tputs("start");\n')
 	for e in exec_expr:
-		footer += ('\t' + e.name + '{}.eval(nullptr); \n')
+		init_name = get_leaf_name(CFunction(e.name, 'init'))
+		varname = e.name + '_var';
+		footer += '	struct {} * {} = new {};\n'.format(e.name, varname, e.name)
+		footer += '	{}({});\n'.format(init_name, varname);
+		footer += '	{}->eval(nullptr);\n\n'.format(varname);
 	footer += ('\tputs("end");\n')
 	footer += ('\treturn 0; \n}')
 	out.footer += footer

@@ -125,8 +125,8 @@ class Bind(Leaf):
 	def __repr__(self):
 		return self.print(0)
 	def print(self, indent):
-		return ('\t' * indent) + '{' + self.name + '}'
-
+		name = self.name if not self.name is None else 'expr' + str(self.unique_id)
+		return ('\t' * indent) + '{' + name + '}'
 
 def trimSpaces(s: str) -> str:
 	re = ''

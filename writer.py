@@ -209,6 +209,8 @@ def get_init_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 	out.init_declarations += decl + ';\n'
 	body  = '	if (me->eval_now == NULL) {\n'
 	body += '		me->eval_now = {};\n'.format(exec_name)
+	if out.config.use_typeid:
+		body += '\n		me->typeuuid = {};\n'.format(le.unique_id)
 	body += '	}\n'
 	ret   = 'return 0;'
 	out.init_definitions += '{} {{\n{}\n\t{}\n}}\n\n'.format(decl, body, ret)
@@ -280,6 +282,11 @@ def write(out: SplittedOut, le: Leaf):
 		raise Exception('Dont know how to start writing from {} type'.format(type(le)))
 def write_some(config: OutConfig, binds: list):
 	out = SplittedOut(config)
+
+	if out.config.show_debug:
+		out.header += '#define SHOW_DEBUG'
+	if out.config.use_typeid:
+		out.header += '#define USE_TYPEID'
 
 	proper_binds = []
 	exec_expr = []

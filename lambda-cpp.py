@@ -4,17 +4,18 @@ import parser
 from parser import *
 
 def split_binding_and_def(line: str) -> (str, str):
-	(pre, mid, post) = line.partition('=')
+	(pre, _, p) = line.partition(' ')
+	(p2, mid, post) = p.strip().partition('=')
 
 	post = post.strip()
-	if mid:
+	if len(p2) <= 0:
 		if not post:
 			raise SyntaxError('Binding at line "{}" cannot have empty definition'.format(line))
-		
+
 		pre = pre.strip()
 		if not pre:
 			raise SyntaxError('Binding at line "{}" cannot have empty name'.format(line))
-		if any(map(lambda c: c.isspace(), pre)) or parser.LAMBDA_SYMBOL in pre or '\\' in pre:
+		if parser.LAMBDA_SYMBOL in pre or '\\' in pre:
 			raise SyntaxError('Binding "{}" has invalid symbols in its name'.format(pre))
 	else:
 		post = line.strip()

@@ -17,7 +17,7 @@ not = \b -> b false true
 if = \i -> \a -> \b -> i a b
 
 # 6)
-kek = \a -> \b -> (\x -> b) a             # same as <false>
+kek = \a b -> (\x -> b) a             # same as <false>
 
 # 7)
 pair = \a -> \b -> \f -> f a b
@@ -29,7 +29,16 @@ zero = pair true id
 
 is0 = \n -> if (fst n) true false
 
+suc  = \n -> pair false n
+pred = \n -> snd n
+
+# get0 = \n -> if (fst n) n (get0 (pred n))
+
 assert = \b -> if b $print_true $print_false
 
 # assert false
-assert (is0 zero)
+assert (is0 (zero))
+assert (is0 (suc zero))
+assert (is0 (pred (suc zero)))
+# assert false
+# assert (fst (pair false true))

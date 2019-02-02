@@ -213,6 +213,23 @@ der(Bind_is0) {
 		return ((&m_Bind_if)->eval(((&m_Bind_fst)->eval(this->x)))->eval((&m_Bind_true))->eval((&m_Bind_false)));
 	}
 };
+der(Bind_suc) {
+	Bind_pair m_Bind_pair;
+	Bind_false m_Bind_false;
+	Bind_suc() : fun(nullptr) {}
+
+	ovv {
+		return ((&m_Bind_pair)->eval((&m_Bind_false))->eval(this->x));
+	}
+};
+der(Bind_pred) {
+	Bind_snd m_Bind_snd;
+	Bind_pred() : fun(nullptr) {}
+
+	ovv {
+		return ((&m_Bind_snd)->eval(this->x));
+	}
+};
 der(Bind_assert) {
 	Bind_if m_Bind_if;
 	Bind_print_true m_Bind_print_true;
@@ -230,12 +247,37 @@ der(EXPR_0) {
 	EXPR_0() : fun(nullptr) {}
 
 	ovv {
-		return ((&m_Bind_assert)->eval(((&m_Bind_is0)->eval((&m_Bind_zero)))))->eval(x);
+		return ((&m_Bind_assert)->eval(((&m_Bind_is0)->eval(((&m_Bind_zero))))))->eval(x);
+	}
+};
+der(EXPR_1) {
+	Bind_assert m_Bind_assert;
+	Bind_is0 m_Bind_is0;
+	Bind_suc m_Bind_suc;
+	Bind_zero m_Bind_zero;
+	EXPR_1() : fun(nullptr) {}
+
+	ovv {
+		return ((&m_Bind_assert)->eval(((&m_Bind_is0)->eval(((&m_Bind_suc)->eval((&m_Bind_zero)))))))->eval(x);
+	}
+};
+der(EXPR_2) {
+	Bind_assert m_Bind_assert;
+	Bind_is0 m_Bind_is0;
+	Bind_pred m_Bind_pred;
+	Bind_suc m_Bind_suc;
+	Bind_zero m_Bind_zero;
+	EXPR_2() : fun(nullptr) {}
+
+	ovv {
+		return ((&m_Bind_assert)->eval(((&m_Bind_is0)->eval(((&m_Bind_pred)->eval(((&m_Bind_suc)->eval((&m_Bind_zero)))))))))->eval(x);
 	}
 };
 int main() {
 	puts("start");
 	EXPR_0{}.eval(nullptr); 
+	EXPR_1{}.eval(nullptr); 
+	EXPR_2{}.eval(nullptr); 
 	puts("end");
 	return 0; 
 }

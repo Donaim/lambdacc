@@ -2,6 +2,8 @@
 import parser
 from parser import *
 
+show_debug = False
+
 class SplittedOut:
 	def __init__(self, filename: str):
 		self.filename = filename
@@ -138,7 +140,8 @@ def get_exec_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 	
 	defi  = decl + ' {\n'
 	defi += '	struct {} * me = (struct {} *)me_abs;\n'.format(lambda_name, lambda_name)
-	defi += '	printf ("Lam [%s] got [%s]\\n", me->tostr(), x->tostr());\n'
+	if show_debug:
+		defi += '	printf ("Lam [%s] got [%s]\\n", me->tostr(), x->tostr());\n'
 	defi += init_children(le=le, parent_lambda_name=lambda_name)
 	defi += '	me->x = x;\n'
 	defi += '	' + get_ovv(le)                                                                # RETURN STATEMENT
@@ -202,10 +205,10 @@ def write_named_lambda(out: SplittedOut, le: Lambda, lambda_name: str):
 			raise Exception('Unexpected member type {}'.format(type(l)))
 
 	out.struct_definitions += stname
-	out.struct_definitions += ('\n')
-	out.struct_definitions += '	const char * tostr() override {{ return "{}"; }}\n'.format(lambda_name)
 	out.struct_definitions += st_members
-	out.struct_definitions += ('};\n')
+	if show_debug:
+		out.struct_definitions += '\n	const char * tostr() override {{ return "{}"; }}\n'.format(lambda_name)
+	out.struct_definitions += ('};\n\n')
 
 	get_init_func(out, le, lambda_name)
 	get_exec_func(out, le, lambda_name)
@@ -226,6 +229,8 @@ def write_some(filepath: str, binds: list):
 	out = SplittedOut(filepath)
 	with open('template.cc') as tempr:
 		out.template = tempr.read()
+		if show_debug:
+			out.template = '#define SHOW_DEBUG\n' + out.template
 
 	proper_binds = []
 	exec_expr = []

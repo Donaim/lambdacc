@@ -19,7 +19,9 @@ public:
 	}
 	exec_t eval_now;
 
+#ifdef SHOW_DEBUG
 	virtual const char * tostr() = 0;
+#endif
 };
 
 #include <cstdio>
@@ -43,17 +45,26 @@ public:
 // static error_not_lambda * error_not_lambda_ptr = &error_not_lambda_instance;
 
 struct Bind_error : fun {
+
+#ifdef SHOW_DEBUG
 	const char * tostr() override { return "ERROR"; }
+#endif
 };
 struct Bind_error * bind_err = new Bind_error;
 
 struct Bind_print_true : fun {
 	struct Bind_error * m_Bind_error;
+
+#ifdef SHOW_DEBUG
 	const char * tostr() override { return "$print_true"; }
+#endif
 };
 struct Bind_print_false : fun {
 	struct Bind_error * m_Bind_error;
+
+#ifdef SHOW_DEBUG
 	const char * tostr() override { return "$print_false"; }
+#endif
 };
 
 ff Exec_Bind_error       (ff me_abs, ff x);

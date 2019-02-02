@@ -1,6 +1,24 @@
 
 import parser
-from parser import * 
+from parser import *
+
+class SplittedOut:
+	def __init__(self, filename: str):
+		self.filename = filename
+
+		self.template = ''
+		self.func_declarations = ''
+		self.struct_definitions = ''
+		self.func_definitions = ''
+		self.footer = ''
+
+	def dump(self):
+		with open(self.filename, 'w+') as w:
+			w.write(self.template)
+			w.write(self.func_declarations)
+			w.write(self.struct_definitions)
+			w.write(self.func_definitions)
+			w.write(self.footer)
 
 def get_leaf_name(le: Leaf) -> str:
 	if type(le) is Leaf:
@@ -19,7 +37,7 @@ def get_ovv_member_name(mem: Leaf):
 	name = get_member_name(name)
 	t = type(mem)
 	if t is Bind or t is Lambda:
-		return '(&{})'.format(name)
+		return '({})'.format(name)
 	else:
 		raise Exception('expected types {} and {} '.format(Bind, Argument, Lambda))
 
@@ -90,59 +108,60 @@ def get_unique_lambda_members(le: Lambda) -> list:
 			re.append(m)
 	return re
 
-def write_structure_member(file, name, name_m):
-	file.write('\t{:<30} {};\n'.format(name, name_m))
-def write_named_lambda(file, le: Lambda, lambda_name: str):
+def get_structure_member(name, name_m):
+	return '\t{:<30} * {};\n'.format(name, name_m)
+def write_named_lambda(out: SplittedOut, le: Lambda, lambda_name: str):
 	for l in le.leafs:
 		if type(l) is Lambda:
-			write_lambda(file=file, le=l)
+			write_lambda(out=out, le=l)
 
-	file.write('der({}) {{\n'.format(lambda_name))
+	stname = 'der({}) {{\n'.format(lambda_name)
 
-	is_bind = le.parent is None
-	constructor = '\t{}({}) : fun({})'.format(lambda_name, '' if is_bind else 'ff p', 'nullptr' if is_bind else 'p')
+	is_bind = type(le.parent) is Bind
+	constructor = '\t{}() '.format(lambda_name)
+	constructor += ' {}\n\n'
 
 	members = get_unique_lambda_members(le=le)
+	st_members = ''
 	for l in members:
 		if type(l) is Lambda:
 			name = get_leaf_name(l)
 			name_m = get_member_name(name)
 			
-			write_structure_member(file, name, name_m)
-			constructor += ', {}(this)'.format(name_m)
+			st_members += get_structure_member(name, name_m)
 		elif type(l) is Bind:
 			name = get_leaf_name(l)
 			name_m = get_member_name(name)
 
-			write_structure_member(file, name, name_m)
+			st_members += get_structure_member(name, name_m)
 		else:
 			raise Exception('Unexpected member type {}'.format(type(l)))
 
-	constructor += ' {}\n\n'
-	file.write('\n')
-	file.write(constructor)
+	out.struct_definitions += stname
+	out.struct_definitions += ('\n')
+	out.struct_definitions += (constructor)
+	out.struct_definitions += st_members
 
-	file.write('\tovv {')
-	file.write('\n\t\t' + get_ovv(le))
-	file.write('\n\t}\n')
-	file.write('};\n')
-def write_lambda(file, le: Leaf):
+	out.struct_definitions += ('\tovv {')
+	out.struct_definitions += ('\n\t\t' + get_ovv(le))
+	out.struct_definitions += ('\n\t}\n')
+	out.struct_definitions += ('};\n')
+def write_lambda(out: SplittedOut, le: Leaf):
 	name = get_leaf_name(le)
-	return write_named_lambda(file=file, le=le, lambda_name=name)
+	return write_named_lambda(out=out, le=le, lambda_name=name)
 
-def write(file, le: Leaf):
+def write(out: SplittedOut, le: Leaf):
 	if type(le) is Lambda:
-		return write_lambda(file, le)
+		return write_lambda(out=out, le=le)
 	elif type(le) is Bind:
 		name = get_leaf_name(le)
-		return write_named_lambda(file=file, le=le.target, lambda_name=name)
+		return write_named_lambda(out=out, le=le.target, lambda_name=name)
 	else:
 		raise Exception('Dont know how to start writing from {} type'.format(type(le)))
 def write_some(filepath: str, binds: list):
-	file = open(filepath, 'w')
-	with open('template.cc', 'r') as r:
-		template = r.read()
-		file.write(template)
+	out = SplittedOut(filepath)
+	with open('template.cc') as tempr:
+		out.template = tempr.read()
 
 	proper_binds = []
 	exec_expr = []
@@ -156,18 +175,20 @@ def write_some(filepath: str, binds: list):
 			proper_binds.append(b)
 			
 	for b in proper_binds:
-		write(file=file, le=b)
+		write(out=out, le=b)
 	for e in exec_expr:
-		write_named_lambda(file=file, le=e.target, lambda_name=e.name)
-	
-	file.write('int main() {\n')
-	file.write('\tputs("start");\n')
-	for e in exec_expr:
-		file.write('\t' + e.name + '{}.eval(nullptr); \n')
-	file.write('\tputs("end");\n')
-	file.write('\treturn 0; \n}')
+		write_named_lambda(out=out, le=e.target, lambda_name=e.name)
 
-	file.close()
+	footer = ''
+	footer += ('int main() {\n')
+	footer += ('\tputs("start");\n')
+	for e in exec_expr:
+		footer += ('\t' + e.name + '{}.eval(nullptr); \n')
+	footer += ('\tputs("end");\n')
+	footer += ('\treturn 0; \n}')
+	out.footer += footer
+
+	out.dump()
 	print('write some ended')
 
 def main():
@@ -181,9 +202,8 @@ def main():
 	# t = p.print(0)
 	# print(t)
 
-	file = open('test.cc', 'w')
-	write(file, p)
-	file.close()
+	out = SplittedOut('test.cc')
+	write(out, p)
 	print('end writing')
 
 if __name__ == '__main__':

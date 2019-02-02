@@ -49,11 +49,22 @@ struct Bind_print_false : fun {
 	Bind_print_false() {}
 };
 
+
+ff Exec_Bind_print_true (ff me_abs, ff x) {
+	puts("ITS TRUE!");
+}
+
+ff Exec_Bind_print_false (ff me_abs, ff x) {
+	puts("ITS FALSE!");
+}
+
 int Init_Bind_print_true (ff me) {
 	puts ("TRUE INITED");
+	me->eval_now = Exec_Bind_print_true;
 }
 int Init_Bind_print_false (ff me) {
 	puts ("FALS INITED");
+	me->eval_now = Exec_Bind_print_false;
 }
 
 // struct Bind_num : fun {
@@ -301,8 +312,7 @@ der(EXPR_0) {
 	EXPR_0()  {}
 
 	Bind_assert                    * m_Bind_assert;
-	Bind_is0                       * m_Bind_is0;
-	Bind_zero                      * m_Bind_zero;
+	Bind_false                     * m_Bind_false;
 };
 
 
@@ -796,22 +806,23 @@ ff Exec_EXPR_0                    (ff me_abs, ff x) {
 		me->m_Bind_assert = new Bind_assert;
 		me->m_Bind_assert->parent = me;
 		Init_Bind_assert(me->m_Bind_assert);
-		me->m_Bind_is0 = new Bind_is0;
-		me->m_Bind_is0->parent = me;
-		Init_Bind_is0(me->m_Bind_is0);
-		me->m_Bind_zero = new Bind_zero;
-		me->m_Bind_zero->parent = me;
-		Init_Bind_zero(me->m_Bind_zero);
+		me->m_Bind_false = new Bind_false;
+		me->m_Bind_false->parent = me;
+		Init_Bind_false(me->m_Bind_false);
 	}
 	me->x = x;
-	return ((me->m_Bind_assert)->eval(((me->m_Bind_is0)->eval(((me->m_Bind_zero))))))->eval(x);
+	return ((me->m_Bind_assert)->eval((me->m_Bind_false)))->eval(x);
 }
 
 
 
 int main() {
 	puts("start");
-	EXPR_0{}.eval(nullptr); 
+
+	struct EXPR_0 * e = new EXPR_0;
+	Init_EXPR_0(e);
+	e->eval(nullptr);
+
 	puts("end");
 	return 0; 
 }

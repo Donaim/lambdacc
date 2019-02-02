@@ -62,6 +62,7 @@ struct Bind_num : fun {
 };
 
 der(Bind_id) {
+
 	Bind_id() : fun(nullptr) {}
 
 	ovv {
@@ -69,6 +70,7 @@ der(Bind_id) {
 	}
 };
 der(Lambda_7) {
+
 	Lambda_7(ff p) : fun(p) {}
 
 	ovv {
@@ -76,7 +78,8 @@ der(Lambda_7) {
 	}
 };
 der(Bind_true) {
-	Lambda_7 m_Lambda_7;
+	Lambda_7                       m_Lambda_7;
+
 	Bind_true() : fun(nullptr), m_Lambda_7(this) {}
 
 	ovv {
@@ -84,6 +87,7 @@ der(Bind_true) {
 	}
 };
 der(Lambda_12) {
+
 	Lambda_12(ff p) : fun(p) {}
 
 	ovv {
@@ -91,7 +95,8 @@ der(Lambda_12) {
 	}
 };
 der(Bind_false) {
-	Lambda_12 m_Lambda_12;
+	Lambda_12                      m_Lambda_12;
+
 	Bind_false() : fun(nullptr), m_Lambda_12(this) {}
 
 	ovv {
@@ -99,8 +104,9 @@ der(Bind_false) {
 	}
 };
 der(Bind_not) {
-	Bind_false m_Bind_false;
-	Bind_true m_Bind_true;
+	Bind_false                     m_Bind_false;
+	Bind_true                      m_Bind_true;
+
 	Bind_not() : fun(nullptr) {}
 
 	ovv {
@@ -108,6 +114,7 @@ der(Bind_not) {
 	}
 };
 der(Lambda_22) {
+
 	Lambda_22(ff p) : fun(p) {}
 
 	ovv {
@@ -115,7 +122,8 @@ der(Lambda_22) {
 	}
 };
 der(Lambda_20) {
-	Lambda_22 m_Lambda_22;
+	Lambda_22                      m_Lambda_22;
+
 	Lambda_20(ff p) : fun(p), m_Lambda_22(this) {}
 
 	ovv {
@@ -123,7 +131,8 @@ der(Lambda_20) {
 	}
 };
 der(Bind_if) {
-	Lambda_20 m_Lambda_20;
+	Lambda_20                      m_Lambda_20;
+
 	Bind_if() : fun(nullptr), m_Lambda_20(this) {}
 
 	ovv {
@@ -131,6 +140,7 @@ der(Bind_if) {
 	}
 };
 der(Lambda_29) {
+
 	Lambda_29(ff p) : fun(p) {}
 
 	ovv {
@@ -138,7 +148,8 @@ der(Lambda_29) {
 	}
 };
 der(Lambda_27) {
-	Lambda_29 m_Lambda_29;
+	Lambda_29                      m_Lambda_29;
+
 	Lambda_27(ff p) : fun(p), m_Lambda_29(this) {}
 
 	ovv {
@@ -146,7 +157,8 @@ der(Lambda_27) {
 	}
 };
 der(Bind_kek) {
-	Lambda_27 m_Lambda_27;
+	Lambda_27                      m_Lambda_27;
+
 	Bind_kek() : fun(nullptr), m_Lambda_27(this) {}
 
 	ovv {
@@ -154,6 +166,7 @@ der(Bind_kek) {
 	}
 };
 der(Lambda_36) {
+
 	Lambda_36(ff p) : fun(p) {}
 
 	ovv {
@@ -161,7 +174,8 @@ der(Lambda_36) {
 	}
 };
 der(Lambda_34) {
-	Lambda_36 m_Lambda_36;
+	Lambda_36                      m_Lambda_36;
+
 	Lambda_34(ff p) : fun(p), m_Lambda_36(this) {}
 
 	ovv {
@@ -169,7 +183,8 @@ der(Lambda_34) {
 	}
 };
 der(Bind_pair) {
-	Lambda_34 m_Lambda_34;
+	Lambda_34                      m_Lambda_34;
+
 	Bind_pair() : fun(nullptr), m_Lambda_34(this) {}
 
 	ovv {
@@ -177,7 +192,8 @@ der(Bind_pair) {
 	}
 };
 der(Bind_fst) {
-	Bind_true m_Bind_true;
+	Bind_true                      m_Bind_true;
+
 	Bind_fst() : fun(nullptr) {}
 
 	ovv {
@@ -185,7 +201,8 @@ der(Bind_fst) {
 	}
 };
 der(Bind_snd) {
-	Bind_false m_Bind_false;
+	Bind_false                     m_Bind_false;
+
 	Bind_snd() : fun(nullptr) {}
 
 	ovv {
@@ -193,9 +210,10 @@ der(Bind_snd) {
 	}
 };
 der(Bind_zero) {
-	Bind_pair m_Bind_pair;
-	Bind_true m_Bind_true;
-	Bind_id m_Bind_id;
+	Bind_pair                      m_Bind_pair;
+	Bind_true                      m_Bind_true;
+	Bind_id                        m_Bind_id;
+
 	Bind_zero() : fun(nullptr) {}
 
 	ovv {
@@ -203,10 +221,11 @@ der(Bind_zero) {
 	}
 };
 der(Bind_is0) {
-	Bind_if m_Bind_if;
-	Bind_fst m_Bind_fst;
-	Bind_true m_Bind_true;
-	Bind_false m_Bind_false;
+	Bind_if                        m_Bind_if;
+	Bind_fst                       m_Bind_fst;
+	Bind_true                      m_Bind_true;
+	Bind_false                     m_Bind_false;
+
 	Bind_is0() : fun(nullptr) {}
 
 	ovv {
@@ -214,8 +233,9 @@ der(Bind_is0) {
 	}
 };
 der(Bind_suc) {
-	Bind_pair m_Bind_pair;
-	Bind_false m_Bind_false;
+	Bind_pair                      m_Bind_pair;
+	Bind_false                     m_Bind_false;
+
 	Bind_suc() : fun(nullptr) {}
 
 	ovv {
@@ -223,7 +243,8 @@ der(Bind_suc) {
 	}
 };
 der(Bind_pred) {
-	Bind_snd m_Bind_snd;
+	Bind_snd                       m_Bind_snd;
+
 	Bind_pred() : fun(nullptr) {}
 
 	ovv {
@@ -231,9 +252,10 @@ der(Bind_pred) {
 	}
 };
 der(Bind_assert) {
-	Bind_if m_Bind_if;
-	Bind_print_true m_Bind_print_true;
-	Bind_print_false m_Bind_print_false;
+	Bind_if                        m_Bind_if;
+	Bind_print_true                m_Bind_print_true;
+	Bind_print_false               m_Bind_print_false;
+
 	Bind_assert() : fun(nullptr) {}
 
 	ovv {
@@ -241,9 +263,10 @@ der(Bind_assert) {
 	}
 };
 der(EXPR_0) {
-	Bind_assert m_Bind_assert;
-	Bind_is0 m_Bind_is0;
-	Bind_zero m_Bind_zero;
+	Bind_assert                    m_Bind_assert;
+	Bind_is0                       m_Bind_is0;
+	Bind_zero                      m_Bind_zero;
+
 	EXPR_0() : fun(nullptr) {}
 
 	ovv {
@@ -251,10 +274,11 @@ der(EXPR_0) {
 	}
 };
 der(EXPR_1) {
-	Bind_assert m_Bind_assert;
-	Bind_is0 m_Bind_is0;
-	Bind_suc m_Bind_suc;
-	Bind_zero m_Bind_zero;
+	Bind_assert                    m_Bind_assert;
+	Bind_is0                       m_Bind_is0;
+	Bind_suc                       m_Bind_suc;
+	Bind_zero                      m_Bind_zero;
+
 	EXPR_1() : fun(nullptr) {}
 
 	ovv {
@@ -262,11 +286,12 @@ der(EXPR_1) {
 	}
 };
 der(EXPR_2) {
-	Bind_assert m_Bind_assert;
-	Bind_is0 m_Bind_is0;
-	Bind_pred m_Bind_pred;
-	Bind_suc m_Bind_suc;
-	Bind_zero m_Bind_zero;
+	Bind_assert                    m_Bind_assert;
+	Bind_is0                       m_Bind_is0;
+	Bind_pred                      m_Bind_pred;
+	Bind_suc                       m_Bind_suc;
+	Bind_zero                      m_Bind_zero;
+
 	EXPR_2() : fun(nullptr) {}
 
 	ovv {

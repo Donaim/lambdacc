@@ -89,6 +89,9 @@ def get_unique_lambda_members(le: Lambda) -> list:
 		if not m in re:
 			re.append(m)
 	return re
+
+def write_structure_member(file, name, name_m):
+	file.write('\t{:<30} {};\n'.format(name, name_m))
 def write_named_lambda(file, le: Lambda, lambda_name: str):
 	for l in le.leafs:
 		if type(l) is Lambda:
@@ -105,17 +108,18 @@ def write_named_lambda(file, le: Lambda, lambda_name: str):
 			name = get_leaf_name(l)
 			name_m = get_member_name(name)
 			
-			file.write('\t{} {};\n'.format(name, name_m))
+			write_structure_member(file, name, name_m)
 			constructor += ', {}(this)'.format(name_m)
 		elif type(l) is Bind:
 			name = get_leaf_name(l)
 			name_m = get_member_name(name)
 
-			file.write('\t{} {};\n'.format(name, name_m))
+			write_structure_member(file, name, name_m)
 		else:
 			raise Exception('Unexpected member type {}'.format(type(l)))
 
 	constructor += ' {}\n\n'
+	file.write('\n')
 	file.write(constructor)
 
 	file.write('\tovv {')

@@ -1,10 +1,10 @@
 This is a lambda-calculus to C++ translator  
-You can write code in lambda-calculus and let the script generate (efficient) C++ translation  
+You can write code in lambda-calculus and let the script generate C++ translation  
 
 # Usage
 
 1) Write lambda script to example.ini
-2) `$ make run`
+2) `$ make`
 
 # Features
 

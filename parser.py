@@ -223,6 +223,8 @@ def parse_structure(b: Branch, scope: list, binds: list, parent: Leaf) -> Leaf:
 	else: # is brackets
 		re = Leaf(leafs=None, parent=parent)
 		lfs = parse_leafs(b=b, scope=scope, binds=binds, parent=re)
+		if len(lfs) == 1:
+			return lfs[0]
 		re.leafs = lfs
 		return re
 

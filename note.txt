@@ -20,7 +20,7 @@ if = \i -> \a -> \b -> i a b
 kek = \a -> \b -> (\x -> b) a             # same as <false>
 
 # 7)
-pair = \a -> \b -> f -> f a b
+pair = \a -> \b -> \f -> f a b
 fst = \p -> p true
 snd = \p -> p false
 

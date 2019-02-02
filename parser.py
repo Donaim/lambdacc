@@ -35,8 +35,8 @@ class Branch:
 		self.is_arg = is_arg
 
 	@staticmethod
-	def from_text(expr: str):
-		expr = expr.strip()
+	def from_text(original: str):
+		expr = original.strip()
 		# print('branch="{}"'.format(expr))
 
 		is_lambda = expr.startswith(LAMBDA_DECL)
@@ -59,14 +59,30 @@ class Branch:
 				expr = expr[len(LAMBDA_SYMBOL):]
 				continue
 			elif expr.startswith(LAMBDA_DECL):       # lambda
-				re.branches.append(Branch.from_text(expr))
+				sub = Branch.from_text(expr)
+				size = len(sub.branches)
+				if size == 0:
+					raise SyntaxError('Sub-expression "{}" of expression "{}" cannot be empty!'.format(body, expr))
+				elif size == 1:
+					re.branches.append(sub.branches[0])
+				else:
+					re.branches.append(sub)
+				
 				expr = ''
 			elif expr[0] == '(':    # another branch
 				stop = find_next_bracket(expr)
 				if stop < 0:
 					raise Exception('Wrong number of brackets: need {} more ")"!'.format(stop))
 				body = expr[1:stop]
-				re.branches.append(Branch.from_text(body))
+				sub = Branch.from_text(body)
+				size = len(sub.branches)
+				if size == 0:
+					raise SyntaxError('Sub-expression "{}" of expression "{}" cannot be empty!'.format(body, expr))
+				elif size == 1:
+					re.branches.append(sub.branches[0])
+				else:
+					re.branches.append(sub)
+
 				expr = expr[stop + 1:]
 			else: # simple token
 				stop = find_first_char(expr, [' ', '(', LAMBDA_DECL])

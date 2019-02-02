@@ -8,15 +8,15 @@ typedef fun * ff;
 
 class fun {
 protected:
-    fun(ff p) : parent{p} {}
+	fun(ff p) : parent{p} {}
 public:
-    const fun * const  parent;
-    ff x;
-    ff eval(ff x) {
-        this->x = x;
-        return eval_now(x);
-    }
-    virtual ff eval_now(ff x) = 0;
+	const fun * const  parent;
+	ff x;
+	ff eval(ff x) {
+		this->x = x;
+		return eval_now(x);
+	}
+	virtual ff eval_now(ff x) = 0;
 };
 
 #include <cstdio>
@@ -228,17 +228,6 @@ der(Bind_pred) {
 
 	ovv {
 		return ((&m_Bind_snd)->eval(this->x));
-	}
-};
-der(Bind_get0) {
-	Bind_if m_Bind_if;
-	Bind_fst m_Bind_fst;
-	Bind_get0 m_Bind_get0;
-	Bind_pred m_Bind_pred;
-	Bind_get0() : fun(nullptr) {}
-
-	ovv {
-		return ((&m_Bind_if)->eval(((&m_Bind_fst)->eval(this->x)))->eval(this->x)->eval(((&m_Bind_get0)->eval(((&m_Bind_pred)->eval(this->x))))));
 	}
 };
 der(Bind_assert) {

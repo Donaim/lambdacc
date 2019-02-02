@@ -8,15 +8,15 @@ typedef fun * ff;
 
 class fun {
 protected:
-    fun(ff p) : parent{p} {}
+	fun(ff p) : parent{p} {}
 public:
-    const fun * const  parent;
-    ff x;
-    ff eval(ff x) {
-        this->x = x;
-        return eval_now(x);
-    }
-    virtual ff eval_now(ff x) = 0;
+	const fun * const  parent;
+	ff x;
+	ff eval(ff x) {
+		this->x = x;
+		return eval_now(x);
+	}
+	virtual ff eval_now(ff x) = 0;
 };
 
 #include <cstdio>

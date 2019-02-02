@@ -1,5 +1,5 @@
 [x] lazy evaluation
-[ ] fix unique lambda members (each member should have its own argument x)
+[x] fix unique lambda members (each member should have its own argument x)
 [ ] inline bindings: do not introduce overhead from bindings (think of implications to call-trace)
 [ ] representation: find a good way to print numbers, strings
 [ ] make more names legal

@@ -37,6 +37,12 @@ class CFunction:
 		self.name = leaf_name
 		self.t = t
 
+class StructField:
+	def __init__(self, leaf, name):
+		self.leaf = leaf
+		self.name = name
+		self.t = type(leaf)
+
 def get_leaf_name(le) -> str:
 	if type(le) is Leaf:
 		return 'Leaf_' + str(le.unique_id)
@@ -56,12 +62,12 @@ def get_leaf_name(le) -> str:
 	raise Exception('Unknown type {}'.format(type(le)))
 def get_member_name(leaf_name: str) -> str:
 	return 'm_' + leaf_name
-def get_ovv_member_name(mem: Leaf):
-	name = get_leaf_name(mem)
-	name = get_member_name(name)
-	t = type(mem)
+def get_ovv_member_name(field: StructField):
+	t = field.t
 	if t is Bind or t is Lambda or t is Leaf:
-		return '(me->{})'.format(name)
+		return '(me->{})'.format(field.name)
+	elif t is Argument:
+		return '(me->x)'
 	else:
 		raise Exception('expected types {} and {} '.format(Bind, Argument, Lambda))
 
@@ -80,10 +86,11 @@ def get_argument_by_parents(me: Lambda, arg: Argument):
 
 def get_return_part(out: SplittedOut, le: Leaf, base_lambda: Lambda) -> str:
 	exec_line = ''
-	for l in le.leafs:
-		t = type(l)
+	for field in get_fields(le=le):
+		l = field.leaf
+		t = field.t
+		name = get_ovv_member_name(field=field)
 		if t is Bind or t is Lambda:
-			name = get_ovv_member_name(l)
 			if exec_line:
 				exec_line += '->eval({})'.format(name)
 			else:
@@ -95,7 +102,6 @@ def get_return_part(out: SplittedOut, le: Leaf, base_lambda: Lambda) -> str:
 			else:
 				exec_line += name
 		elif t is Leaf:
-			name = get_ovv_member_name(l)
 			write_lambda(out=out, le=l)
 			if exec_line:
 				exec_line += '->eval({})'.format(name)
@@ -115,20 +121,24 @@ def get_ovv(out: SplittedOut, le: Leaf) -> str:
 	else:
 		raise Exception('get_ovv expects {} or {} but got {}'.format(Bind, Lambda, lt))
 def init_children(le: Leaf, parent_lambda_name: str) -> str:
-	members = get_unique_lambda_members(le=le)
+	members = get_fields(le=le)
 	st_members = ''
 	ret = '	if (me->x == NULL) {\n'
-	for l in members:
+	for field in members:
+		name_m = field.name
+		l = field.leaf
 		mem = ''
-		if type(l) is Lambda or type(l) is Bind or type(l) is Leaf:
+		t = field.t
+		if t is Lambda or t is Bind or t is Leaf:
 			name = get_leaf_name(l)
-			name_m = get_member_name(name)
 
 			mem += '		me->{} = new {};\n'.format(name_m, name)
 			mem += '		me->{}->parent = me;\n'.format(name_m)
 
 			init_name = get_leaf_name(CFunction(name, 'init'))
 			mem += '		{}(me->{});\n'.format(init_name, name_m)
+		elif t is Argument:
+			continue
 		else:
 			raise Exception('Unexpected member type {}'.format(type(l)))
 		ret += mem
@@ -168,11 +178,13 @@ def get_lambda_members(le: Lambda) -> iter:
 			yield l
 		if t is Leaf:
 			yield l
-def get_unique_lambda_members(le: Lambda) -> list:
+
+def get_fields(le: Lambda) -> list:
 	re = []
-	for m in get_lambda_members(le=le):
-		if not m in re:
-			re.append(m)
+	for (i, leaf) in enumerate(le.leafs):
+		t = type(leaf)
+		name = leaf.name if t is Argument else 'm_' + str(i)
+		re.append(StructField(leaf=leaf, name=name))
 	return re
 
 def get_structure_member(name, name_m):
@@ -188,26 +200,18 @@ def write_named_lambda(out: SplittedOut, le: Lambda, lambda_name: str):
 
 	is_bind = type(le.parent) is Bind
 
-	members = get_unique_lambda_members(le=le)
+	members = get_fields(le=le)
 	st_members = ''
-	for l in members:
-		if type(l) is Lambda:
-			name = get_leaf_name(l)
-			name_m = get_member_name(name)
-			
+	for field in members:
+		leaf = field.leaf
+		name_m = field.name
+		if field.t is Lambda or field.t is Bind or field.t is Leaf:
+			name = get_leaf_name(leaf)
 			st_members += get_structure_member(name, name_m)
-		elif type(l) is Bind:
-			name = get_leaf_name(l)
-			name_m = get_member_name(name)
-
-			st_members += get_structure_member(name, name_m)
-		elif type(l) is Leaf:
-			name = get_leaf_name(l)
-			name_m = get_member_name(name)
-
-			st_members += get_structure_member(name, name_m)
+		elif field.t is Argument:
+			continue
 		else:
-			raise Exception('Unexpected member type {}'.format(type(l)))
+			raise Exception('Unexpected member type {}'.format(type(leaf)))
 
 	out.struct_definitions += stname
 	out.struct_definitions += st_members

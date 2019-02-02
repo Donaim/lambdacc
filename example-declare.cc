@@ -7,17 +7,11 @@ ff Exec_Bind_error (ff me_abs, ff x) {
 #define BIND_ERROR_TYPEUUID (-4)
 
 der(Bind_error) {
-	Bind_error() {
-		this->eval_now = Exec_Bind_error;
-#ifdef USE_TYPEID
-		this->typeuuid = BIND_ERROR_TYPEUUID;
-#endif
-	}
 #ifdef SHOW_DEBUG
 	const char * tostr() override { return "ERROR"; }
 #endif
 };
-struct Bind_error * bind_err = new Bind_error;
+struct Bind_error * bind_err = nullptr;
 
 der(Bind_print_true) {
 #ifdef SHOW_DEBUG
@@ -46,8 +40,13 @@ ff Exec_Bind_print_false (ff me_abs, ff x);
 ff Exec_Bind_print_true  (ff me_abs, ff x);
 ff Exec_Bind_ec          (ff me_abs, ff x);
 
-int Init_Bind_error (ff me) {
+int Init_Bind_error (ff me_abs) {
+	struct Bind_print_true * me = (struct Bind_print_true *) me_abs;
 	me->eval_now = Exec_Bind_error;
+
+#ifdef USE_TYPEID
+	me->typeuuid = BIND_ERROR_TYPEUUID;
+#endif
 	return 0;
 }
 

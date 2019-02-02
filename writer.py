@@ -167,7 +167,7 @@ def get_ovv(out: SplittedOut, le: Leaf) -> str:
 def init_children(le: Leaf, parent_lambda_name: str) -> str:
 	members = get_fields(le=le)
 	st_members = ''
-	ret = '	if (me->x == NULL) {\n'
+	ret = '	if (me->x == nullptr) {\n'
 	for field in members:
 		name_m = field.name
 		l = field.leaf
@@ -176,8 +176,9 @@ def init_children(le: Leaf, parent_lambda_name: str) -> str:
 		if t is Lambda or t is Bind or t is Leaf:
 			name = get_leaf_name(l)
 
-			mem += '		me->{} = new {};\n'.format(name_m, name)
+			mem += '		me->{} = ALLOC({});\n'.format(name_m, name)
 			mem += '		me->{}->parent = me;\n'.format(name_m)
+			mem += '		me->{}->x = nullptr;\n'.format(name_m)
 
 			init_name = get_leaf_name(CFunction(name, 'init'))
 			mem += '		{}(me->{});\n'.format(init_name, name_m)
@@ -192,7 +193,7 @@ def get_exec_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 	exec_name = get_leaf_name(CFunction(lambda_name, 'exec'))
 	decl = 'ff {:<30} (ff me_abs, ff x)'.format(exec_name)
 	out.exec_declarations += decl + ';\n'
-	
+
 	defi  = decl + ' {\n'
 	defi += '	struct {} * me = (struct {} *)me_abs;\n'.format(lambda_name, lambda_name)
 	if out.config.show_debug:
@@ -305,12 +306,15 @@ def write_some(config: OutConfig, binds: list):
 		write_named_lambda(out=out, le=e.target, lambda_name=e.name)
 
 	footer = ''
-	footer += ('int main() {\n')
-	footer += ('\tputs("start");\n')
+	footer += 'int main() {\n'
+	footer += '\tputs("start");\n'
+	footer += '\tALLOC_INIT();\n'
+	footer += '\tbind_err = ALLOC(Bind_error);\n'
+	footer += '\n'
 	for e in exec_expr:
 		init_name = get_leaf_name(CFunction(e.name, 'init'))
 		varname = e.name + '_var';
-		footer += '	struct {} * {} = new {};\n'.format(e.name, varname, e.name)
+		footer += '	struct {} * {} = ALLOC({});\n'.format(e.name, varname, e.name)
 		footer += '	{}({});\n'.format(init_name, varname);
 		footer += '	{}->eval(bind_err);\n\n'.format(varname);
 	footer += ('\tputs("end");\n')

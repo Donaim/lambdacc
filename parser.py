@@ -77,8 +77,9 @@ class Branch:
 
 counter = 0
 class Leaf:
-    def __init__(self, leafs: list):
+    def __init__(self, leafs: list, parent):
         self.leafs = leafs
+        self.parent = parent
         
         global counter
         self.unique_id = counter
@@ -90,29 +91,33 @@ class Leaf:
         return l_str
 
 class Lambda(Leaf):
-    def __init__(self, scope: list, argname: str, leafs: list):
-        super(Lambda, self).__init__(leafs)
+    def __init__(self, scope: list, arg, leafs: list, parent: Leaf):
+        super(Lambda, self).__init__(leafs, parent=parent)
         self.scope = scope
-        self.argname = argname
+        self.arg = arg
     def print(self, indent: int):
         i_str = '\t' * indent
         l_str = ''
         for l in self.leafs:
             l_str += '\n' + l.print(indent + 1)
-        return '{}(lambda {} of {}): {}'.format(i_str, self.scope, self.argname, l_str)
+        return '{}(lambda {} of {}): {}'.format(i_str, self.scope, self.arg.name, l_str)
 
 class Argument(Leaf):
-    def __init__(self, name: str):
-        super(Argument, self).__init__([])
+    def __init__(self, name: str, parent: Leaf):
+        super(Argument, self).__init__([], parent=parent)
         self.name = name
+    def __repr__(self):
+        return self.print(0)
     def print(self, indent):
         return ('\t' * indent) + '[' + self.name + ']'
 
 class Bind(Leaf):
-    def __init__(self, name: str, target: Leaf):
-        super(Bind, self).__init__([])
+    def __init__(self, name: str, target: Leaf, parent: Leaf):
+        super(Bind, self).__init__([], parent=parent)
         self.name = name
         self.target = target
+    def __repr__(self):
+        return self.print(0)
     def print(self, indent):
         return ('\t' * indent) + '{' + self.name + '}'
 
@@ -156,38 +161,49 @@ def parse_tokens(expr: str) -> Branch:
     expr = trimSpaces(expr)
     expr = transformMultipleLambdas(expr)
     return Branch.from_text(expr)
-def parse_token(token: Branch, parent: Branch, scope: list, binds: list) -> Leaf:
-    if token.text in scope:
-        return Argument(token.text)
-    else:
-        for b in binds:
-            if b.name == token.text:
-                return b
-        raise Exception('not defined binding "{}" in scope = {} and bindings = {}'.format(token.text, scope, list(map(lambda b: b.name, binds))))
+def parse_token(token: Branch, scope: list, binds: list) -> Leaf:
+    for arg in scope:
+        if arg.name == token.text:
+            return arg
+    for b in binds:
+        if b.name == token.text:
+            return b
+    raise Exception('not defined binding "{}" in scope = {} and bindings = {}'.format(token.text, scope, list(map(lambda b: b.name, binds))))
 
-def parse_leafs(b: Branch, scope: list, binds: list) -> list:
+def add_scope_argument(current_scope: list, new_arg: Branch, parent: Leaf) -> list:
+    for arg in current_scope:
+        if arg.name == new_arg.text:
+            return current_scope
+    return current_scope + [Argument(new_arg.text, parent=parent)]
+
+def parse_leafs(b: Branch, scope: list, binds: list, parent: Leaf) -> list:
     lfs = []
     for t in b.branches:
         if t.is_token:
             if t.is_arg: continue
-            lfs.append(parse_token(token=t, parent=b, scope=scope, binds=binds))
+            lfs.append(parse_token(token=t, scope=scope, binds=binds))
         else:
-            lfs.append(parse_structure(t, scope, binds))
+            lfs.append(parse_structure(t, scope, binds, parent=parent))
     return lfs
-def parse_structure(b: Branch, scope: list, binds: list) -> Leaf:
+def parse_structure(b: Branch, scope: list, binds: list, parent: Leaf) -> Leaf:
     if b.is_lambda:
-        arg = (b.branches[0]).text
-        sc = scope + [arg]
-        lfs = parse_leafs(b=b, scope=sc, binds=binds)
-        return Lambda(argname=arg, scope=sc, leafs=lfs)
+        arg = b.branches[0]
+        sc = add_scope_argument(scope, arg, parent=parent)
+        arg = sc[-1]
+        re = Lambda(arg=arg, scope=sc, leafs=None, parent=parent)
+        lfs = parse_leafs(b=b, scope=sc, binds=binds, parent=re)
+        re.leafs = lfs
+        return re
     else: # is brackets
-        lfs = parse_leafs(b=b, scope=scope, binds=binds)
-        return Leaf(leafs=lfs)
+        re = Leaf(leafs=None, parent=parent)
+        lfs = parse_leafs(b=b, scope=scope, binds=binds, parent=re)
+        re.leafs = lfs
+        return re
 
 def main():
     # expr = r'   \    a -> \    b ->    (\x    ->    b hello)    a  '
     # expr = r'   \    a b ->    (\x    ->    b hello)    a  '
-    # expr = r'\n f x -> n(\g h -> h (g f h)) (\u -> x) (\u ->u)'
+    expr = r'\n f x -> n(\g h -> h (g f h)) (\u -> x) (\u ->u)'
     # expr = r'\n f x . n(\g h . h (g f h)) (\u . x) (\u .u)'
     # expr = r'\n f x.n(\g h.h(g f h))(\u.x)(\u.u)'
     # expr = r'x y z\k -> y z x'
@@ -196,14 +212,13 @@ def main():
     # expr = r'\a b -> a'
     # expr = r'\b -> b x y'
 
-
     expr = trimSpaces(expr)
     print(expr)
     expr = transformMultipleLambdas(expr)
     print(expr)
 
     p = parse_tokens(expr)
-    p = parse_structure(p, [], [Bind('x', Leaf([])), Bind('y', Leaf([])), Bind('z', Leaf([]))])
+    p = parse_structure(p, [], [Bind('x', Leaf([], None), None)], None)
     t = p.print(0)
     print(t)
 if __name__ == '__main__':

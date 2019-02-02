@@ -9,7 +9,8 @@ $(PROJ).cc: $(PROJ).ini
 		--headerfile $(PROJ)-header.cc \
 		--declare-file $(PROJ)-declare.cc \
 		--define-file $(PROJ)-define.cc \
-		--footerfile $(PROJ)-footer.cc
+		--footerfile $(PROJ)-footer.cc \
+
 	@echo translated
 
 $(PROJ).exe: $(PROJ).cc

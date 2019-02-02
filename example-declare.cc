@@ -51,14 +51,29 @@ int Init_Bind_error (ff me_abs) {
 	return 0;
 }
 
+mapkey_t Cache_Bind_print_true(ff me) {
+	mapkey_t ret;
+	ret.push_back(me->typeuuid);
+	return ret;
+}
 int Init_Bind_print_true (ff me) {
 	// puts ("TRUE INITED");
 	me->eval_now = Exec_Bind_print_true;
+	me->cache = Cache_Bind_print_true;
+	me->typeuuid = -11;
 	return 0;
+}
+
+mapkey_t Cache_Bind_print_false (ff me) {
+	mapkey_t ret;
+	ret.push_back(me->typeuuid);
+	return ret;
 }
 int Init_Bind_print_false (ff me) {
 	// puts ("FALS INITED");
 	me->eval_now = Exec_Bind_print_false;
+	me->cache = Cache_Bind_print_false;
+	me->typeuuid = -10;
 	return 0;
 }
 

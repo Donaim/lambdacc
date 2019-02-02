@@ -39,7 +39,7 @@ public:
 	exec_t eval_now;
 
 #ifdef DO_CACHING
-	void (*cache)(ff me, vector<int> * ret);
+	mapkey_t (*cache)(ff me);
 #endif
 
 #ifdef USE_TYPEID

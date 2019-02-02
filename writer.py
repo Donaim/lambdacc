@@ -224,6 +224,11 @@ def get_init_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 	body += '		me->eval_now = {};\n'.format(exec_name)
 	if out.config.use_typeid:
 		body += '\n		me->typeuuid = {};\n'.format(le.unique_id)
+
+	if out.config.do_caching:
+		cache_funcname = get_leaf_name(CFunction(lambda_name, 'cache'))
+		body += '\n		me->cache = {};\n'.format(cache_funcname)
+
 	body += '	}\n'
 	ret   = 'return 0;'
 	out.init_definitions += '{} {{\n{}\n\t{}\n}}\n\n'.format(decl, body, ret)
@@ -233,24 +238,26 @@ def get_caching_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 
 	funcname = get_leaf_name(CFunction(lambda_name, 'cache'))
 
-	decl = 'void {:<30} (struct {} *me, vector<{}> * ret)'.format(funcname, lambda_name, TYPEID_TYPE)
+	decl = '{} {:<30} (ff me)'.format(MAPKEY_T, funcname, TYPEID_TYPE)
 	out.caching_declarations += decl + ';\n'
 
-	lines = []
+	lines = ['{} ret'.format(MAPKEY_T)]
 	# Get cache key of our type
-	lines.append('ret->push_back(me->typeuuid)')
+	lines.append('ret.push_back(me->typeuuid)')
 
 	# Get cache key of our x value
-	lines.append('me->x->cache(me->x, ret)')
+	lines.append('ret.push_back(me->x->typeuuid)')
 
 	# Get cache keys of parents
 	current_str = 'me->parent'
 	current_parent = le.parent
 	while not current_parent is None:
-		lines.append('{}->cache({}, ret)'.format(current_str, current_str))
+		lines.append('ret.push_back({}->typeuuid)'.format(current_str, current_str))
 
 		current_str += '->parent'
 		current_parent = current_parent.parent
+
+	lines.append('return ret')
 
 	re = decl + ' {\n\t' + str.join(';\n\t', lines) + ';\n}\n'
 	out.caching_definitions += re

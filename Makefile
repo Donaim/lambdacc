@@ -1,6 +1,9 @@
 
 PROJ = example
 
+headers = $(PROJ)-header.cc $(PROJ)-declare.cc $(PROJ)-define.cc $(PROJ)-footer.cc
+additional-deps = Makefile  $(shell ls *.py)
+
 run: all
 	./$(PROJ).exe
 
@@ -8,12 +11,12 @@ all: $(PROJ).exe
 	@echo compiled
 
 clean:
-	- rm -f $(PROJ).cc $(PROJ).exe
+	- rm -f $(PROJ).cc $(PROJ).exe $(PROJ).inline.*
 
 $(PROJ).exe: $(PROJ).cc
 	g++ -o $@ $^ -O3
 
-$(PROJ).cc: $(PROJ).ini $(PROJ)-header.cc $(PROJ)-declare.cc $(PROJ)-define.cc $(PROJ)-footer.cc
+$(PROJ).cc: $(PROJ).ini $(headers) $(additional-deps)
 	./lambda-cpp.py --source $(PROJ).ini --dest $(PROJ).cc \
 		--make-inline \
 		--print-intermediate \

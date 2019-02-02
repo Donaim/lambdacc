@@ -10,9 +10,11 @@ class SplittedOut:
 
 		self.template = ''
 		self.struct_declarations = ''
+		self.leafs_declarations = ''
 		self.init_declarations = ''
 		self.exec_declarations = ''
 		self.struct_definitions = ''
+		self.leafs_definitions = ''
 		self.init_definitions = ''
 		self.exec_definitions = ''
 		self.footer = ''
@@ -22,9 +24,11 @@ class SplittedOut:
 			for t in [
 					self.template,
 					self.struct_declarations,
+					self.leafs_declarations,
 					self.init_declarations,
 					self.exec_declarations,
 					self.struct_definitions,
+					self.leafs_definitions,
 					self.init_definitions,
 					self.exec_definitions,
 					self.footer,
@@ -60,7 +64,7 @@ def get_ovv_member_name(mem: Leaf):
 	name = get_leaf_name(mem)
 	name = get_member_name(name)
 	t = type(mem)
-	if t is Bind or t is Lambda:
+	if t is Bind or t is Lambda or t is Leaf:
 		return '(me->{})'.format(name)
 	else:
 		raise Exception('expected types {} and {} '.format(Bind, Argument, Lambda))
@@ -68,7 +72,7 @@ def get_ovv_member_name(mem: Leaf):
 def get_argument_by_parents(me: Lambda, arg: Argument):
 	re = 'me->'
 	p = me
-	while p.arg != arg:
+	while type(p) is Leaf or p.arg != arg:
 		if p is None: raise Exception('Argument not found (None parent)')
 		p = p.parent
 		re += 'parent->'
@@ -78,7 +82,7 @@ def get_argument_by_parents(me: Lambda, arg: Argument):
 			re += 'parent->'
 	return re + 'x'
 
-def get_return_part(le: Leaf, base_lambda: Lambda) -> str:
+def get_return_part(out: SplittedOut, le: Leaf, base_lambda: Lambda) -> str:
 	exec_line = ''
 	for l in le.leafs:
 		t = type(l)
@@ -95,16 +99,17 @@ def get_return_part(le: Leaf, base_lambda: Lambda) -> str:
 			else:
 				exec_line += name
 		elif t is Leaf:
-			part = get_return_part(l, base_lambda)
+			name = get_ovv_member_name(l)
+			write_lambda(out=out, le=l)
 			if exec_line:
-				exec_line += '->eval({})'.format(part)
+				exec_line += '->eval({})'.format(name)
 			else:
-				exec_line += part
+				exec_line += name
 		else:
 			raise Exception('unexpected type {}'.format(t))
 	return '(' + exec_line + ')'
-def get_ovv(le: Leaf) -> str:
-	exec_line = get_return_part(le, le)
+def get_ovv(out: SplittedOut, le: Leaf) -> str:
+	exec_line = get_return_part(out=out, le=le, base_lambda=le)
 
 	lt = type(le)
 	if lt is Lambda:
@@ -119,7 +124,7 @@ def init_children(le: Leaf, parent_lambda_name: str) -> str:
 	ret = '	if (me->x == NULL) {\n'
 	for l in members:
 		mem = ''
-		if type(l) is Lambda or type(l) is Bind:
+		if type(l) is Lambda or type(l) is Bind or type(l) is Leaf:
 			name = get_leaf_name(l)
 			name_m = get_member_name(name)
 
@@ -144,7 +149,7 @@ def get_exec_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 		defi += '	printf ("Lam [%s] got [%s]\\n", me->tostr(), x->tostr());\n'
 	defi += init_children(le=le, parent_lambda_name=lambda_name)
 	defi += '	me->x = x;\n'
-	defi += '	' + get_ovv(le)                                                                # RETURN STATEMENT
+	defi += '	' + get_ovv(out=out, le=le)                                                # RETURN STATEMENT
 	defi += '\n}\n\n'
 	out.exec_definitions += defi
 def get_init_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
@@ -166,8 +171,7 @@ def get_lambda_members(le: Lambda) -> iter:
 		if t is Bind:
 			yield l
 		if t is Leaf:
-			for le2 in get_lambda_members(le=l):
-				yield le2
+			yield l
 def get_unique_lambda_members(le: Lambda) -> list:
 	re = []
 	for m in get_lambda_members(le=le):
@@ -197,6 +201,11 @@ def write_named_lambda(out: SplittedOut, le: Lambda, lambda_name: str):
 			
 			st_members += get_structure_member(name, name_m)
 		elif type(l) is Bind:
+			name = get_leaf_name(l)
+			name_m = get_member_name(name)
+
+			st_members += get_structure_member(name, name_m)
+		elif type(l) is Leaf:
 			name = get_leaf_name(l)
 			name_m = get_member_name(name)
 

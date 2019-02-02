@@ -2,6 +2,7 @@
 
 import parser
 from parser import *
+from functools import reduce
 
 import inliner
 from os import path
@@ -88,13 +89,30 @@ def parse_text(text: str) -> iter:
 	tuples = map(split_binding_and_def, lines)
 	toks = map(SplittedLine.get_name_and_token, tuples)
 
-	binds = []
-	for t in toks:
+	def get_tagged_tok(acc, tok):
+		(tid, arr) = acc
+		# print ("REDUCE GOT: ((tid={}, arr={}), {})".format(tid, arr, tok))
+		return (tid + 1, arr + [(tid, tok)])
+	(count, tagged_toks) = list(reduce(get_tagged_tok, toks, (0, [])))
+
+	def get_tok_keyvalue(tagged_tok):
+		(tid, t) = tagged_tok
+		return (tid, Bind(t.bind_name, target=None))
+
+	# Load all binds first
+	bdict = dict( map(get_tok_keyvalue, filter(lambda t: t[1].branch, tagged_toks)) )
+	binds = list(bdict.values())
+
+	# Init bind targets
+	for tt in tagged_toks:
+		(tid, t) = tt
 		if t.branch:
 			br = t.branch
 
-			b = Bind ( name=t.bind_name, target=None )
-			binds.append( b )
+			b = bdict[tid]
+			print ("NOW BIND '{}', T.bind_name = <{}>  ".format(b, t.bind_name))
+			print ("BIND ID = {}".format(b.unique_id))
+
 			s = parse_structure( b=br, scope=[], binds=binds, parent=b )
 			b.target = s
 

@@ -5,8 +5,16 @@
 #define ovv      ff eval_now(ff x) override
 // #define dlajdkladjlkasjdla {}
 
+#include <map>
+using std::map;
+#include <vector>
+using std::vector;
+typedef vector<int> mapkey_t;
+
 class fun;
 typedef fun * ff;
+
+map<mapkey_t,ff> caching;
 
 typedef ff (*exec_t)(ff, ff);
 

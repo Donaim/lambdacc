@@ -17,9 +17,9 @@ public:
 	ff eval(ff x) {
 		return eval_now(this, x);
 	}
-	// virtual void initme() = 0;
-	// virtual ff eval_now(ff x) = 0;
 	exec_t eval_now;
+
+	virtual const char * tostr() = 0;
 };
 
 #include <cstdio>
@@ -42,30 +42,63 @@ public:
 // static error_not_lambda error_not_lambda_instance{};
 // static error_not_lambda * error_not_lambda_ptr = &error_not_lambda_instance;
 
+struct Bind_error : fun {
+	const char * tostr() override { return "ERROR"; }
+};
 struct Bind_print_true : fun {
-	Bind_print_true() {}
+	struct Bind_error * m_Bind_error;
+	const char * tostr() override { return "$print_true"; }
 };
 struct Bind_print_false : fun {
-	Bind_print_false() {}
+	struct Bind_error * m_Bind_error;
+	const char * tostr() override { return "$print_false"; }
 };
 
-ff Exec_Bind_print_true (ff me_abs, ff x) {
-	puts("TRUE");
-	return NULL;
-}
+ff Exec_Bind_error       (ff me_abs, ff x);
+ff Exec_Bind_print_false (ff me_abs, ff x);
+ff Exec_Bind_print_true  (ff me_abs, ff x);
 
-ff Exec_Bind_print_false (ff me_abs, ff x) {
-	puts("FALSE");
-	return NULL;
+int Init_Bind_error (ff me) {
+	me->eval_now = Exec_Bind_error;
+	return 0;
 }
 
 int Init_Bind_print_true (ff me) {
 	// puts ("TRUE INITED");
 	me->eval_now = Exec_Bind_print_true;
+	return 0;
 }
 int Init_Bind_print_false (ff me) {
 	// puts ("FALS INITED");
 	me->eval_now = Exec_Bind_print_false;
+	return 0;
+}
+
+ff Exec_Bind_print_true (ff me_abs, ff x) {
+	struct Bind_print_true * me = (struct Bind_print_true *)me_abs;
+	if (me->x == NULL) {
+		me->m_Bind_error = new Bind_error;
+		me->m_Bind_error->parent = me;
+		Init_Bind_error(me->m_Bind_error);
+	}
+	me->x = x;
+	puts("TRUE");
+	return me->m_Bind_error;
+}
+ff Exec_Bind_print_false (ff me_abs, ff x) {
+	struct Bind_print_false * me = (struct Bind_print_false *)me_abs;
+	if (me->x == NULL) {
+		me->m_Bind_error = new Bind_error;
+		me->m_Bind_error->parent = me;
+		Init_Bind_error(me->m_Bind_error);
+	}
+	me->x = x;
+	puts("FALSE");
+	return me->m_Bind_error;
+}
+ff Exec_Bind_error (ff me_abs, ff x) {
+	puts("ERROR: This is not supposed to be evaluated!");
+	return NULL;
 }
 
 // struct Bind_num : fun {

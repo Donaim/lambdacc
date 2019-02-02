@@ -138,6 +138,7 @@ def get_exec_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 	
 	defi  = decl + ' {\n'
 	defi += '	struct {} * me = (struct {} *)me_abs;\n'.format(lambda_name, lambda_name)
+	defi += '	printf ("Lam [%s] got [%s]\\n", me->tostr(), x->tostr());\n'
 	defi += init_children(le=le, parent_lambda_name=lambda_name)
 	defi += '	me->x = x;\n'
 	defi += '	' + get_ovv(le)                                                                # RETURN STATEMENT
@@ -183,8 +184,6 @@ def write_named_lambda(out: SplittedOut, le: Lambda, lambda_name: str):
 	stname = 'der({}) {{\n'.format(lambda_name)
 
 	is_bind = type(le.parent) is Bind
-	constructor = '\t{}() '.format(lambda_name)
-	constructor += ' {}\n\n'
 
 	members = get_unique_lambda_members(le=le)
 	st_members = ''
@@ -204,7 +203,7 @@ def write_named_lambda(out: SplittedOut, le: Lambda, lambda_name: str):
 
 	out.struct_definitions += stname
 	out.struct_definitions += ('\n')
-	out.struct_definitions += (constructor)
+	out.struct_definitions += '	const char * tostr() override {{ return "{}"; }}\n'.format(lambda_name)
 	out.struct_definitions += st_members
 	out.struct_definitions += ('};\n')
 

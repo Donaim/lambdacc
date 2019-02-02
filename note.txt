@@ -32,13 +32,14 @@ is0 = \n -> if (fst n) true false
 suc  = \n -> pair false n
 pred = \n -> snd n
 
-get0 = \n -> \d -> if (fst n) n (get0 (pred d))
+get0 = \n -> if (is0 n) n (pred n)
 
 assert = \b -> if b $print_true $print_false
 
-assert false
-assert (is0 (zero))
+# assert false
+# assert (is0 (zero))
 assert (is0 (suc zero))
+# assert (get0 zero)
 # assert (is0 (pred (suc zero)))
 # assert false
 # assert (fst (pair false true))

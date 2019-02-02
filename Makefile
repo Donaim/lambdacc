@@ -21,3 +21,15 @@ $(PROJ).cc: $(PROJ).ini $(PROJ)-header.cc $(PROJ)-declare.cc $(PROJ)-define.cc $
 		--footerfile $(PROJ)-footer.cc \
 
 	@echo translated
+
+$(PROJ)-header.cc:
+	touch $@
+
+$(PROJ)-declare.cc:
+	touch $@
+
+$(PROJ)-define.cc:
+	touch $@
+
+$(PROJ)-footer.cc:
+	touch $@

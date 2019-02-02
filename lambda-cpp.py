@@ -91,7 +91,6 @@ def parse_text(text: str) -> iter:
 
 	def get_tagged_tok(acc, tok):
 		(tid, arr) = acc
-		# print ("REDUCE GOT: ((tid={}, arr={}), {})".format(tid, arr, tok))
 		return (tid + 1, arr + [(tid, tok)])
 	(count, tagged_toks) = list(reduce(get_tagged_tok, toks, (0, [])))
 
@@ -110,9 +109,6 @@ def parse_text(text: str) -> iter:
 			br = t.branch
 
 			b = bdict[tid]
-			print ("NOW BIND '{}', T.bind_name = <{}>  ".format(b, t.bind_name))
-			print ("BIND ID = {}".format(b.unique_id))
-
 			s = parse_structure( b=br, scope=[], binds=binds, parent=b )
 			b.target = s
 

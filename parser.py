@@ -1,8 +1,5 @@
 
-import abc
-import copy
-
-LAMBDA_SYMBOL = '.'
+LAMBDA_SYMBOL = '->'
 
 def find_first_char(s: str, chars: list):
     for i, c in enumerate(s):
@@ -38,7 +35,7 @@ class Branch:
     @staticmethod
     def from_text(expr: str):
         expr = expr.strip()
-        print('branch="{}"'.format(expr))
+        # print('branch="{}"'.format(expr))
 
         is_lambda = expr[0] == '\\'
 
@@ -69,26 +66,24 @@ class Branch:
                 body = expr[1:stop]
                 re.branches.append(Branch.from_text(body))
                 expr = expr[stop + 1:]
-                # print('expr000="{}"'.format(expr))
             else: # simple token
                 stop = find_first_char(expr, [' ', '(', '\\'])
                 if stop < 0:
                     stop = len(expr)
                 tok = expr[0:stop]
-                # print('tok="{}"'.format(send))
                 re.branches.append(Branch(tok, [], is_lambda=False, is_token=True, is_arg=False))
-                # print('expr0="{}"'.format(expr))
                 expr = expr[stop:]
-                # print('expr1="{}"'.format(expr))
         return re
 
+counter = 0
 class Leaf:
     def __init__(self, leafs: list):
         self.leafs = leafs
-    def __repr__(self):
-        return str(self)
-    def __str__(self):
-        return str(self.leafs)
+        
+        global counter
+        self.unique_id = counter
+        counter += 1
+        
     def print(self, indent: int):
         i_str = '\t' * indent
         l_str = '\n'.join(map ( lambda l: l.print(indent + 1), self.leafs))
@@ -159,6 +154,7 @@ def transformMultipleLambdas(s: str) -> str:
 
 def parse_tokens(expr: str) -> Branch:
     expr = trimSpaces(expr)
+    expr = transformMultipleLambdas(expr)
     return Branch.from_text(expr)
 def parse_token(token: Branch, parent: Branch, scope: list, binds: list) -> Leaf:
     if token.text in scope:
@@ -188,21 +184,27 @@ def parse_structure(b: Branch, scope: list, binds: list) -> Leaf:
         lfs = parse_leafs(b=b, scope=scope, binds=binds)
         return Leaf(leafs=lfs)
 
-# expr = r'   \    a -> \    b ->    (\x    ->    b hello)    a  '
-# expr = r'   \    a b ->    (\x    ->    b hello)    a  '
-# expr = r'\n f x -> n(\g h -> h (g f h)) (\u -> x) (\u ->u)'
-# expr = r'\n f x . n(\g h . h (g f h)) (\u . x) (\u .u)'
-expr = r'\n f x.n(\g h.h(g f h))(\u.x)(\u.u)'
-# expr = r'x y z\k -> y z x'
-# expr = r'\f -> (\x -> x x)(\x -> f(x x))'
-# expr = r'\x->x y'
+def main():
+    # expr = r'   \    a -> \    b ->    (\x    ->    b hello)    a  '
+    # expr = r'   \    a b ->    (\x    ->    b hello)    a  '
+    # expr = r'\n f x -> n(\g h -> h (g f h)) (\u -> x) (\u ->u)'
+    # expr = r'\n f x . n(\g h . h (g f h)) (\u . x) (\u .u)'
+    # expr = r'\n f x.n(\g h.h(g f h))(\u.x)(\u.u)'
+    # expr = r'x y z\k -> y z x'
+    # expr = r'\f -> (\x -> x x)(\x -> f(x x))'
+    # expr = r'\x->x y'
+    # expr = r'\a b -> a'
+    # expr = r'\b -> b x y'
 
-expr = trimSpaces(expr)
-print(expr)
-expr = transformMultipleLambdas(expr)
-print(expr)
 
-p = parse_tokens(expr)
-p = parse_structure(p, [], [Bind('x', Leaf([])), Bind('y', Leaf([])), Bind('z', Leaf([]))])
-t = p.print(0)
-print(t)
+    expr = trimSpaces(expr)
+    print(expr)
+    expr = transformMultipleLambdas(expr)
+    print(expr)
+
+    p = parse_tokens(expr)
+    p = parse_structure(p, [], [Bind('x', Leaf([])), Bind('y', Leaf([])), Bind('z', Leaf([]))])
+    t = p.print(0)
+    print(t)
+if __name__ == '__main__':
+    main()

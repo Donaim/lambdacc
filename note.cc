@@ -50,8 +50,10 @@ der(f) {
 der(neg) {
     f fff;
     t ttt;
+    fun * bbb;
     ovv(b) {
-        return b->eval(&fff)->eval(&ttt);
+        bbb = b;
+        return bbb->eval(&fff)->eval(&ttt);
     }
 };
 

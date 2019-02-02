@@ -3,10 +3,8 @@ You can write code in lambda-calculus and let the script generate (efficient) C+
 
 # Usage
 
-	-- write lambda script to note.txt
-
-	$ python3 macro_parser.py
-	$ g++ generated.cc && ./a.out
+	$ ./lambda-cpp.py --source example.ini --dest out.cc
+	$ g++ out.cc && ./a.out
 
 # Features
 

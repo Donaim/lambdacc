@@ -15,7 +15,6 @@ public:
 	const fun * parent = nullptr;
 	ff x;
 	ff eval(ff x) {
-		this->x = x;
 		return eval_now(this, x);
 	}
 	// virtual void initme() = 0;
@@ -43,20 +42,19 @@ public:
 // static error_not_lambda error_not_lambda_instance{};
 // static error_not_lambda * error_not_lambda_ptr = &error_not_lambda_instance;
 
-// struct Bind_print_true : fun {
-// 	Bind_print_true() {}
-// 	ovv {
-// 		puts("TRUE");
-// 		return &error_not_lambda_instance;
-// 	}
-// };
-// struct Bind_print_false : fun {
-// 	Bind_print_false() {}
-// 	ovv {
-// 		puts("FALSE");
-// 		return &error_not_lambda_instance;
-// 	}
-// };
+struct Bind_print_true : fun {
+	Bind_print_true() {}
+};
+struct Bind_print_false : fun {
+	Bind_print_false() {}
+};
+
+int Init_Bind_print_true (ff me) {
+	puts ("TRUE INITED");
+}
+int Init_Bind_print_false (ff me) {
+	puts ("FALS INITED");
+}
 
 // struct Bind_num : fun {
 // 	Bind_num() {}

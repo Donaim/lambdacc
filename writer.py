@@ -111,13 +111,38 @@ def get_ovv(le: Leaf) -> str:
 		return 'return ' + exec_line + '->eval(x)' + ';'
 	else:
 		raise Exception('get_ovv expects {} or {} but got {}'.format(Bind, Lambda, lt))
+def init_children(le: Leaf, parent_lambda_name: str) -> str:
+	members = get_unique_lambda_members(le=le)
+	st_members = ''
+	ret = '	if (me->x == NULL) {\n'
+	for l in members:
+		mem = ''
+		if type(l) is Lambda or type(l) is Bind:
+			name = get_leaf_name(l)
+			name_m = get_member_name(name)
+
+			mem += '		me->{} = new {};\n'.format(name_m, name)
+			mem += '		me->{}->parent = me;\n'.format(name_m)
+
+			init_name = get_leaf_name(CFunction(name, 'init'))
+			mem += '		{}(me->{});\n'.format(init_name, name_m)
+		else:
+			raise Exception('Unexpected member type {}'.format(type(l)))
+		ret += mem
+	ret += '	}\n'
+	return ret
 def get_exec_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 	exec_name = get_leaf_name(CFunction(lambda_name, 'exec'))
 	decl = 'ff {:<30} (ff me_abs, ff x)'.format(exec_name)
 	out.exec_declarations += decl + ';\n'
-	cast = 'struct {} * me = (struct {} *)me_abs;'.format(lambda_name, lambda_name)
-	ret  = get_ovv(le)                             # RETURN STATEMENT
-	out.exec_definitions += '{} {{\n\t{}\n\t{}\n}}\n\n'.format(decl, cast, ret)
+	
+	defi  = decl + ' {\n'
+	defi += '	struct {} * me = (struct {} *)me_abs;\n'.format(lambda_name, lambda_name)
+	defi += init_children(le=le, parent_lambda_name=lambda_name)
+	defi += '	me->x = x;\n'
+	defi += '	' + get_ovv(le)                                                                # RETURN STATEMENT
+	defi += '\n}\n\n'
+	out.exec_definitions += defi
 def get_init_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 	init_name = get_leaf_name(CFunction(lambda_name, 'init'))
 	exec_name = get_leaf_name(CFunction(lambda_name, 'exec'))

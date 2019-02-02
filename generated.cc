@@ -15,7 +15,6 @@ public:
 	const fun * parent = nullptr;
 	ff x;
 	ff eval(ff x) {
-		this->x = x;
 		return eval_now(this, x);
 	}
 	// virtual void initme() = 0;
@@ -43,20 +42,19 @@ public:
 // static error_not_lambda error_not_lambda_instance{};
 // static error_not_lambda * error_not_lambda_ptr = &error_not_lambda_instance;
 
-// struct Bind_print_true : fun {
-// 	Bind_print_true() {}
-// 	ovv {
-// 		puts("TRUE");
-// 		return &error_not_lambda_instance;
-// 	}
-// };
-// struct Bind_print_false : fun {
-// 	Bind_print_false() {}
-// 	ovv {
-// 		puts("FALSE");
-// 		return &error_not_lambda_instance;
-// 	}
-// };
+struct Bind_print_true : fun {
+	Bind_print_true() {}
+};
+struct Bind_print_false : fun {
+	Bind_print_false() {}
+};
+
+int Init_Bind_print_true (ff me) {
+	puts ("TRUE INITED");
+}
+int Init_Bind_print_false (ff me) {
+	puts ("FALS INITED");
+}
 
 // struct Bind_num : fun {
 // 	Bind_num() {}
@@ -90,6 +88,8 @@ struct Bind_suc;
 struct Bind_pred;
 struct Lambda_59;
 struct Bind_get0;
+struct Bind_assert;
+struct EXPR_0;
 
 
 int Init_Bind_id                   (struct Bind_id *me);
@@ -115,6 +115,8 @@ int Init_Bind_suc                  (struct Bind_suc *me);
 int Init_Bind_pred                 (struct Bind_pred *me);
 int Init_Lambda_59                 (struct Lambda_59 *me);
 int Init_Bind_get0                 (struct Bind_get0 *me);
+int Init_Bind_assert               (struct Bind_assert *me);
+int Init_EXPR_0                    (struct EXPR_0 *me);
 
 
 ff Exec_Bind_id                   (ff me_abs, ff x);
@@ -140,6 +142,8 @@ ff Exec_Bind_suc                  (ff me_abs, ff x);
 ff Exec_Bind_pred                 (ff me_abs, ff x);
 ff Exec_Lambda_59                 (ff me_abs, ff x);
 ff Exec_Bind_get0                 (ff me_abs, ff x);
+ff Exec_Bind_assert               (ff me_abs, ff x);
+ff Exec_EXPR_0                    (ff me_abs, ff x);
 
 
 der(Bind_id) {
@@ -283,6 +287,22 @@ der(Bind_get0) {
 	Bind_get0()  {}
 
 	Lambda_59                      * m_Lambda_59;
+};
+der(Bind_assert) {
+
+	Bind_assert()  {}
+
+	Bind_if                        * m_Bind_if;
+	Bind_print_true                * m_Bind_print_true;
+	Bind_print_false               * m_Bind_print_false;
+};
+der(EXPR_0) {
+
+	EXPR_0()  {}
+
+	Bind_assert                    * m_Bind_assert;
+	Bind_is0                       * m_Bind_is0;
+	Bind_zero                      * m_Bind_zero;
 };
 
 
@@ -470,127 +490,328 @@ int Init_Bind_get0                 (struct Bind_get0 *me) {
 	return 0;
 }
 
+int Init_Bind_assert               (struct Bind_assert *me) {
+	if (me->eval_now == NULL) {
+		me->eval_now = Exec_Bind_assert;
+	}
+
+	return 0;
+}
+
+int Init_EXPR_0                    (struct EXPR_0 *me) {
+	if (me->eval_now == NULL) {
+		me->eval_now = Exec_EXPR_0;
+	}
+
+	return 0;
+}
+
 
 
 ff Exec_Bind_id                   (ff me_abs, ff x) {
 	struct Bind_id * me = (struct Bind_id *)me_abs;
+	if (me->x == NULL) {
+	}
+	me->x = x;
 	return (me->x);
 }
 
 ff Exec_Lambda_7                  (ff me_abs, ff x) {
 	struct Lambda_7 * me = (struct Lambda_7 *)me_abs;
+	if (me->x == NULL) {
+	}
+	me->x = x;
 	return (me->parent->x);
 }
 
 ff Exec_Bind_true                 (ff me_abs, ff x) {
 	struct Bind_true * me = (struct Bind_true *)me_abs;
+	if (me->x == NULL) {
+		me->m_Lambda_7 = new Lambda_7;
+		me->m_Lambda_7->parent = me;
+		Init_Lambda_7(me->m_Lambda_7);
+	}
+	me->x = x;
 	return ((me->m_Lambda_7));
 }
 
 ff Exec_Lambda_12                 (ff me_abs, ff x) {
 	struct Lambda_12 * me = (struct Lambda_12 *)me_abs;
+	if (me->x == NULL) {
+	}
+	me->x = x;
 	return (me->x);
 }
 
 ff Exec_Bind_false                (ff me_abs, ff x) {
 	struct Bind_false * me = (struct Bind_false *)me_abs;
+	if (me->x == NULL) {
+		me->m_Lambda_12 = new Lambda_12;
+		me->m_Lambda_12->parent = me;
+		Init_Lambda_12(me->m_Lambda_12);
+	}
+	me->x = x;
 	return ((me->m_Lambda_12));
 }
 
 ff Exec_Bind_not                  (ff me_abs, ff x) {
 	struct Bind_not * me = (struct Bind_not *)me_abs;
+	if (me->x == NULL) {
+		me->m_Bind_false = new Bind_false;
+		me->m_Bind_false->parent = me;
+		Init_Bind_false(me->m_Bind_false);
+		me->m_Bind_true = new Bind_true;
+		me->m_Bind_true->parent = me;
+		Init_Bind_true(me->m_Bind_true);
+	}
+	me->x = x;
 	return (me->x->eval((me->m_Bind_false))->eval((me->m_Bind_true)));
 }
 
 ff Exec_Lambda_22                 (ff me_abs, ff x) {
 	struct Lambda_22 * me = (struct Lambda_22 *)me_abs;
+	if (me->x == NULL) {
+	}
+	me->x = x;
 	return (me->parent->parent->x->eval(me->parent->x)->eval(me->x));
 }
 
 ff Exec_Lambda_20                 (ff me_abs, ff x) {
 	struct Lambda_20 * me = (struct Lambda_20 *)me_abs;
+	if (me->x == NULL) {
+		me->m_Lambda_22 = new Lambda_22;
+		me->m_Lambda_22->parent = me;
+		Init_Lambda_22(me->m_Lambda_22);
+	}
+	me->x = x;
 	return ((me->m_Lambda_22));
 }
 
 ff Exec_Bind_if                   (ff me_abs, ff x) {
 	struct Bind_if * me = (struct Bind_if *)me_abs;
+	if (me->x == NULL) {
+		me->m_Lambda_20 = new Lambda_20;
+		me->m_Lambda_20->parent = me;
+		Init_Lambda_20(me->m_Lambda_20);
+	}
+	me->x = x;
 	return ((me->m_Lambda_20));
 }
 
 ff Exec_Lambda_29                 (ff me_abs, ff x) {
 	struct Lambda_29 * me = (struct Lambda_29 *)me_abs;
+	if (me->x == NULL) {
+	}
+	me->x = x;
 	return (me->parent->x);
 }
 
 ff Exec_Lambda_27                 (ff me_abs, ff x) {
 	struct Lambda_27 * me = (struct Lambda_27 *)me_abs;
+	if (me->x == NULL) {
+		me->m_Lambda_29 = new Lambda_29;
+		me->m_Lambda_29->parent = me;
+		Init_Lambda_29(me->m_Lambda_29);
+	}
+	me->x = x;
 	return ((me->m_Lambda_29)->eval(me->parent->x));
 }
 
 ff Exec_Bind_kek                  (ff me_abs, ff x) {
 	struct Bind_kek * me = (struct Bind_kek *)me_abs;
+	if (me->x == NULL) {
+		me->m_Lambda_27 = new Lambda_27;
+		me->m_Lambda_27->parent = me;
+		Init_Lambda_27(me->m_Lambda_27);
+	}
+	me->x = x;
 	return ((me->m_Lambda_27));
 }
 
 ff Exec_Lambda_36                 (ff me_abs, ff x) {
 	struct Lambda_36 * me = (struct Lambda_36 *)me_abs;
+	if (me->x == NULL) {
+	}
+	me->x = x;
 	return (me->x->eval(me->parent->parent->x)->eval(me->parent->x));
 }
 
 ff Exec_Lambda_34                 (ff me_abs, ff x) {
 	struct Lambda_34 * me = (struct Lambda_34 *)me_abs;
+	if (me->x == NULL) {
+		me->m_Lambda_36 = new Lambda_36;
+		me->m_Lambda_36->parent = me;
+		Init_Lambda_36(me->m_Lambda_36);
+	}
+	me->x = x;
 	return ((me->m_Lambda_36));
 }
 
 ff Exec_Bind_pair                 (ff me_abs, ff x) {
 	struct Bind_pair * me = (struct Bind_pair *)me_abs;
+	if (me->x == NULL) {
+		me->m_Lambda_34 = new Lambda_34;
+		me->m_Lambda_34->parent = me;
+		Init_Lambda_34(me->m_Lambda_34);
+	}
+	me->x = x;
 	return ((me->m_Lambda_34));
 }
 
 ff Exec_Bind_fst                  (ff me_abs, ff x) {
 	struct Bind_fst * me = (struct Bind_fst *)me_abs;
+	if (me->x == NULL) {
+		me->m_Bind_true = new Bind_true;
+		me->m_Bind_true->parent = me;
+		Init_Bind_true(me->m_Bind_true);
+	}
+	me->x = x;
 	return (me->x->eval((me->m_Bind_true)));
 }
 
 ff Exec_Bind_snd                  (ff me_abs, ff x) {
 	struct Bind_snd * me = (struct Bind_snd *)me_abs;
+	if (me->x == NULL) {
+		me->m_Bind_false = new Bind_false;
+		me->m_Bind_false->parent = me;
+		Init_Bind_false(me->m_Bind_false);
+	}
+	me->x = x;
 	return (me->x->eval((me->m_Bind_false)));
 }
 
 ff Exec_Bind_zero                 (ff me_abs, ff x) {
 	struct Bind_zero * me = (struct Bind_zero *)me_abs;
+	if (me->x == NULL) {
+		me->m_Bind_pair = new Bind_pair;
+		me->m_Bind_pair->parent = me;
+		Init_Bind_pair(me->m_Bind_pair);
+		me->m_Bind_true = new Bind_true;
+		me->m_Bind_true->parent = me;
+		Init_Bind_true(me->m_Bind_true);
+		me->m_Bind_id = new Bind_id;
+		me->m_Bind_id->parent = me;
+		Init_Bind_id(me->m_Bind_id);
+	}
+	me->x = x;
 	return ((me->m_Bind_pair)->eval((me->m_Bind_true))->eval((me->m_Bind_id)))->eval(x);
 }
 
 ff Exec_Bind_is0                  (ff me_abs, ff x) {
 	struct Bind_is0 * me = (struct Bind_is0 *)me_abs;
+	if (me->x == NULL) {
+		me->m_Bind_if = new Bind_if;
+		me->m_Bind_if->parent = me;
+		Init_Bind_if(me->m_Bind_if);
+		me->m_Bind_fst = new Bind_fst;
+		me->m_Bind_fst->parent = me;
+		Init_Bind_fst(me->m_Bind_fst);
+		me->m_Bind_true = new Bind_true;
+		me->m_Bind_true->parent = me;
+		Init_Bind_true(me->m_Bind_true);
+		me->m_Bind_false = new Bind_false;
+		me->m_Bind_false->parent = me;
+		Init_Bind_false(me->m_Bind_false);
+	}
+	me->x = x;
 	return ((me->m_Bind_if)->eval(((me->m_Bind_fst)->eval(me->x)))->eval((me->m_Bind_true))->eval((me->m_Bind_false)));
 }
 
 ff Exec_Bind_suc                  (ff me_abs, ff x) {
 	struct Bind_suc * me = (struct Bind_suc *)me_abs;
+	if (me->x == NULL) {
+		me->m_Bind_pair = new Bind_pair;
+		me->m_Bind_pair->parent = me;
+		Init_Bind_pair(me->m_Bind_pair);
+		me->m_Bind_false = new Bind_false;
+		me->m_Bind_false->parent = me;
+		Init_Bind_false(me->m_Bind_false);
+	}
+	me->x = x;
 	return ((me->m_Bind_pair)->eval((me->m_Bind_false))->eval(me->x));
 }
 
 ff Exec_Bind_pred                 (ff me_abs, ff x) {
 	struct Bind_pred * me = (struct Bind_pred *)me_abs;
+	if (me->x == NULL) {
+		me->m_Bind_snd = new Bind_snd;
+		me->m_Bind_snd->parent = me;
+		Init_Bind_snd(me->m_Bind_snd);
+	}
+	me->x = x;
 	return ((me->m_Bind_snd)->eval(me->x));
 }
 
 ff Exec_Lambda_59                 (ff me_abs, ff x) {
 	struct Lambda_59 * me = (struct Lambda_59 *)me_abs;
+	if (me->x == NULL) {
+		me->m_Bind_if = new Bind_if;
+		me->m_Bind_if->parent = me;
+		Init_Bind_if(me->m_Bind_if);
+		me->m_Bind_fst = new Bind_fst;
+		me->m_Bind_fst->parent = me;
+		Init_Bind_fst(me->m_Bind_fst);
+		me->m_Bind_get0 = new Bind_get0;
+		me->m_Bind_get0->parent = me;
+		Init_Bind_get0(me->m_Bind_get0);
+		me->m_Bind_pred = new Bind_pred;
+		me->m_Bind_pred->parent = me;
+		Init_Bind_pred(me->m_Bind_pred);
+	}
+	me->x = x;
 	return ((me->m_Bind_if)->eval(((me->m_Bind_fst)->eval(me->parent->x)))->eval(me->parent->x)->eval(((me->m_Bind_get0)->eval(((me->m_Bind_pred)->eval(me->x))))));
 }
 
 ff Exec_Bind_get0                 (ff me_abs, ff x) {
 	struct Bind_get0 * me = (struct Bind_get0 *)me_abs;
+	if (me->x == NULL) {
+		me->m_Lambda_59 = new Lambda_59;
+		me->m_Lambda_59->parent = me;
+		Init_Lambda_59(me->m_Lambda_59);
+	}
+	me->x = x;
 	return ((me->m_Lambda_59));
+}
+
+ff Exec_Bind_assert               (ff me_abs, ff x) {
+	struct Bind_assert * me = (struct Bind_assert *)me_abs;
+	if (me->x == NULL) {
+		me->m_Bind_if = new Bind_if;
+		me->m_Bind_if->parent = me;
+		Init_Bind_if(me->m_Bind_if);
+		me->m_Bind_print_true = new Bind_print_true;
+		me->m_Bind_print_true->parent = me;
+		Init_Bind_print_true(me->m_Bind_print_true);
+		me->m_Bind_print_false = new Bind_print_false;
+		me->m_Bind_print_false->parent = me;
+		Init_Bind_print_false(me->m_Bind_print_false);
+	}
+	me->x = x;
+	return ((me->m_Bind_if)->eval(me->x)->eval((me->m_Bind_print_true))->eval((me->m_Bind_print_false)));
+}
+
+ff Exec_EXPR_0                    (ff me_abs, ff x) {
+	struct EXPR_0 * me = (struct EXPR_0 *)me_abs;
+	if (me->x == NULL) {
+		me->m_Bind_assert = new Bind_assert;
+		me->m_Bind_assert->parent = me;
+		Init_Bind_assert(me->m_Bind_assert);
+		me->m_Bind_is0 = new Bind_is0;
+		me->m_Bind_is0->parent = me;
+		Init_Bind_is0(me->m_Bind_is0);
+		me->m_Bind_zero = new Bind_zero;
+		me->m_Bind_zero->parent = me;
+		Init_Bind_zero(me->m_Bind_zero);
+	}
+	me->x = x;
+	return ((me->m_Bind_assert)->eval(((me->m_Bind_is0)->eval(((me->m_Bind_zero))))))->eval(x);
 }
 
 
 
 int main() {
 	puts("start");
+	EXPR_0{}.eval(nullptr); 
 	puts("end");
 	return 0; 
 }

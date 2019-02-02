@@ -251,7 +251,7 @@ def write_some(filepath: str, binds: list):
 		varname = e.name + '_var';
 		footer += '	struct {} * {} = new {};\n'.format(e.name, varname, e.name)
 		footer += '	{}({});\n'.format(init_name, varname);
-		footer += '	{}->eval(nullptr);\n\n'.format(varname);
+		footer += '	{}->eval(bind_err);\n\n'.format(varname);
 	footer += ('\tputs("end");\n')
 	footer += ('\treturn 0; \n}')
 	out.footer += footer

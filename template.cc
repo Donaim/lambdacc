@@ -45,6 +45,8 @@ public:
 struct Bind_error : fun {
 	const char * tostr() override { return "ERROR"; }
 };
+struct Bind_error * bind_err = new Bind_error;
+
 struct Bind_print_true : fun {
 	struct Bind_error * m_Bind_error;
 	const char * tostr() override { return "$print_true"; }

@@ -45,6 +45,8 @@ public:
 struct Bind_error : fun {
 	const char * tostr() override { return "ERROR"; }
 };
+struct Bind_error * bind_err = new Bind_error;
+
 struct Bind_print_true : fun {
 	struct Bind_error * m_Bind_error;
 	const char * tostr() override { return "$print_true"; }
@@ -830,7 +832,7 @@ int main() {
 	puts("start");
 	struct EXPR_0 * EXPR_0_var = new EXPR_0;
 	Init_EXPR_0(EXPR_0_var);
-	EXPR_0_var->eval(nullptr);
+	EXPR_0_var->eval(bind_err);
 
 	puts("end");
 	return 0; 

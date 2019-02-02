@@ -1,20 +1,22 @@
 
-all: out.exe
+PROJ = example
+
+all: $(PROJ).exe
 	@echo compiled
 
-out.cc:
-	./lambda-cpp.py --source example.ini --dest out.cc \
-		--headerfile example-header.cc \
-		--declare-file example-declare.cc \
-		--define-file example-define.cc \
-		--footerfile example-footer.cc
+$(PROJ).cc: $(PROJ).ini
+	./lambda-cpp.py --source $(PROJ).ini --dest $(PROJ).cc \
+		--headerfile $(PROJ)-header.cc \
+		--declare-file $(PROJ)-declare.cc \
+		--define-file $(PROJ)-define.cc \
+		--footerfile $(PROJ)-footer.cc
 	@echo translated
 
-out.exe: out.cc
+$(PROJ).exe: $(PROJ).cc
 	g++ -o $@ $^
 
 run: all
-	./out.exe
+	./$(PROJ).exe
 
 clean:
-	- rm -f out.cc out.exe
+	- rm -f $(PROJ).cc $(PROJ).exe

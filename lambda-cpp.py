@@ -79,6 +79,12 @@ def get_arguments():
 	group.add_argument('--no-use-typeid', dest='use_typeid', action='store_false', help='Do not use unique_id to determine lambda type')
 	group.set_defaults(use_typeid=True)
 
+	def includehelp(name): return 'File to be included after generated file "{}" section'.format(name)
+	parser.add_argument('--headerfile', help=includehelp('header'))
+	parser.add_argument('--declare-file', help=includehelp('declare'))
+	parser.add_argument('--define-file', help=includehelp('define'))
+	parser.add_argument('--footerfile', help=includehelp('footer'))
+
 	return parser.parse_args()
 
 def processone(args):
@@ -93,10 +99,14 @@ def processone(args):
 		print('{}=\n{}\n\n'.format(o.name, o.target.print(0)))
 
 	import writer
-	dest = args.dest
-	show_debug = args.show_debug
-	use_typeid = args.use_typeid
-	config = writer.OutConfig(filename=dest, show_debug=show_debug, use_typeid=use_typeid)
+	config = writer.OutConfig(
+		filename=args.dest,
+		show_debug=args.show_debug,
+		use_typeid=args.use_typeid,
+		headerfile=args.headerfile,
+		declare_file=args.declare_file,
+		define_file=args.define_file,
+		footerfile=args.footerfile)
 	writer.write_some(config=config, binds=binds)
 
 def main():

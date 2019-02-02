@@ -4,16 +4,27 @@ import parser
 from parser import *
 
 class OutConfig:
-	def __init__(self, filename: str, show_debug: bool, use_typeid: bool):
+	def __init__(self,
+			filename: str,
+			show_debug: bool,
+			use_typeid: bool,
+			headerfile: str,
+			declare_file: str,
+			define_file: str,
+			footerfile: str):
 		self.filename = filename
 		self.show_debug = show_debug
 		self.use_typeid = use_typeid
+		self.headerfile = headerfile
+		self.declare_file = declare_file
+		self.define_file = define_file
+		self.footerfile = footerfile
 
 class SplittedOut:
 	def __init__(self, config: OutConfig):
 		self.config = config
 
-		self.template = ''
+		self.header = ''
 		self.struct_declarations = ''
 		self.init_declarations = ''
 		self.exec_declarations = ''
@@ -23,19 +34,28 @@ class SplittedOut:
 		self.footer = ''
 
 	def dump(self):
-		with open(self.config.filename, 'w+') as w:
-			for t in [
-					self.template,
-					self.struct_declarations,
-					self.init_declarations,
-					self.exec_declarations,
-					self.struct_definitions,
-					self.init_definitions,
-					self.exec_definitions,
-					self.footer,
-					]:
-				w.write(t)
-				w.write('\n\n')
+		w = open(self.config.filename, 'w+')
+
+		def include(filename: str) -> None:
+			if not filename is None:
+				w.write('\n#include "{}"\n\n'.format(filename))
+		def writeone(one: str) -> None:
+			w.write(one)
+			w.write('\n\n')
+		def writearr(arr: list) -> None:
+			for t in arr:
+				writeone(t)
+		
+		writeone(self.header)
+		include(self.config.headerfile)
+		writearr([self.struct_declarations, self.init_declarations, self.exec_declarations])
+		include(self.config.declare_file)
+		writearr([self.struct_definitions, self.init_definitions, self.exec_definitions])
+		include(self.config.define_file)
+		writeone(self.footer)
+		include(self.config.footerfile)
+
+		w.close()
 
 class CFunction:
 	def __init__(self, leaf_name: str, t: str):
@@ -260,10 +280,6 @@ def write(out: SplittedOut, le: Leaf):
 		raise Exception('Dont know how to start writing from {} type'.format(type(le)))
 def write_some(config: OutConfig, binds: list):
 	out = SplittedOut(config)
-	with open('template.cc') as tempr:
-		out.template = tempr.read()
-		if out.config.show_debug:
-			out.template = '#define SHOW_DEBUG\n' + out.template
 
 	proper_binds = []
 	exec_expr = []

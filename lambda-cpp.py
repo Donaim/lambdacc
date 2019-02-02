@@ -74,6 +74,11 @@ def get_arguments():
 	group.add_argument('--no-show-debug', dest='show_debug', action='store_false', help='Do not include debug information')
 	group.set_defaults(show_debug=False)
 
+	group = parser.add_mutually_exclusive_group()
+	group.add_argument('--use-typeid', dest='use_typeid', action='store_true', help='Use unique_id to determine lambda type')
+	group.add_argument('--no-use-typeid', dest='use_typeid', action='store_false', help='Do not use unique_id to determine lambda type')
+	group.set_defaults(use_typeid=True)
+
 	return parser.parse_args()
 
 def processone(args):
@@ -88,9 +93,11 @@ def processone(args):
 		print('{}=\n{}\n\n'.format(o.name, o.target.print(0)))
 
 	import writer
-	writer.show_debug = args.show_debug
 	dest = args.dest
-	writer.write_some(dest, binds)
+	show_debug = args.show_debug
+	use_typeid = args.use_typeid
+	config = writer.OutConfig(filename=dest, show_debug=show_debug, use_typeid=use_typeid)
+	writer.write_some(config=config, binds=binds)
 
 def main():
 	print('macro parser loaded :)')

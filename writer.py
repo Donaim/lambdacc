@@ -3,11 +3,15 @@ import string
 import parser
 from parser import *
 
-show_debug = True
+class OutConfig:
+	def __init__(self, filename: str, show_debug: bool, use_typeid: bool):
+		self.filename = filename
+		self.show_debug = show_debug
+		self.use_typeid = use_typeid
 
 class SplittedOut:
-	def __init__(self, filename: str):
-		self.filename = filename
+	def __init__(self, config: OutConfig):
+		self.config = config
 
 		self.template = ''
 		self.struct_declarations = ''
@@ -19,7 +23,7 @@ class SplittedOut:
 		self.footer = ''
 
 	def dump(self):
-		with open(self.filename, 'w+') as w:
+		with open(self.config.filename, 'w+') as w:
 			for t in [
 					self.template,
 					self.struct_declarations,
@@ -171,7 +175,7 @@ def get_exec_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 	
 	defi  = decl + ' {\n'
 	defi += '	struct {} * me = (struct {} *)me_abs;\n'.format(lambda_name, lambda_name)
-	if show_debug:
+	if out.config.show_debug:
 		defi += '	printf ("Lam [%s] got [%s]\\n", me->tostr(), x->tostr());\n'
 	defi += init_children(le=le, parent_lambda_name=lambda_name)
 	defi += '	me->x = x;\n'
@@ -235,7 +239,7 @@ def write_named_lambda(out: SplittedOut, le: Lambda, lambda_name: str):
 
 	out.struct_definitions += stname
 	out.struct_definitions += st_members
-	if show_debug:
+	if out.config.show_debug:
 		out.struct_definitions += '\n	const char * tostr() override {{ return "{}"; }}\n'.format(lambda_name)
 	out.struct_definitions += ('};\n\n')
 
@@ -254,11 +258,11 @@ def write(out: SplittedOut, le: Leaf):
 		return write_named_lambda(out=out, le=le.target, lambda_name=name)
 	else:
 		raise Exception('Dont know how to start writing from {} type'.format(type(le)))
-def write_some(filepath: str, binds: list):
-	out = SplittedOut(filepath)
+def write_some(config: OutConfig, binds: list):
+	out = SplittedOut(config)
 	with open('template.cc') as tempr:
 		out.template = tempr.read()
-		if show_debug:
+		if out.config.show_debug:
 			out.template = '#define SHOW_DEBUG\n' + out.template
 
 	proper_binds = []

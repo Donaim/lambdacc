@@ -2,7 +2,7 @@
 import abc
 import copy
 
-LAMBDA_SYMBOL = '->'
+LAMBDA_SYMBOL = '.'
 
 def find_first_char(s: str, chars: list):
     for i, c in enumerate(s):
@@ -57,7 +57,7 @@ class Branch:
                 expr = expr[1:]
                 continue
             elif expr.startswith(LAMBDA_SYMBOL):     # skip
-                expr = expr[2:]
+                expr = expr[len(LAMBDA_SYMBOL):]
                 continue
             elif expr[0] == '\\':     # lambda
                 re.branches.append(Branch.from_text(expr))
@@ -190,7 +190,9 @@ def parse_structure(b: Branch, scope: list, binds: list) -> Leaf:
 
 # expr = r'   \    a -> \    b ->    (\x    ->    b hello)    a  '
 # expr = r'   \    a b ->    (\x    ->    b hello)    a  '
-expr = r'\n f x -> n(\g h -> h (g f h)) (\u -> x) (\u ->u)'
+# expr = r'\n f x -> n(\g h -> h (g f h)) (\u -> x) (\u ->u)'
+# expr = r'\n f x . n(\g h . h (g f h)) (\u . x) (\u .u)'
+expr = r'\n f x.n(\g h.h(g f h))(\u.x)(\u.u)'
 # expr = r'x y z\k -> y z x'
 # expr = r'\f -> (\x -> x x)(\x -> f(x x))'
 # expr = r'\x->x y'

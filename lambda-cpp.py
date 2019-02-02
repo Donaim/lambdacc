@@ -3,7 +3,33 @@
 import parser
 from parser import *
 
-def split_binding_and_def(line: str) -> (str, str):
+class ClassifiedLine:
+	def __init__(self, good: str, all: str):
+		self.good = good
+		self.all = all
+
+class SplittedLine:
+	def __init__(self, pre: str, post: str, all: str):
+		self.pre = pre
+		self.post = post
+		self.all = all
+	def get_name_and_token(self) -> (str, Branch):
+		branch = parse_tokens(self.post) if self.post else None
+		return TokenizedLine (bind_name=self.pre, branch=branch, all=self.all)
+
+class TokenizedLine:
+	def __init__(self, bind_name: str, branch: Branch, all: str):
+		self.bind_name = bind_name
+		self.branch = branch
+		self.all = all
+
+def split_binding_and_def(cline: ClassifiedLine) -> SplittedLine:
+	line = cline.good
+	if not line:
+		return SplittedLine (pre=None, post=None, all=cline.all)
+	else:
+		print ("Good: {}".format(line))
+
 	(pre, _, p) = line.partition(' ')
 	(p2, mid, post) = p.strip().partition('=')
 
@@ -20,13 +46,14 @@ def split_binding_and_def(line: str) -> (str, str):
 	else:
 		post = line.strip()
 		pre = None
-	return (pre, post)
+	return SplittedLine (pre=pre, post=post, all=cline.all)
 	
 def join_lines(lines: iter) -> iter:
 	prev = ''
 	for o in lines:
 		if  o.startswith('\t') or o.startswith('    '):
-			prev += o
+			prev += ' ' + o.strip()
+			yield ''
 		else:
 			prev = prev.strip()
 			if prev: yield prev
@@ -37,26 +64,31 @@ def join_lines(lines: iter) -> iter:
 def filter_lines(lines: iter) -> iter:
 	for o in lines:
 		if len(o) < 1 or o.isspace() or o[0] == ';':
-			continue
-		if '#' in o:
-			(pre, _, post) = o.partition('#')
-			if len(post) < 1:
-				yield o
+			yield ClassifiedLine (None, o)
+		elif '#' in o:
+			(pre, _, _) = o.partition('#')
+			pre = pre.strip()
+			if len(pre) < 1:
+				yield ClassifiedLine (None, o)
 			else:
-				yield pre
+				yield ClassifiedLine (pre, o)
 		else:
-			yield o
+			yield ClassifiedLine (o, o)
 
 def parse_text(text: str) -> list:
-	lines = text.split('\n')
-	lines = list(filter_lines(lines))
-	lines = list(join_lines(lines))
-	tuples = map(lambda o: split_binding_and_def(o), lines)
-	toks = map(lambda p: (p[0], parse_tokens(p[1])), tuples)
+	linesR = text.split('\n')
+	linesR = list(join_lines(linesR))
+	lines = list(filter_lines(linesR))
+	tuples = map(split_binding_and_def, lines)
+	toks = map(SplittedLine.get_name_and_token, tuples)
 
 	binds = []
-	for (name, br) in toks:
-		b = Bind ( name=name, target=None )
+	for t in toks:
+		if not t.branch:
+			continue
+		br = t.branch
+
+		b = Bind ( name=t.bind_name, target=None )
 		binds.append( b )
 		s = parse_structure( b=br, scope=[], binds=binds, parent=b )
 		b.target = s
@@ -72,13 +104,18 @@ def get_arguments():
 
 	group = parser.add_mutually_exclusive_group()
 	group.add_argument('--show-debug', dest='show_debug', action='store_true', help='Include debug information')
-	group.add_argument('--no-show-debug', dest='show_debug', action='store_false', help='Do not include debug information')
+	group.add_argument('--no-show-debug', dest='show_debug', action='store_false', help=None)
 	group.set_defaults(show_debug=False)
 
 	group = parser.add_mutually_exclusive_group()
 	group.add_argument('--use-typeid', dest='use_typeid', action='store_true', help='Use unique_id to determine lambda type')
-	group.add_argument('--no-use-typeid', dest='use_typeid', action='store_false', help='Do not use unique_id to determine lambda type')
+	group.add_argument('--no-use-typeid', dest='use_typeid', action='store_false', help=None)
 	group.set_defaults(use_typeid=True)
+
+	group = parser.add_mutually_exclusive_group()
+	group.add_argument('--make-inline', dest='make_inline', action='store_true', help='Inline all bindings except for recursive ones')
+	group.add_argument('--no-make-inline', dest='make_inline', action='store_false', help=None)
+	group.set_defaults(show_debug=False)
 
 	def includehelp(name): return 'File to be included after generated file "{}" section'.format(name)
 	parser.add_argument('--headerfile', help=includehelp('header'))

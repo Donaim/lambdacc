@@ -145,6 +145,7 @@ struct Bind_zero;
 struct Bind_is0;
 struct Bind_suc;
 struct Bind_pred;
+struct Bind_get0;
 struct Bind_assert;
 struct EXPR_0;
 
@@ -170,6 +171,7 @@ int Init_Bind_zero                 (struct Bind_zero *me);
 int Init_Bind_is0                  (struct Bind_is0 *me);
 int Init_Bind_suc                  (struct Bind_suc *me);
 int Init_Bind_pred                 (struct Bind_pred *me);
+int Init_Bind_get0                 (struct Bind_get0 *me);
 int Init_Bind_assert               (struct Bind_assert *me);
 int Init_EXPR_0                    (struct EXPR_0 *me);
 
@@ -195,6 +197,7 @@ ff Exec_Bind_zero                 (ff me_abs, ff x);
 ff Exec_Bind_is0                  (ff me_abs, ff x);
 ff Exec_Bind_suc                  (ff me_abs, ff x);
 ff Exec_Bind_pred                 (ff me_abs, ff x);
+ff Exec_Bind_get0                 (ff me_abs, ff x);
 ff Exec_Bind_assert               (ff me_abs, ff x);
 ff Exec_EXPR_0                    (ff me_abs, ff x);
 
@@ -326,6 +329,14 @@ der(Bind_pred) {
 	const char * tostr() override { return "Bind_pred"; }
 };
 
+der(Bind_get0) {
+	Bind_if                        * m_Bind_if;
+	Bind_false                     * m_Bind_false;
+	Bind_zero                      * m_Bind_zero;
+
+	const char * tostr() override { return "Bind_get0"; }
+};
+
 der(Bind_assert) {
 	Bind_if                        * m_Bind_if;
 	Bind_print_true                * m_Bind_print_true;
@@ -335,10 +346,11 @@ der(Bind_assert) {
 };
 
 der(EXPR_0) {
-	Bind_assert                    * m_Bind_assert;
-	Bind_if                        * m_Bind_if;
 	Bind_false                     * m_Bind_false;
-	Bind_not                       * m_Bind_not;
+	Bind_kek                       * m_Bind_kek;
+	Bind_id                        * m_Bind_id;
+	Bind_is0                       * m_Bind_is0;
+	Bind_zero                      * m_Bind_zero;
 
 	const char * tostr() override { return "EXPR_0"; }
 };
@@ -508,6 +520,14 @@ int Init_Bind_suc                  (struct Bind_suc *me) {
 int Init_Bind_pred                 (struct Bind_pred *me) {
 	if (me->eval_now == NULL) {
 		me->eval_now = Exec_Bind_pred;
+	}
+
+	return 0;
+}
+
+int Init_Bind_get0                 (struct Bind_get0 *me) {
+	if (me->eval_now == NULL) {
+		me->eval_now = Exec_Bind_get0;
 	}
 
 	return 0;
@@ -786,6 +806,24 @@ ff Exec_Bind_pred                 (ff me_abs, ff x) {
 	return ((me->m_Bind_snd)->eval(me->x));
 }
 
+ff Exec_Bind_get0                 (ff me_abs, ff x) {
+	struct Bind_get0 * me = (struct Bind_get0 *)me_abs;
+	printf ("Lam [%s] got [%s]\n", me->tostr(), x->tostr());
+	if (me->x == NULL) {
+		me->m_Bind_if = new Bind_if;
+		me->m_Bind_if->parent = me;
+		Init_Bind_if(me->m_Bind_if);
+		me->m_Bind_false = new Bind_false;
+		me->m_Bind_false->parent = me;
+		Init_Bind_false(me->m_Bind_false);
+		me->m_Bind_zero = new Bind_zero;
+		me->m_Bind_zero->parent = me;
+		Init_Bind_zero(me->m_Bind_zero);
+	}
+	me->x = x;
+	return ((me->m_Bind_if)->eval((me->m_Bind_false))->eval((me->m_Bind_zero))->eval((me->m_Bind_zero)));
+}
+
 ff Exec_Bind_assert               (ff me_abs, ff x) {
 	struct Bind_assert * me = (struct Bind_assert *)me_abs;
 	printf ("Lam [%s] got [%s]\n", me->tostr(), x->tostr());
@@ -808,21 +846,24 @@ ff Exec_EXPR_0                    (ff me_abs, ff x) {
 	struct EXPR_0 * me = (struct EXPR_0 *)me_abs;
 	printf ("Lam [%s] got [%s]\n", me->tostr(), x->tostr());
 	if (me->x == NULL) {
-		me->m_Bind_assert = new Bind_assert;
-		me->m_Bind_assert->parent = me;
-		Init_Bind_assert(me->m_Bind_assert);
-		me->m_Bind_if = new Bind_if;
-		me->m_Bind_if->parent = me;
-		Init_Bind_if(me->m_Bind_if);
 		me->m_Bind_false = new Bind_false;
 		me->m_Bind_false->parent = me;
 		Init_Bind_false(me->m_Bind_false);
-		me->m_Bind_not = new Bind_not;
-		me->m_Bind_not->parent = me;
-		Init_Bind_not(me->m_Bind_not);
+		me->m_Bind_kek = new Bind_kek;
+		me->m_Bind_kek->parent = me;
+		Init_Bind_kek(me->m_Bind_kek);
+		me->m_Bind_id = new Bind_id;
+		me->m_Bind_id->parent = me;
+		Init_Bind_id(me->m_Bind_id);
+		me->m_Bind_is0 = new Bind_is0;
+		me->m_Bind_is0->parent = me;
+		Init_Bind_is0(me->m_Bind_is0);
+		me->m_Bind_zero = new Bind_zero;
+		me->m_Bind_zero->parent = me;
+		Init_Bind_zero(me->m_Bind_zero);
 	}
 	me->x = x;
-	return ((me->m_Bind_assert)->eval(((me->m_Bind_if)->eval((me->m_Bind_false))->eval((me->m_Bind_false))->eval(((me->m_Bind_not)->eval(((me->m_Bind_not)->eval(((me->m_Bind_not)->eval((me->m_Bind_false)))))))))))->eval(x);
+	return ((me->m_Bind_false)->eval(((me->m_Bind_kek)->eval((me->m_Bind_id))))->eval(((me->m_Bind_is0)->eval((me->m_Bind_zero)))))->eval(x);
 }
 
 

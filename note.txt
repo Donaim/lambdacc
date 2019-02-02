@@ -41,7 +41,7 @@ assert = \b -> if b $print_true $print_false
 # assert (if (is0 zero) true false)
 # assert (is0 (get0 zero))
 
-assert (if true false false)
+assert (if false false (not (not (not false))))
 
 # assert (is0 (suc zero))
 # assert (get0 zero)

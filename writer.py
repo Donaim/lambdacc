@@ -2,7 +2,7 @@
 import parser
 from parser import *
 
-show_debug = False
+show_debug = True
 
 class SplittedOut:
 	def __init__(self, filename: str):

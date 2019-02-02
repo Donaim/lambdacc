@@ -38,6 +38,10 @@ public:
 	}
 	exec_t eval_now;
 
+#ifdef DO_CACHING
+	void (*cache)(ff me, vector<int> * ret);
+#endif
+
 #ifdef USE_TYPEID
 	int typeuuid = -1;
 #endif

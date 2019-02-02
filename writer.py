@@ -3,6 +3,9 @@ import string
 import parser
 from parser import *
 
+MAPKEY_T = 'mapkey_t'
+TYPEID_TYPE = 'int'
+
 class OutConfig:
 	def __init__(self,
 			filename: str,
@@ -11,7 +14,8 @@ class OutConfig:
 			headerfile: str,
 			declare_file: str,
 			define_file: str,
-			footerfile: str):
+			footerfile: str,
+			do_caching: bool = True):
 		self.filename = filename
 		self.show_debug = show_debug
 		self.use_typeid = use_typeid
@@ -19,6 +23,10 @@ class OutConfig:
 		self.declare_file = declare_file
 		self.define_file = define_file
 		self.footerfile = footerfile
+		self.do_caching = do_caching
+
+		if do_caching and not use_typeid:
+			raise Exception("Caching requires TYPE IDs!")
 
 class SplittedOut:
 	def __init__(self, config: OutConfig):
@@ -26,9 +34,11 @@ class SplittedOut:
 
 		self.header = ''
 		self.struct_declarations = ''
+		self.caching_declarations = ''
 		self.init_declarations = ''
 		self.exec_declarations = ''
 		self.struct_definitions = ''
+		self.caching_definitions = ''
 		self.init_definitions = ''
 		self.exec_definitions = ''
 		self.footer = ''
@@ -48,9 +58,9 @@ class SplittedOut:
 		
 		writeone(self.header)
 		include(self.config.headerfile)
-		writearr([self.struct_declarations, self.init_declarations, self.exec_declarations])
+		writearr([self.struct_declarations, self.caching_declarations, self.init_declarations, self.exec_declarations])
 		include(self.config.declare_file)
-		writearr([self.struct_definitions, self.init_definitions, self.exec_definitions])
+		writearr([self.struct_definitions, self.caching_definitions, self.init_definitions, self.exec_definitions])
 		include(self.config.define_file)
 		writeone(self.footer)
 		include(self.config.footerfile)
@@ -101,6 +111,8 @@ def get_leaf_name(le) -> str:
 			return "Exec_" + str(le.name)
 		elif le.t == 'init':
 			return "Init_" + str(le.name)
+		elif le.t == 'cache':
+			return 'Cache_' + str(le.name)
 		else:
 			raise Exception("Unknown CFuntion type: {}".format(le.t))
 	raise Exception('Unknown type {}'.format(type(le)))
@@ -215,6 +227,33 @@ def get_init_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 	body += '	}\n'
 	ret   = 'return 0;'
 	out.init_definitions += '{} {{\n{}\n\t{}\n}}\n\n'.format(decl, body, ret)
+def get_caching_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
+	if not out.config.do_caching:
+		return
+
+	funcname = get_leaf_name(CFunction(lambda_name, 'cache'))
+
+	decl = 'void {:<30} (struct {} *me, vector<{}> * ret)'.format(funcname, lambda_name, TYPEID_TYPE)
+	out.caching_declarations += decl + ';\n'
+
+	lines = []
+	# Get cache key of our type
+	lines.append('ret->push_back(me->typeuuid)')
+
+	# Get cache key of our x value
+	lines.append('me->x->cache(me->x, ret)')
+
+	# Get cache keys of parents
+	current_str = 'me->parent'
+	current_parent = le.parent
+	while not current_parent is None:
+		lines.append('{}->cache({}, ret)'.format(current_str, current_str))
+
+		current_str += '->parent'
+		current_parent = current_parent.parent
+
+	re = decl + ' {\n\t' + str.join(';\n\t', lines) + ';\n}\n'
+	out.caching_definitions += re
 
 def get_lambda_members(le: Lambda) -> iter:
 	for l in le.leafs:
@@ -268,6 +307,7 @@ def write_named_lambda(out: SplittedOut, le: Lambda, lambda_name: str):
 
 	get_init_func(out, le, lambda_name)
 	get_exec_func(out, le, lambda_name)
+	get_caching_func(out, le=le, lambda_name=lambda_name)
 
 def write_lambda(out: SplittedOut, le: Leaf):
 	name = get_leaf_name(le)
@@ -288,6 +328,8 @@ def write_some(config: OutConfig, binds: list):
 		out.header += '#define SHOW_DEBUG\n'
 	if out.config.use_typeid:
 		out.header += '#define USE_TYPEID\n'
+	if out.config.do_caching:
+		out.header += '#define DO_CACHING\n'
 
 	proper_binds = []
 	exec_expr = []

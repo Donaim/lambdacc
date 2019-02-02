@@ -35,10 +35,9 @@ def get_argument_by_parents(me: Lambda, arg: Argument):
             p = p.parent
             re += 'parent->'
     return re + 'x'
-    
-def get_ovv(le: Leaf) -> list:
+
+def get_return_part(le: Leaf, base_lambda: Lambda) -> str:
     exec_line = ''
-    
     for l in le.leafs:
         t = type(l)
         if t is Bind or t is Lambda:
@@ -48,13 +47,22 @@ def get_ovv(le: Leaf) -> list:
             else:
                 exec_line += name
         elif t is Argument:
-            name = get_argument_by_parents(le, l)
+            name = get_argument_by_parents(base_lambda, l)
             if exec_line:
                 exec_line += '->eval({})'.format(name)
             else:
                 exec_line += name
+        elif t is Leaf:
+            part = get_return_part(l, base_lambda)
+            if exec_line:
+                exec_line += '->eval({})'.format(part)
+            else:
+                exec_line += part
         else:
             raise Exception('unexpected type {}'.format(t))
+    return '(' + exec_line + ')'
+def get_ovv(le: Leaf) -> list:
+    exec_line = get_return_part(le, le)
     exec_line = 'return ' + exec_line + ';'
     yield exec_line
 
@@ -96,7 +104,8 @@ def write(file, le: Leaf):
     # else not writing
 
 # expr = r'\b -> b x y'
-expr = r'\a b -> x a'
+# expr = r'\a b -> x a'
+expr = r'\a b c -> x (a b) c'
 # expr = r'\a b -> b'
 
 p = parse_tokens(expr)

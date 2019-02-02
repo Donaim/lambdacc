@@ -61,10 +61,17 @@ def get_return_part(le: Leaf, base_lambda: Lambda) -> str:
         else:
             raise Exception('unexpected type {}'.format(t))
     return '(' + exec_line + ')'
-def get_ovv(le: Leaf) -> list:
+def get_ovv(le: Leaf) -> str:
     exec_line = get_return_part(le, le)
-    exec_line = 'return ' + exec_line + ';'
-    yield exec_line
+    
+    lt = type(le)
+    if lt is Lambda:
+        return 'return ' + exec_line + ';'
+    elif lt is Leaf or lt is Argument or lt is Bind:
+        return 'return ' + exec_line + '->eval(x)' + ';'
+    else:
+        raise Exception('get_ovv expects {} or {} but got {}'.format(Bind, Lambda, lt))
+
 
 def get_lambda_members(le: Lambda) -> iter:
     for l in le.leafs:
@@ -112,8 +119,7 @@ def write_named_lambda(file, le: Lambda, lambda_name: str):
     file.write(constructor)
 
     file.write('\tovv {')
-    for line in get_ovv(le):
-        file.write('\n\t\t' + line)
+    file.write('\n\t\t' + get_ovv(le))
     file.write('\n\t}\n')
     file.write('};\n')
 def write_lambda(file, le: Leaf):
@@ -153,7 +159,7 @@ def write_some(filepath: str, binds: list):
     file.write('int main() {\n')
     file.write('\tputs("start");\n')
     for e in exec_expr:
-        file.write('\t' + e.name + '{}.eval(&debug_id_instance)->eval(&error_not_lambda_instance); \n')
+        file.write('\t' + e.name + '{}.eval(nullptr); \n')
     file.write('\tputs("end");\n')
     file.write('\treturn 0; \n}')
 

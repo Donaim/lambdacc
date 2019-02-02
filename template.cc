@@ -28,15 +28,16 @@ der(debug_id) {
 	}
 };
 static debug_id debug_id_instance{};
-static debug_id * did = &debug_id_instance;
+static debug_id * debug_id_instance_ptr = &debug_id_instance;
 
 der(error_not_lambda) {
 	error_not_lambda() : fun(nullptr) {}
 	ovv {
-		throw puts("error: literal is not supposed to be evaluated");
+		throw puts("error: this lambda is not supposed to be evaluated");
 	}
 };
 static error_not_lambda error_not_lambda_instance{};
+static error_not_lambda * error_not_lambda_ptr = &error_not_lambda_instance;
 
 struct Bind_print_true : fun {
 	Bind_print_true() : fun(nullptr) {}

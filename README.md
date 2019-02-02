@@ -1,6 +1,4 @@
 
-Help me fix bug with nested leafs please! It shows up after 'assert (is0 zero)' for example
-
 # usage
 
 	-- write lambda script to note.txt

@@ -28,16 +28,15 @@ der(debug_id) {
 	}
 };
 static debug_id debug_id_instance{};
-static debug_id * debug_id_instance_ptr = &debug_id_instance;
+static debug_id * did = &debug_id_instance;
 
 der(error_not_lambda) {
 	error_not_lambda() : fun(nullptr) {}
 	ovv {
-		throw puts("error: this lambda is not supposed to be evaluated");
+		throw puts("error: literal is not supposed to be evaluated");
 	}
 };
 static error_not_lambda error_not_lambda_instance{};
-static error_not_lambda * error_not_lambda_ptr = &error_not_lambda_instance;
 
 struct Bind_print_true : fun {
 	Bind_print_true() : fun(nullptr) {}
@@ -199,7 +198,7 @@ der(Bind_zero) {
 	Bind_zero() : fun(nullptr) {}
 
 	ovv {
-		return ((&m_Bind_pair)->eval((&m_Bind_true))->eval((&m_Bind_id)))->eval(x);
+		return (((&m_Bind_pair)->eval((&m_Bind_true))->eval((&m_Bind_id))))->eval(x);
 	}
 };
 der(Bind_is0) {
@@ -210,7 +209,7 @@ der(Bind_is0) {
 	Bind_is0() : fun(nullptr) {}
 
 	ovv {
-		return ((&m_Bind_if)->eval(((&m_Bind_fst)->eval(this->x)))->eval((&m_Bind_true))->eval((&m_Bind_false)));
+		return ((&m_Bind_if)->eval(m_Bind_fst.eval(x))->eval((&m_Bind_true))->eval((&m_Bind_false)));
 	}
 };
 der(Bind_assert) {
@@ -230,12 +229,12 @@ der(EXPR_0) {
 	EXPR_0() : fun(nullptr) {}
 
 	ovv {
-		return ((&m_Bind_assert)->eval(((&m_Bind_is0)->eval((&m_Bind_zero)))))->eval(x);
+		return ((&m_Bind_assert)->eval(((&m_Bind_is0)->eval((&m_Bind_zero)))));
 	}
 };
 int main() {
 	puts("start");
-	EXPR_0{}.eval(nullptr); 
+	EXPR_0{}.eval(did)->eval(did); 
 	puts("end");
 	return 0; 
 }

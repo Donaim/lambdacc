@@ -1,24 +1,24 @@
 der(Lambda_7) {
-	Bind_x Bind_x_m;
-	Lambda_7(ff p) : fun(p), Bind_x_m(this) {}
+	Bind_x m_Bind_x;
+	Lambda_7(ff p) : fun(p) {}
 
 	ovv {
-		return ((&Bind_x_m)->eval((this->parent->parent->x->eval(this->parent->x)))->eval(this->x));
+		return ((&m_Bind_x)->eval((this->parent->parent->x->eval(this->parent->x)))->eval(this->x));
 	}
 };
 der(Lambda_5) {
-	Lambda_7 Lambda_7_m;
-	Lambda_5(ff p) : fun(p), Lambda_7_m(this) {}
+	Lambda_7 m_Lambda_7;
+	Lambda_5(ff p) : fun(p), m_Lambda_7(this) {}
 
 	ovv {
-		return ((&Lambda_7_m));
+		return ((&m_Lambda_7));
 	}
 };
 der(Lambda_3) {
-	Lambda_5 Lambda_5_m;
-	Lambda_3() : fun(nullptr), Lambda_5_m(this) {}
+	Lambda_5 m_Lambda_5;
+	Lambda_3() : fun(nullptr), m_Lambda_5(this) {}
 
 	ovv {
-		return ((&Lambda_5_m));
+		return ((&m_Lambda_5));
 	}
 };

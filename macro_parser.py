@@ -54,8 +54,10 @@ def parse_text(text: str) -> list:
 
     binds = []
     for (name, br) in toks:
+        b = Bind ( name=name, target=None )
+        binds.append( b )
         s = parse_structure( b=br, scope=[], binds=binds, parent=None )
-        binds.append( Bind( name=name, target=s ) )
+        b.target = s
 
     return binds
 

@@ -1,0 +1,29 @@
+
+# comment
+
+# 1)
+id = \x -> x
+
+# 2)
+true = \a -> \b -> a
+
+# 3)
+false = \a -> \b -> b
+
+# 4)
+not = \b -> b false true
+
+# 5)
+if = \i -> \a -> \b -> i a b
+
+# 6)
+kek = \a -> \b -> (\x -> b) a             # same as <false>
+
+# 7)
+pair = \a -> \b -> f -> f a b
+fst = \p -> p true
+snd = \p -> p false
+
+# 8)
+zero = pair true id
+

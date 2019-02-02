@@ -70,7 +70,7 @@ def main():
         print('{}=\n{}\n\n'.format(o.name, o.target.print(0)))
     
     import writer
-    writer.write_some('tttt.cc', binds)
+    writer.write_some('generated.cc', binds)
 
 if __name__ == '__main__':
     main()

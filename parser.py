@@ -1,5 +1,6 @@
 
 LAMBDA_SYMBOL = '->'
+LAMBDA_DECL   = '\\'
 
 def find_first_char(s: str, chars: list):
 	for i, c in enumerate(s):
@@ -37,7 +38,7 @@ class Branch:
 		expr = expr.strip()
 		# print('branch="{}"'.format(expr))
 
-		is_lambda = expr[0] == '\\'
+		is_lambda = expr[0] == LAMBDA_DECL
 
 		re = Branch(None, [], is_lambda=is_lambda, is_token=False, is_arg=False)
 
@@ -56,7 +57,7 @@ class Branch:
 			elif expr.startswith(LAMBDA_SYMBOL):     # skip
 				expr = expr[len(LAMBDA_SYMBOL):]
 				continue
-			elif expr[0] == '\\':     # lambda
+			elif expr[0] == LAMBDA_DECL:     # lambda
 				re.branches.append(Branch.from_text(expr))
 				expr = ''
 			elif expr[0] == '(':    # another branch
@@ -67,7 +68,7 @@ class Branch:
 				re.branches.append(Branch.from_text(body))
 				expr = expr[stop + 1:]
 			else: # simple token
-				stop = find_first_char(expr, [' ', '(', '\\'])
+				stop = find_first_char(expr, [' ', '(', LAMBDA_DECL])
 				if stop < 0:
 					stop = len(expr)
 				tok = expr[0:stop]
@@ -84,7 +85,7 @@ class Leaf:
 		global counter
 		self.unique_id = counter
 		counter += 1
-		
+
 	def print(self, indent: int):
 		i_str = '\t' * indent
 		l_str = '\n'.join(map ( lambda l: l.print(indent + 1), self.leafs))
@@ -94,9 +95,18 @@ class Leaf:
 	def __ne__(self, other) -> bool:
 		return not self == other
 
+class Argument(Leaf):
+	def __init__(self, name: str, parent: Leaf):
+		super(Argument, self).__init__(leafs=[], parent=parent)
+		self.name = name
+	def __repr__(self):
+		return self.print(0)
+	def print(self, indent):
+		return ('\t' * indent) + '[' + self.name + ']'
+
 class Lambda(Leaf):
-	def __init__(self, scope: list, arg, leafs: list, parent: Leaf):
-		super(Lambda, self).__init__(leafs, parent=parent)
+	def __init__(self, scope: list, arg: Argument, leafs: list, parent: Leaf):
+		super(Lambda, self).__init__(leafs=leafs, parent=parent)
 		self.scope = scope
 		self.arg = arg
 	def print(self, indent: int):
@@ -105,15 +115,6 @@ class Lambda(Leaf):
 		for l in self.leafs:
 			l_str += '\n' + l.print(indent + 1)
 		return '{}(lambda {} of {}): {}'.format(i_str, self.scope, self.arg.name, l_str)
-
-class Argument(Leaf):
-	def __init__(self, name: str, parent: Leaf):
-		super(Argument, self).__init__([], parent=parent)
-		self.name = name
-	def __repr__(self):
-		return self.print(0)
-	def print(self, indent):
-		return ('\t' * indent) + '[' + self.name + ']'
 
 class Bind(Leaf):
 	def __init__(self, name: str, target: Leaf):
@@ -134,7 +135,7 @@ def trimSpaces(s: str) -> str:
 		if c.isspace():
 			if last == c:
 				continue
-			elif last == '\\':
+			elif last == LAMBDA_DECL:
 				last = c
 				continue
 			else:
@@ -152,13 +153,13 @@ def transformMultipleLambdas(s: str) -> str:
 			buff += c
 			if s.endswith(LAMBDA_SYMBOL, 0, i + 1):
 				buff = buff[:-(len(LAMBDA_SYMBOL))].strip()
-				buff = buff.replace(' ', ' {} \\'.format(LAMBDA_SYMBOL)) + ' '
+				buff = buff.replace(' ', ' {} {}'.format(LAMBDA_SYMBOL, LAMBDA_DECL)) + ' '
 				re += buff + LAMBDA_SYMBOL
 				
 				buff = ''
 				last_lambda = False
 		else:
-			if c == '\\':
+			if c == LAMBDA_DECL:
 				last_lambda = True
 			re += c
 	return re

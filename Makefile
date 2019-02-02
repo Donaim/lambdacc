@@ -15,6 +15,7 @@ $(PROJ).exe: $(PROJ).cc
 
 $(PROJ).cc: $(PROJ).ini $(PROJ)-header.cc $(PROJ)-declare.cc $(PROJ)-define.cc $(PROJ)-footer.cc
 	./lambda-cpp.py --source $(PROJ).ini --dest $(PROJ).cc \
+		--no-make-inline \
 		--headerfile $(PROJ)-header.cc \
 		--declare-file $(PROJ)-declare.cc \
 		--define-file $(PROJ)-define.cc \

@@ -11,7 +11,7 @@ all: $(PROJ).exe
 	@echo compiled
 
 clean:
-	- rm -f $(PROJ).cc $(PROJ).exe $(PROJ).inline.*
+	- rm -f $(PROJ).cc $(PROJ).exe $(PROJ).inline.ini
 
 $(PROJ).exe: $(PROJ).cc
 	g++ -o $@ $^ -O3
@@ -28,15 +28,3 @@ $(PROJ).cc: $(PROJ).ini $(headers) $(additional-deps)
 		--footerfile $(PROJ)-footer.cc \
 
 	@echo translated
-
-$(PROJ)-header.cc:
-	touch $@
-
-$(PROJ)-declare.cc:
-	touch $@
-
-$(PROJ)-define.cc:
-	touch $@
-
-$(PROJ)-footer.cc:
-	touch $@

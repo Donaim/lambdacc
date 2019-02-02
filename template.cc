@@ -21,32 +21,40 @@ public:
 
 #include <cstdio>
 
-der(error_fun) {
-	error_fun() : fun(nullptr) {}
+der(debug_id) {
+	debug_id() : fun(nullptr) {}
 	ovv {
-		printf("error: not supposed to be evaluated");
-		return nullptr;
-	}
-};
-static error_fun * error_fun_instance = new error_fun{};
-
-//IMPL
-
-struct IPrintable : fun {
-	virtual const char * text() const = 0;
-	ovv {
-		puts(this->text());
 		return x;
 	}
 };
+static debug_id debug_id_instance{};
+der(error_not_lambda) {
+	error_not_lambda() : fun(nullptr) {}
+	ovv {
+		throw puts("error: literal is not supposed to be evaluated");
+	}
+};
+static error_not_lambda error_not_lambda_instance{};
 
-struct Text_True : IPrintable {
-	const char * text() const override {
-		return "TRUE";
+struct Bind_print_true : fun {
+	Bind_print_true() : fun(nullptr) {}
+	ovv {
+		puts("TRUE");
+		return &error_not_lambda_instance;
 	}
 };
-struct Text_False : IPrintable {
-	const char * text() const override {
-		return "TRUE";
+struct Bind_print_false : fun {
+	Bind_print_false() : fun(nullptr) {}
+	ovv {
+		puts("FALSE");
+		return &error_not_lambda_instance;
 	}
 };
+
+struct Bind_num : fun {
+	Bind_num() : fun(nullptr) {}
+	ovv {
+		
+	}
+};
+

@@ -27,5 +27,9 @@ snd = \p -> p false
 # 8)
 zero = pair true id
 
+assert = \b -> if b $print_true $print_false
+
 id not true
 true
+
+assert false

@@ -12,11 +12,11 @@ def get_leaf_name(le: Leaf) -> str:
     if type(le) is Bind:
         return 'Bind_' + str(le.name)
     raise Exception('Unknown type {}'.format(type(le)))
-def get_member_name(leaf_name: str) -> str:
-    return leaf_name + '_m'
-def get_ovv_member_name(mem: Leaf):
+def get_member_name(leaf_name: str, index: int) -> str:
+    return 'm' + str(index) + '_' + leaf_name
+def get_ovv_member_name(mem: Leaf, index: int):
     name = get_leaf_name(mem)
-    name = get_member_name(name)
+    name = get_member_name(name, index=index)
     t = type(mem)
     if t is Bind or t is Lambda:
         return '(&{})'.format(name)
@@ -38,10 +38,13 @@ def get_argument_by_parents(me: Lambda, arg: Argument):
 
 def get_return_part(le: Leaf, base_lambda: Lambda) -> str:
     exec_line = ''
+    member_count = 0
     for l in le.leafs:
         t = type(l)
         if t is Bind or t is Lambda:
-            name = get_ovv_member_name(l)
+            name = get_ovv_member_name(l, member_count)
+            member_count += 1
+
             if exec_line:
                 exec_line += '->eval({})'.format(name)
             else:
@@ -72,16 +75,26 @@ def write_named_lambda(file, le: Leaf, lambda_name: str):
             write_lambda(file=file, le=l)
 
     file.write('der({}) {{\n'.format(lambda_name))
+
+    is_bind = le.parent is None
+    constructor = '\t{}({}) : fun({})'.format(lambda_name, '' if is_bind else 'ff p', 'nullptr' if is_bind else 'p')
     
-    constructor = '\t{}({}) : fun({})'.format(lambda_name, 'ff p', 'p')
-    
+    member_count = 0
     for l in le.leafs:
-        if type(l) is Lambda or type(l) is Bind:
+        if type(l) is Lambda:
             name = get_leaf_name(l)
-            name_m = get_member_name(name)
+            name_m = get_member_name(name, index=member_count)
+            member_count += 1
+            
             file.write('\t{} {};\n'.format(name, name_m))
             constructor += ', {}(this)'.format(name_m)
-    
+        if type(l) is Bind:
+            name = get_leaf_name(l)
+            name_m = get_member_name(name, index=member_count)
+            member_count += 1
+
+            file.write('\t{} {};\n'.format(name, name_m))
+
     constructor += ' {}\n\n'
     file.write(constructor)
 
@@ -125,11 +138,11 @@ def write_some(filepath: str, binds: list):
         write_named_lambda(file=file, le=e.target, lambda_name=e.name)
     
     file.write('int main() {\n')
-    file.write('\tprintf("start\\n");\n')
+    file.write('\tputs("start");\n')
     for e in exec_expr:
-        file.write('\t' + e.name + '{nullptr}.eval(debug_id_instance); \n')
-    file.write('\tprintf("end\\n");\n')
-    file.write('\treturn 0; \n }')
+        file.write('\t' + e.name + '{}.eval(&debug_id_instance)->eval(&error_not_lambda_instance); \n')
+    file.write('\tputs("end");\n')
+    file.write('\treturn 0; \n}')
 
     file.close()
     print('write some ended')

@@ -120,10 +120,12 @@ class Bind(Leaf):
         super(Bind, self).__init__([], parent=None)
         self.name = name
         self.target = target
+        self.predefined = False
     def __repr__(self):
         return self.print(0)
     def print(self, indent):
         return ('\t' * indent) + '{' + self.name + '}'
+
 
 def trimSpaces(s: str) -> str:
     re = ''
@@ -166,6 +168,11 @@ def parse_tokens(expr: str) -> Branch:
     expr = transformMultipleLambdas(expr)
     return Branch.from_text(expr)
 def parse_token(token: Branch, scope: list, binds: list) -> Leaf:
+    if token.text.startswith('$'):
+        name = token.text[1:]
+        re = Bind(name, None)
+        re.predefined = True
+        return re
     for arg in scope:
         if arg.name == token.text:
             return arg

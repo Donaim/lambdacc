@@ -21,50 +21,45 @@ public:
 
 #include <cstdio>
 
-static bool debug_id_muted = false;
-static int debug_id_counter = 0;
 der(debug_id) {
 	debug_id() : fun(nullptr) {}
 	ovv {
-		++debug_id_counter;
-		if (debug_id_muted);
-		else {
-			printf("[debug id called %d times]\n", debug_id_counter);
-		}
-		return (this->x);
+		return x;
 	}
 };
-static debug_id * debug_id_instance = new debug_id{};
-
-der(error_fun) {
-	error_fun() : fun(nullptr) {}
+static debug_id debug_id_instance{};
+der(error_not_lambda) {
+	error_not_lambda() : fun(nullptr) {}
 	ovv {
-		printf("error: not supposed to be evaluated");
-		return nullptr;
+		throw puts("error: literal is not supposed to be evaluated");
 	}
 };
-static error_fun * error_fun_instance = new error_fun{};
+static error_not_lambda error_not_lambda_instance{};
 
-der(print_true_id) {
-	print_true_id() : fun(nullptr) {}
+struct Bind_print_true : fun {
+	Bind_print_true() : fun(nullptr) {}
 	ovv {
-		printf("TRUE\n");
-		return error_fun_instance;
+		puts("TRUE");
+		return &error_not_lambda_instance;
 	}
 };
-static print_true_id * print_true_id_instance = new print_true_id{};
-der(print_false_id) {
-	print_false_id() : fun(nullptr) {}
+struct Bind_print_false : fun {
+	Bind_print_false() : fun(nullptr) {}
 	ovv {
-		printf("FALSE\n");
-		return error_fun_instance;
+		puts("FALSE");
+		return &error_not_lambda_instance;
 	}
 };
-static print_false_id * print_false_id_instance = new print_false_id{};
 
-/* END OF TEMPLATE */
+struct Bind_num : fun {
+	Bind_num() : fun(nullptr) {}
+	ovv {
+		
+	}
+};
+
 der(Bind_id) {
-	Bind_id(ff p) : fun(p) {}
+	Bind_id() : fun(nullptr) {}
 
 	ovv {
 		return (this->x);
@@ -78,11 +73,11 @@ der(Lambda_6) {
 	}
 };
 der(Bind_true) {
-	Lambda_6 Lambda_6_m;
-	Bind_true(ff p) : fun(p), Lambda_6_m(this) {}
+	Lambda_6 m0_Lambda_6;
+	Bind_true() : fun(nullptr), m0_Lambda_6(this) {}
 
 	ovv {
-		return ((&Lambda_6_m));
+		return ((&m0_Lambda_6));
 	}
 };
 der(Lambda_11) {
@@ -93,20 +88,20 @@ der(Lambda_11) {
 	}
 };
 der(Bind_false) {
-	Lambda_11 Lambda_11_m;
-	Bind_false(ff p) : fun(p), Lambda_11_m(this) {}
+	Lambda_11 m0_Lambda_11;
+	Bind_false() : fun(nullptr), m0_Lambda_11(this) {}
 
 	ovv {
-		return ((&Lambda_11_m));
+		return ((&m0_Lambda_11));
 	}
 };
 der(Bind_not) {
-	Bind_false Bind_false_m;
-	Bind_true Bind_true_m;
-	Bind_not(ff p) : fun(p), Bind_false_m(this), Bind_true_m(this) {}
+	Bind_false m0_Bind_false;
+	Bind_true m1_Bind_true;
+	Bind_not() : fun(nullptr) {}
 
 	ovv {
-		return (this->x->eval((&Bind_false_m))->eval((&Bind_true_m)));
+		return (this->x->eval((&m0_Bind_false))->eval((&m1_Bind_true)));
 	}
 };
 der(Lambda_21) {
@@ -117,19 +112,19 @@ der(Lambda_21) {
 	}
 };
 der(Lambda_19) {
-	Lambda_21 Lambda_21_m;
-	Lambda_19(ff p) : fun(p), Lambda_21_m(this) {}
+	Lambda_21 m0_Lambda_21;
+	Lambda_19(ff p) : fun(p), m0_Lambda_21(this) {}
 
 	ovv {
-		return ((&Lambda_21_m));
+		return ((&m0_Lambda_21));
 	}
 };
 der(Bind_if) {
-	Lambda_19 Lambda_19_m;
-	Bind_if(ff p) : fun(p), Lambda_19_m(this) {}
+	Lambda_19 m0_Lambda_19;
+	Bind_if() : fun(nullptr), m0_Lambda_19(this) {}
 
 	ovv {
-		return ((&Lambda_19_m));
+		return ((&m0_Lambda_19));
 	}
 };
 der(Lambda_28) {
@@ -140,19 +135,19 @@ der(Lambda_28) {
 	}
 };
 der(Lambda_26) {
-	Lambda_28 Lambda_28_m;
-	Lambda_26(ff p) : fun(p), Lambda_28_m(this) {}
+	Lambda_28 m0_Lambda_28;
+	Lambda_26(ff p) : fun(p), m0_Lambda_28(this) {}
 
 	ovv {
-		return ((&Lambda_28_m)->eval(this->parent->x));
+		return ((&m0_Lambda_28)->eval(this->parent->x));
 	}
 };
 der(Bind_kek) {
-	Lambda_26 Lambda_26_m;
-	Bind_kek(ff p) : fun(p), Lambda_26_m(this) {}
+	Lambda_26 m0_Lambda_26;
+	Bind_kek() : fun(nullptr), m0_Lambda_26(this) {}
 
 	ovv {
-		return ((&Lambda_26_m));
+		return ((&m0_Lambda_26));
 	}
 };
 der(Lambda_35) {
@@ -163,76 +158,89 @@ der(Lambda_35) {
 	}
 };
 der(Lambda_33) {
-	Lambda_35 Lambda_35_m;
-	Lambda_33(ff p) : fun(p), Lambda_35_m(this) {}
+	Lambda_35 m0_Lambda_35;
+	Lambda_33(ff p) : fun(p), m0_Lambda_35(this) {}
 
 	ovv {
-		return ((&Lambda_35_m));
+		return ((&m0_Lambda_35));
 	}
 };
 der(Bind_pair) {
-	Lambda_33 Lambda_33_m;
-	Bind_pair(ff p) : fun(p), Lambda_33_m(this) {}
+	Lambda_33 m0_Lambda_33;
+	Bind_pair() : fun(nullptr), m0_Lambda_33(this) {}
 
 	ovv {
-		return ((&Lambda_33_m));
+		return ((&m0_Lambda_33));
 	}
 };
 der(Bind_fst) {
-	Bind_true Bind_true_m;
-	Bind_fst(ff p) : fun(p), Bind_true_m(this) {}
+	Bind_true m0_Bind_true;
+	Bind_fst() : fun(nullptr) {}
 
 	ovv {
-		return (this->x->eval((&Bind_true_m)));
+		return (this->x->eval((&m0_Bind_true)));
 	}
 };
 der(Bind_snd) {
-	Bind_false Bind_false_m;
-	Bind_snd(ff p) : fun(p), Bind_false_m(this) {}
+	Bind_false m0_Bind_false;
+	Bind_snd() : fun(nullptr) {}
 
 	ovv {
-		return (this->x->eval((&Bind_false_m)));
+		return (this->x->eval((&m0_Bind_false)));
 	}
 };
 der(Bind_zero) {
-	Bind_pair Bind_pair_m;
-	Bind_true Bind_true_m;
-	Bind_id Bind_id_m;
-	Bind_zero(ff p) : fun(p), Bind_pair_m(this), Bind_true_m(this), Bind_id_m(this) {}
+	Bind_pair m0_Bind_pair;
+	Bind_true m1_Bind_true;
+	Bind_id m2_Bind_id;
+	Bind_zero() : fun(nullptr) {}
 
 	ovv {
-		return ((&Bind_pair_m)->eval((&Bind_true_m))->eval((&Bind_id_m)));
+		return ((&m0_Bind_pair)->eval((&m1_Bind_true))->eval((&m2_Bind_id)));
+	}
+};
+der(Bind_assert) {
+	Bind_if m0_Bind_if;
+	Bind_print_true m1_Bind_print_true;
+	Bind_print_false m2_Bind_print_false;
+	Bind_assert() : fun(nullptr) {}
+
+	ovv {
+		return ((&m0_Bind_if)->eval(this->x)->eval((&m1_Bind_print_true))->eval((&m2_Bind_print_false)));
 	}
 };
 der(EXPR_0) {
-	Bind_id Bind_id_m;
-	Bind_not Bind_not_m;
-	Bind_true Bind_true_m;
-	EXPR_0(ff p) : fun(p), Bind_id_m(this), Bind_not_m(this), Bind_true_m(this) {}
+	Bind_id m0_Bind_id;
+	Bind_not m1_Bind_not;
+	Bind_true m2_Bind_true;
+	EXPR_0() : fun(nullptr) {}
 
 	ovv {
-		return ((&Bind_id_m)->eval((&Bind_not_m))->eval((&Bind_true_m)));
+		return ((&m0_Bind_id)->eval((&m1_Bind_not))->eval((&m2_Bind_true)));
 	}
 };
 der(EXPR_1) {
-	Bind_true Bind_true_m;
-	EXPR_1(ff p) : fun(p), Bind_true_m(this) {}
+	Bind_true m0_Bind_true;
+	EXPR_1() : fun(nullptr) {}
 
 	ovv {
-		return ((&Bind_true_m));
+		return ((&m0_Bind_true));
 	}
 };
-void assert(fun * b) {
-	Bind_if iff{nullptr};
-	iff.eval(b)->eval(print_true_id_instance)->eval(print_false_id_instance)->eval(error_fun_instance);
-}
+der(EXPR_2) {
+	Bind_assert m0_Bind_assert;
+	Bind_false m1_Bind_false;
+	EXPR_2() : fun(nullptr) {}
+
+	ovv {
+		return ((&m0_Bind_assert)->eval((&m1_Bind_false)));
+	}
+};
 int main() {
-	printf("start\n");
-
-	auto fff = new Bind_true {nullptr};
-	auto nnn = new Bind_not{nullptr};
-	assert( nnn->eval(nnn->eval(fff)) );
-
-	printf("end\n");
+	puts("start");
+	EXPR_0{}.eval(&debug_id_instance)->eval(&error_not_lambda_instance); 
+	EXPR_1{}.eval(&debug_id_instance)->eval(&error_not_lambda_instance); 
+	EXPR_2{}.eval(&debug_id_instance)->eval(&error_not_lambda_instance); 
+	puts("end");
 	return 0; 
 }

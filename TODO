@@ -1,7 +1,7 @@
 [x] lazy evaluation
 [x] fix unique lambda members (each member should have its own argument x)
 [x] fix Y combinator case
-[ ] inline bindings: do not introduce overhead from bindings (think of implications to call-trace)
+[x] inline bindings: do not introduce overhead from bindings (think of implications to call-trace)
 [ ] cache evalutations [hard]
 [ ] representation: find a good way to print numbers, strings
 [x] make more names legal

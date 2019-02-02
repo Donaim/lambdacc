@@ -147,7 +147,7 @@ def make_inline(args, parsed: list) -> None:
 		if p.bind:
 			if p.bind.name:
 				w.write(p.bind.name + ' = ')
-			w.write(inliner.get_leaf_text(le=p.bind.target, main=p.bind))
+			w.write(inliner.get_leaf_text(le=p.bind.target, recids=[p.bind.unique_id]))
 		else:
 			w.write(p.all)
 		w.write('\n')

@@ -116,8 +116,8 @@ class Argument(Leaf):
         return ('\t' * indent) + '[' + self.name + ']'
 
 class Bind(Leaf):
-    def __init__(self, name: str, target: Leaf, parent: Leaf):
-        super(Bind, self).__init__([], parent=parent)
+    def __init__(self, name: str, target: Leaf):
+        super(Bind, self).__init__([], parent=None)
         self.name = name
         self.target = target
     def __repr__(self):

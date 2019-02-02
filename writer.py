@@ -66,16 +66,14 @@ def get_ovv(le: Leaf) -> list:
     exec_line = 'return ' + exec_line + ';'
     yield exec_line
 
-def write_lambda(file, le: Leaf):
+def write_named_lambda(file, le: Leaf, lambda_name: str):
     for l in le.leafs:
         if type(l) is Lambda:
             write_lambda(file=file, le=l)
 
-    name = get_leaf_name(le)
-    file.write('der({}) {{\n'.format(name))
+    file.write('der({}) {{\n'.format(lambda_name))
     
-    have_parent = not le.parent is None
-    constructor = '\t{}({}) : fun({})'.format(name, 'ff p' if have_parent else '', 'p' if have_parent else 'nullptr')
+    constructor = '\t{}({}) : fun({})'.format(lambda_name, 'ff p', 'p')
     
     for l in le.leafs:
         if type(l) is Lambda or type(l) is Bind:
@@ -92,6 +90,9 @@ def write_lambda(file, le: Leaf):
         file.write('\n\t\t' + line)
     file.write('\n\t}\n')
     file.write('};\n')
+def write_lambda(file, le: Leaf):
+    name = get_leaf_name(le)
+    return write_named_lambda(file=file, le=le, lambda_name=name)
 
 def write_bind(file, le: Leaf):
     name = get_leaf_name(le)
@@ -99,21 +100,37 @@ def write_bind(file, le: Leaf):
 def write(file, le: Leaf):
     if type(le) is Lambda:
         return write_lambda(file, le)
-    if type(le) is Bind:
-        return write_bind(file, le)
-    # else not writing
+    elif type(le) is Bind:
+        name = get_leaf_name(le)
+        return write_named_lambda(file=file, le=le.target, lambda_name=name)
+    else:
+        raise Exception('Dont know how to start writing from {} type'.format(type(le)))
+def write_some(filepath: str, binds: list):
+    file = open(filepath, 'w')
+    with open('template.cc', 'r') as r:
+        template = r.read()
+        file.write(template)
+    for b in binds:
+        write(file=file, le=b)
 
-# expr = r'\b -> b x y'
-# expr = r'\a b -> x a'
-expr = r'\a b c -> x (a b) c'
-# expr = r'\a b -> b'
+    file.close()
+    print('write some ended')
 
-p = parse_tokens(expr)
-p = parse_structure(p, [], [Bind('x', Leaf([], None), None)], None)
-# t = p.print(0)
-# print(t)
+def main():
+    # expr = r'\b -> b x y'
+    # expr = r'\a b -> x a'
+    expr = r'\a b c -> x (a b) c'
+    # expr = r'\a b -> b'
 
-file = open('test.cc', 'w')
-write(file, p)
-file.close()
+    p = parse_tokens(expr)
+    p = parse_structure(p, [], [Bind('x', Leaf([], None))], None)
+    # t = p.print(0)
+    # print(t)
 
+    file = open('test.cc', 'w')
+    write(file, p)
+    file.close()
+    print('end writing')
+
+if __name__ == '__main__':
+    main()

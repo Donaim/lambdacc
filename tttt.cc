@@ -73,11 +73,11 @@ der(Lambda_6) {
 	}
 };
 der(Bind_true) {
-	Lambda_6 m0_Lambda_6;
-	Bind_true() : fun(nullptr), m0_Lambda_6(this) {}
+	Lambda_6 m_Lambda_6;
+	Bind_true() : fun(nullptr), m_Lambda_6(this) {}
 
 	ovv {
-		return ((&m0_Lambda_6));
+		return ((&m_Lambda_6));
 	}
 };
 der(Lambda_11) {
@@ -88,20 +88,20 @@ der(Lambda_11) {
 	}
 };
 der(Bind_false) {
-	Lambda_11 m0_Lambda_11;
-	Bind_false() : fun(nullptr), m0_Lambda_11(this) {}
+	Lambda_11 m_Lambda_11;
+	Bind_false() : fun(nullptr), m_Lambda_11(this) {}
 
 	ovv {
-		return ((&m0_Lambda_11));
+		return ((&m_Lambda_11));
 	}
 };
 der(Bind_not) {
-	Bind_false m0_Bind_false;
-	Bind_true m1_Bind_true;
+	Bind_false m_Bind_false;
+	Bind_true m_Bind_true;
 	Bind_not() : fun(nullptr) {}
 
 	ovv {
-		return (this->x->eval((&m0_Bind_false))->eval((&m1_Bind_true)));
+		return (this->x->eval((&m_Bind_false))->eval((&m_Bind_true)));
 	}
 };
 der(Lambda_21) {
@@ -112,19 +112,19 @@ der(Lambda_21) {
 	}
 };
 der(Lambda_19) {
-	Lambda_21 m0_Lambda_21;
-	Lambda_19(ff p) : fun(p), m0_Lambda_21(this) {}
+	Lambda_21 m_Lambda_21;
+	Lambda_19(ff p) : fun(p), m_Lambda_21(this) {}
 
 	ovv {
-		return ((&m0_Lambda_21));
+		return ((&m_Lambda_21));
 	}
 };
 der(Bind_if) {
-	Lambda_19 m0_Lambda_19;
-	Bind_if() : fun(nullptr), m0_Lambda_19(this) {}
+	Lambda_19 m_Lambda_19;
+	Bind_if() : fun(nullptr), m_Lambda_19(this) {}
 
 	ovv {
-		return ((&m0_Lambda_19));
+		return ((&m_Lambda_19));
 	}
 };
 der(Lambda_28) {
@@ -135,19 +135,19 @@ der(Lambda_28) {
 	}
 };
 der(Lambda_26) {
-	Lambda_28 m0_Lambda_28;
-	Lambda_26(ff p) : fun(p), m0_Lambda_28(this) {}
+	Lambda_28 m_Lambda_28;
+	Lambda_26(ff p) : fun(p), m_Lambda_28(this) {}
 
 	ovv {
-		return ((&m0_Lambda_28)->eval(this->parent->x));
+		return ((&m_Lambda_28)->eval(this->parent->x));
 	}
 };
 der(Bind_kek) {
-	Lambda_26 m0_Lambda_26;
-	Bind_kek() : fun(nullptr), m0_Lambda_26(this) {}
+	Lambda_26 m_Lambda_26;
+	Bind_kek() : fun(nullptr), m_Lambda_26(this) {}
 
 	ovv {
-		return ((&m0_Lambda_26));
+		return ((&m_Lambda_26));
 	}
 };
 der(Lambda_35) {
@@ -158,89 +158,81 @@ der(Lambda_35) {
 	}
 };
 der(Lambda_33) {
-	Lambda_35 m0_Lambda_35;
-	Lambda_33(ff p) : fun(p), m0_Lambda_35(this) {}
+	Lambda_35 m_Lambda_35;
+	Lambda_33(ff p) : fun(p), m_Lambda_35(this) {}
 
 	ovv {
-		return ((&m0_Lambda_35));
+		return ((&m_Lambda_35));
 	}
 };
 der(Bind_pair) {
-	Lambda_33 m0_Lambda_33;
-	Bind_pair() : fun(nullptr), m0_Lambda_33(this) {}
+	Lambda_33 m_Lambda_33;
+	Bind_pair() : fun(nullptr), m_Lambda_33(this) {}
 
 	ovv {
-		return ((&m0_Lambda_33));
+		return ((&m_Lambda_33));
 	}
 };
 der(Bind_fst) {
-	Bind_true m0_Bind_true;
+	Bind_true m_Bind_true;
 	Bind_fst() : fun(nullptr) {}
 
 	ovv {
-		return (this->x->eval((&m0_Bind_true)));
+		return (this->x->eval((&m_Bind_true)));
 	}
 };
 der(Bind_snd) {
-	Bind_false m0_Bind_false;
+	Bind_false m_Bind_false;
 	Bind_snd() : fun(nullptr) {}
 
 	ovv {
-		return (this->x->eval((&m0_Bind_false)));
+		return (this->x->eval((&m_Bind_false)));
 	}
 };
 der(Bind_zero) {
-	Bind_pair m0_Bind_pair;
-	Bind_true m1_Bind_true;
-	Bind_id m2_Bind_id;
+	Bind_pair m_Bind_pair;
+	Bind_true m_Bind_true;
+	Bind_id m_Bind_id;
 	Bind_zero() : fun(nullptr) {}
 
 	ovv {
-		return ((&m0_Bind_pair)->eval((&m1_Bind_true))->eval((&m2_Bind_id)));
+		return ((&m_Bind_pair)->eval((&m_Bind_true))->eval((&m_Bind_id)));
+	}
+};
+der(Bind_is0) {
+	Bind_if m_Bind_if;
+	Bind_fst m_Bind_fst;
+	Bind_true m_Bind_true;
+	Bind_false m_Bind_false;
+	Bind_is0() : fun(nullptr) {}
+
+	ovv {
+		return ((&m_Bind_if)->eval(((&m_Bind_fst)->eval(this->x)))->eval((&m_Bind_true))->eval((&m_Bind_false)));
 	}
 };
 der(Bind_assert) {
-	Bind_if m0_Bind_if;
-	Bind_print_true m1_Bind_print_true;
-	Bind_print_false m2_Bind_print_false;
+	Bind_if m_Bind_if;
+	Bind_print_true m_Bind_print_true;
+	Bind_print_false m_Bind_print_false;
 	Bind_assert() : fun(nullptr) {}
 
 	ovv {
-		return ((&m0_Bind_if)->eval(this->x)->eval((&m1_Bind_print_true))->eval((&m2_Bind_print_false)));
+		return ((&m_Bind_if)->eval(this->x)->eval((&m_Bind_print_true))->eval((&m_Bind_print_false)));
 	}
 };
 der(EXPR_0) {
-	Bind_id m0_Bind_id;
-	Bind_not m1_Bind_not;
-	Bind_true m2_Bind_true;
+	Bind_assert m_Bind_assert;
+	Bind_is0 m_Bind_is0;
+	Bind_zero m_Bind_zero;
 	EXPR_0() : fun(nullptr) {}
 
 	ovv {
-		return ((&m0_Bind_id)->eval((&m1_Bind_not))->eval((&m2_Bind_true)));
-	}
-};
-der(EXPR_1) {
-	Bind_true m0_Bind_true;
-	EXPR_1() : fun(nullptr) {}
-
-	ovv {
-		return ((&m0_Bind_true));
-	}
-};
-der(EXPR_2) {
-	Bind_assert m0_Bind_assert;
-	Bind_false m1_Bind_false;
-	EXPR_2() : fun(nullptr) {}
-
-	ovv {
-		return ((&m0_Bind_assert)->eval((&m1_Bind_false)));
+		return ((&m_Bind_assert)->eval(((&m_Bind_is0)->eval((&m_Bind_zero)))));
 	}
 };
 int main() {
 	puts("start");
-	EXPR_0{}.eval(&debug_id_instance)->eval(&error_not_lambda_instance); 
-	EXPR_1{}.eval(&debug_id_instance)->eval(&error_not_lambda_instance); 
-	EXPR_2{}.eval(&debug_id_instance)->eval(&error_not_lambda_instance); 
+	EXPR_0{}.eval(&debug_id_instance)->eval(&error_not_lambda_instance)->eval(&error_not_lambda_instance); 
 	puts("end");
 	return 0; 
 }

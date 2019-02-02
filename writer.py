@@ -12,11 +12,11 @@ def get_leaf_name(le: Leaf) -> str:
     if type(le) is Bind:
         return 'Bind_' + str(le.name)
     raise Exception('Unknown type {}'.format(type(le)))
-def get_member_name(leaf_name: str, index: int) -> str:
-    return 'm' + str(index) + '_' + leaf_name
-def get_ovv_member_name(mem: Leaf, index: int):
+def get_member_name(leaf_name: str) -> str:
+    return 'm_' + leaf_name
+def get_ovv_member_name(mem: Leaf):
     name = get_leaf_name(mem)
-    name = get_member_name(name, index=index)
+    name = get_member_name(name)
     t = type(mem)
     if t is Bind or t is Lambda:
         return '(&{})'.format(name)
@@ -38,13 +38,10 @@ def get_argument_by_parents(me: Lambda, arg: Argument):
 
 def get_return_part(le: Leaf, base_lambda: Lambda) -> str:
     exec_line = ''
-    member_count = 0
     for l in le.leafs:
         t = type(l)
         if t is Bind or t is Lambda:
-            name = get_ovv_member_name(l, member_count)
-            member_count += 1
-
+            name = get_ovv_member_name(l)
             if exec_line:
                 exec_line += '->eval({})'.format(name)
             else:
@@ -69,7 +66,23 @@ def get_ovv(le: Leaf) -> list:
     exec_line = 'return ' + exec_line + ';'
     yield exec_line
 
-def write_named_lambda(file, le: Leaf, lambda_name: str):
+def get_lambda_members(le: Lambda) -> iter:
+    for l in le.leafs:
+        t = type(l)
+        if t is Lambda:
+            yield l
+        if t is Bind:
+            yield l
+        if t is Leaf:
+            for le2 in get_lambda_members(le=l):
+                yield le2
+def get_unique_lambda_members(le: Lambda) -> list:
+    re = []
+    for m in get_lambda_members(le=le):
+        if not m in re:
+            re.append(m)
+    return re
+def write_named_lambda(file, le: Lambda, lambda_name: str):
     for l in le.leafs:
         if type(l) is Lambda:
             write_lambda(file=file, le=l)
@@ -78,22 +91,22 @@ def write_named_lambda(file, le: Leaf, lambda_name: str):
 
     is_bind = le.parent is None
     constructor = '\t{}({}) : fun({})'.format(lambda_name, '' if is_bind else 'ff p', 'nullptr' if is_bind else 'p')
-    
-    member_count = 0
-    for l in le.leafs:
+
+    members = get_unique_lambda_members(le=le)
+    for l in members:
         if type(l) is Lambda:
             name = get_leaf_name(l)
-            name_m = get_member_name(name, index=member_count)
-            member_count += 1
+            name_m = get_member_name(name)
             
             file.write('\t{} {};\n'.format(name, name_m))
             constructor += ', {}(this)'.format(name_m)
-        if type(l) is Bind:
+        elif type(l) is Bind:
             name = get_leaf_name(l)
-            name_m = get_member_name(name, index=member_count)
-            member_count += 1
+            name_m = get_member_name(name)
 
             file.write('\t{} {};\n'.format(name, name_m))
+        else:
+            raise Exception('Unexpected member type {}'.format(type(l)))
 
     constructor += ' {}\n\n'
     file.write(constructor)

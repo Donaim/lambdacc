@@ -3,8 +3,8 @@ You can write code in lambda-calculus and let the script generate (efficient) C+
 
 # Usage
 
-	$ ./lambda-cpp.py --source example.ini --dest out.cc
-	$ g++ out.cc && ./a.out
+	Write lambda script to example.ini
+	`$ make run`
 
 # Features
 

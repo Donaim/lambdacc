@@ -6,108 +6,143 @@
 class fun;
 typedef fun * ff;
 
+typedef ff (*exec_t)(ff, ff);
+
 class fun {
 private:
-	bool first_call = false;
 protected:
 	fun() {}
 public:
+	bool first_call = true;
 	const fun * parent = nullptr;
 	ff x;
 	ff eval(ff x) {
-		if (first_call) {
-			// initme();
-		}
 		this->x = x;
-		return eval_now(x);
+		return eval_now(this, x);
 	}
-	// virtual void initme() = 0;
-	virtual ff eval_now(ff x) = 0;
+	exec_t eval_now;
 };
 
 #include <cstdio>
 
-der(debug_id) {
-	debug_id() {}
-	ovv {
-		return x;
-	}
-};
-static debug_id debug_id_instance{};
-static debug_id * debug_id_instance_ptr = &debug_id_instance;
+// der(debug_id) {
+// 	debug_id() {}
+// 	ovv {
+// 		return x;
+// 	}
+// };
+// static debug_id debug_id_instance{};
+// static debug_id * debug_id_instance_ptr = &debug_id_instance;
 
-der(error_not_lambda) {
-	error_not_lambda() {}
-	ovv {
-		throw puts("error: this lambda is not supposed to be evaluated");
-	}
-};
-static error_not_lambda error_not_lambda_instance{};
-static error_not_lambda * error_not_lambda_ptr = &error_not_lambda_instance;
+// der(error_not_lambda) {
+// 	error_not_lambda() {}
+// 	ovv {
+// 		throw puts("error: this lambda is not supposed to be evaluated");
+// 	}
+// };
+// static error_not_lambda error_not_lambda_instance{};
+// static error_not_lambda * error_not_lambda_ptr = &error_not_lambda_instance;
 
-struct Bind_print_true : fun {
-	Bind_print_true() {}
-	ovv {
-		puts("TRUE");
-		return &error_not_lambda_instance;
-	}
-};
-struct Bind_print_false : fun {
-	Bind_print_false() {}
-	ovv {
-		puts("FALSE");
-		return &error_not_lambda_instance;
-	}
-};
+// struct Bind_print_true : fun {
+// 	Bind_print_true() {}
+// 	ovv {
+// 		puts("TRUE");
+// 		return &error_not_lambda_instance;
+// 	}
+// };
+// struct Bind_print_false : fun {
+// 	Bind_print_false() {}
+// 	ovv {
+// 		puts("FALSE");
+// 		return &error_not_lambda_instance;
+// 	}
+// };
 
-struct Bind_num : fun {
-	Bind_num() {}
-	ovv {
+// struct Bind_num : fun {
+// 	Bind_num() {}
+// 	ovv {
 		
-	}
-};
+// 	}
+// };
+
+
+
+struct Bind_id;
+struct Lambda_7;
+struct Bind_true;
+struct Lambda_12;
+struct Bind_false;
+struct Bind_not;
+struct Lambda_22;
+struct Lambda_20;
+struct Bind_if;
+struct Lambda_29;
+struct Lambda_27;
+struct Bind_kek;
+struct Lambda_36;
+struct Lambda_34;
+struct Bind_pair;
+struct Bind_fst;
+struct Bind_snd;
+struct Bind_zero;
+struct Bind_is0;
+struct Bind_suc;
+struct Bind_pred;
+struct Lambda_59;
+struct Bind_get0;
+
+
+ff Exec_Bind_id                   (ff me_abs, ff x);
+ff Exec_Lambda_7                  (ff me_abs, ff x);
+ff Exec_Bind_true                 (ff me_abs, ff x);
+ff Exec_Lambda_12                 (ff me_abs, ff x);
+ff Exec_Bind_false                (ff me_abs, ff x);
+ff Exec_Bind_not                  (ff me_abs, ff x);
+ff Exec_Lambda_22                 (ff me_abs, ff x);
+ff Exec_Lambda_20                 (ff me_abs, ff x);
+ff Exec_Bind_if                   (ff me_abs, ff x);
+ff Exec_Lambda_29                 (ff me_abs, ff x);
+ff Exec_Lambda_27                 (ff me_abs, ff x);
+ff Exec_Bind_kek                  (ff me_abs, ff x);
+ff Exec_Lambda_36                 (ff me_abs, ff x);
+ff Exec_Lambda_34                 (ff me_abs, ff x);
+ff Exec_Bind_pair                 (ff me_abs, ff x);
+ff Exec_Bind_fst                  (ff me_abs, ff x);
+ff Exec_Bind_snd                  (ff me_abs, ff x);
+ff Exec_Bind_zero                 (ff me_abs, ff x);
+ff Exec_Bind_is0                  (ff me_abs, ff x);
+ff Exec_Bind_suc                  (ff me_abs, ff x);
+ff Exec_Bind_pred                 (ff me_abs, ff x);
+ff Exec_Lambda_59                 (ff me_abs, ff x);
+ff Exec_Bind_get0                 (ff me_abs, ff x);
+
 
 der(Bind_id) {
 
 	Bind_id()  {}
 
-	ovv {
-		return (this->x);
-	}
 };
 der(Lambda_7) {
 
 	Lambda_7()  {}
 
-	ovv {
-		return (this->parent->x);
-	}
 };
 der(Bind_true) {
 
 	Bind_true()  {}
 
 	Lambda_7                       * m_Lambda_7;
-	ovv {
-		return ((m_Lambda_7));
-	}
 };
 der(Lambda_12) {
 
 	Lambda_12()  {}
 
-	ovv {
-		return (this->x);
-	}
 };
 der(Bind_false) {
 
 	Bind_false()  {}
 
 	Lambda_12                      * m_Lambda_12;
-	ovv {
-		return ((m_Lambda_12));
-	}
 };
 der(Bind_not) {
 
@@ -115,105 +150,69 @@ der(Bind_not) {
 
 	Bind_false                     * m_Bind_false;
 	Bind_true                      * m_Bind_true;
-	ovv {
-		return (this->x->eval((m_Bind_false))->eval((m_Bind_true)));
-	}
 };
 der(Lambda_22) {
 
 	Lambda_22()  {}
 
-	ovv {
-		return (this->parent->parent->x->eval(this->parent->x)->eval(this->x));
-	}
 };
 der(Lambda_20) {
 
 	Lambda_20()  {}
 
 	Lambda_22                      * m_Lambda_22;
-	ovv {
-		return ((m_Lambda_22));
-	}
 };
 der(Bind_if) {
 
 	Bind_if()  {}
 
 	Lambda_20                      * m_Lambda_20;
-	ovv {
-		return ((m_Lambda_20));
-	}
 };
 der(Lambda_29) {
 
 	Lambda_29()  {}
 
-	ovv {
-		return (this->parent->x);
-	}
 };
 der(Lambda_27) {
 
 	Lambda_27()  {}
 
 	Lambda_29                      * m_Lambda_29;
-	ovv {
-		return ((m_Lambda_29)->eval(this->parent->x));
-	}
 };
 der(Bind_kek) {
 
 	Bind_kek()  {}
 
 	Lambda_27                      * m_Lambda_27;
-	ovv {
-		return ((m_Lambda_27));
-	}
 };
 der(Lambda_36) {
 
 	Lambda_36()  {}
 
-	ovv {
-		return (this->x->eval(this->parent->parent->x)->eval(this->parent->x));
-	}
 };
 der(Lambda_34) {
 
 	Lambda_34()  {}
 
 	Lambda_36                      * m_Lambda_36;
-	ovv {
-		return ((m_Lambda_36));
-	}
 };
 der(Bind_pair) {
 
 	Bind_pair()  {}
 
 	Lambda_34                      * m_Lambda_34;
-	ovv {
-		return ((m_Lambda_34));
-	}
 };
 der(Bind_fst) {
 
 	Bind_fst()  {}
 
 	Bind_true                      * m_Bind_true;
-	ovv {
-		return (this->x->eval((m_Bind_true)));
-	}
 };
 der(Bind_snd) {
 
 	Bind_snd()  {}
 
 	Bind_false                     * m_Bind_false;
-	ovv {
-		return (this->x->eval((m_Bind_false)));
-	}
 };
 der(Bind_zero) {
 
@@ -222,9 +221,6 @@ der(Bind_zero) {
 	Bind_pair                      * m_Bind_pair;
 	Bind_true                      * m_Bind_true;
 	Bind_id                        * m_Bind_id;
-	ovv {
-		return ((m_Bind_pair)->eval((m_Bind_true))->eval((m_Bind_id)))->eval(x);
-	}
 };
 der(Bind_is0) {
 
@@ -234,9 +230,6 @@ der(Bind_is0) {
 	Bind_fst                       * m_Bind_fst;
 	Bind_true                      * m_Bind_true;
 	Bind_false                     * m_Bind_false;
-	ovv {
-		return ((m_Bind_if)->eval(((m_Bind_fst)->eval(this->x)))->eval((m_Bind_true))->eval((m_Bind_false)));
-	}
 };
 der(Bind_suc) {
 
@@ -244,83 +237,150 @@ der(Bind_suc) {
 
 	Bind_pair                      * m_Bind_pair;
 	Bind_false                     * m_Bind_false;
-	ovv {
-		return ((m_Bind_pair)->eval((m_Bind_false))->eval(this->x));
-	}
 };
 der(Bind_pred) {
 
 	Bind_pred()  {}
 
 	Bind_snd                       * m_Bind_snd;
-	ovv {
-		return ((m_Bind_snd)->eval(this->x));
-	}
 };
-der(Bind_get0) {
+der(Lambda_59) {
 
-	Bind_get0()  {}
+	Lambda_59()  {}
 
 	Bind_if                        * m_Bind_if;
 	Bind_fst                       * m_Bind_fst;
 	Bind_get0                      * m_Bind_get0;
 	Bind_pred                      * m_Bind_pred;
-	ovv {
-		return ((m_Bind_if)->eval(((m_Bind_fst)->eval(this->x)))->eval(this->x)->eval(((m_Bind_get0)->eval(((m_Bind_pred)->eval(this->x))))));
-	}
 };
-der(Bind_assert) {
+der(Bind_get0) {
 
-	Bind_assert()  {}
+	Bind_get0()  {}
 
-	Bind_if                        * m_Bind_if;
-	Bind_print_true                * m_Bind_print_true;
-	Bind_print_false               * m_Bind_print_false;
-	ovv {
-		return ((m_Bind_if)->eval(this->x)->eval((m_Bind_print_true))->eval((m_Bind_print_false)));
-	}
+	Lambda_59                      * m_Lambda_59;
 };
-der(EXPR_0) {
 
-	EXPR_0()  {}
 
-	Bind_assert                    * m_Bind_assert;
-	Bind_is0                       * m_Bind_is0;
-	Bind_zero                      * m_Bind_zero;
-	ovv {
-		return ((m_Bind_assert)->eval(((m_Bind_is0)->eval(((m_Bind_zero))))))->eval(x);
-	}
-};
-der(EXPR_1) {
+ff Exec_Bind_id                   (ff me_abs, ff x) {
+	struct Bind_id * me = (struct Bind_id *)me_abs;
+	return (me->x);
+}
 
-	EXPR_1()  {}
+ff Exec_Lambda_7                  (ff me_abs, ff x) {
+	struct Lambda_7 * me = (struct Lambda_7 *)me_abs;
+	return (me->parent->x);
+}
 
-	Bind_assert                    * m_Bind_assert;
-	Bind_is0                       * m_Bind_is0;
-	Bind_suc                       * m_Bind_suc;
-	Bind_zero                      * m_Bind_zero;
-	ovv {
-		return ((m_Bind_assert)->eval(((m_Bind_is0)->eval(((m_Bind_suc)->eval((m_Bind_zero)))))))->eval(x);
-	}
-};
-der(EXPR_2) {
+ff Exec_Bind_true                 (ff me_abs, ff x) {
+	struct Bind_true * me = (struct Bind_true *)me_abs;
+	return ((me->m_Lambda_7));
+}
 
-	EXPR_2()  {}
+ff Exec_Lambda_12                 (ff me_abs, ff x) {
+	struct Lambda_12 * me = (struct Lambda_12 *)me_abs;
+	return (me->x);
+}
 
-	Bind_assert                    * m_Bind_assert;
-	Bind_is0                       * m_Bind_is0;
-	Bind_pred                      * m_Bind_pred;
-	Bind_suc                       * m_Bind_suc;
-	Bind_zero                      * m_Bind_zero;
-	ovv {
-		return ((m_Bind_assert)->eval(((m_Bind_is0)->eval(((m_Bind_pred)->eval(((m_Bind_suc)->eval((m_Bind_zero)))))))))->eval(x);
-	}
-};
+ff Exec_Bind_false                (ff me_abs, ff x) {
+	struct Bind_false * me = (struct Bind_false *)me_abs;
+	return ((me->m_Lambda_12));
+}
+
+ff Exec_Bind_not                  (ff me_abs, ff x) {
+	struct Bind_not * me = (struct Bind_not *)me_abs;
+	return (me->x->eval((me->m_Bind_false))->eval((me->m_Bind_true)));
+}
+
+ff Exec_Lambda_22                 (ff me_abs, ff x) {
+	struct Lambda_22 * me = (struct Lambda_22 *)me_abs;
+	return (me->parent->parent->x->eval(me->parent->x)->eval(me->x));
+}
+
+ff Exec_Lambda_20                 (ff me_abs, ff x) {
+	struct Lambda_20 * me = (struct Lambda_20 *)me_abs;
+	return ((me->m_Lambda_22));
+}
+
+ff Exec_Bind_if                   (ff me_abs, ff x) {
+	struct Bind_if * me = (struct Bind_if *)me_abs;
+	return ((me->m_Lambda_20));
+}
+
+ff Exec_Lambda_29                 (ff me_abs, ff x) {
+	struct Lambda_29 * me = (struct Lambda_29 *)me_abs;
+	return (me->parent->x);
+}
+
+ff Exec_Lambda_27                 (ff me_abs, ff x) {
+	struct Lambda_27 * me = (struct Lambda_27 *)me_abs;
+	return ((me->m_Lambda_29)->eval(me->parent->x));
+}
+
+ff Exec_Bind_kek                  (ff me_abs, ff x) {
+	struct Bind_kek * me = (struct Bind_kek *)me_abs;
+	return ((me->m_Lambda_27));
+}
+
+ff Exec_Lambda_36                 (ff me_abs, ff x) {
+	struct Lambda_36 * me = (struct Lambda_36 *)me_abs;
+	return (me->x->eval(me->parent->parent->x)->eval(me->parent->x));
+}
+
+ff Exec_Lambda_34                 (ff me_abs, ff x) {
+	struct Lambda_34 * me = (struct Lambda_34 *)me_abs;
+	return ((me->m_Lambda_36));
+}
+
+ff Exec_Bind_pair                 (ff me_abs, ff x) {
+	struct Bind_pair * me = (struct Bind_pair *)me_abs;
+	return ((me->m_Lambda_34));
+}
+
+ff Exec_Bind_fst                  (ff me_abs, ff x) {
+	struct Bind_fst * me = (struct Bind_fst *)me_abs;
+	return (me->x->eval((me->m_Bind_true)));
+}
+
+ff Exec_Bind_snd                  (ff me_abs, ff x) {
+	struct Bind_snd * me = (struct Bind_snd *)me_abs;
+	return (me->x->eval((me->m_Bind_false)));
+}
+
+ff Exec_Bind_zero                 (ff me_abs, ff x) {
+	struct Bind_zero * me = (struct Bind_zero *)me_abs;
+	return ((me->m_Bind_pair)->eval((me->m_Bind_true))->eval((me->m_Bind_id)))->eval(x);
+}
+
+ff Exec_Bind_is0                  (ff me_abs, ff x) {
+	struct Bind_is0 * me = (struct Bind_is0 *)me_abs;
+	return ((me->m_Bind_if)->eval(((me->m_Bind_fst)->eval(me->x)))->eval((me->m_Bind_true))->eval((me->m_Bind_false)));
+}
+
+ff Exec_Bind_suc                  (ff me_abs, ff x) {
+	struct Bind_suc * me = (struct Bind_suc *)me_abs;
+	return ((me->m_Bind_pair)->eval((me->m_Bind_false))->eval(me->x));
+}
+
+ff Exec_Bind_pred                 (ff me_abs, ff x) {
+	struct Bind_pred * me = (struct Bind_pred *)me_abs;
+	return ((me->m_Bind_snd)->eval(me->x));
+}
+
+ff Exec_Lambda_59                 (ff me_abs, ff x) {
+	struct Lambda_59 * me = (struct Lambda_59 *)me_abs;
+	return ((me->m_Bind_if)->eval(((me->m_Bind_fst)->eval(me->parent->x)))->eval(me->parent->x)->eval(((me->m_Bind_get0)->eval(((me->m_Bind_pred)->eval(me->x))))));
+}
+
+ff Exec_Bind_get0                 (ff me_abs, ff x) {
+	struct Bind_get0 * me = (struct Bind_get0 *)me_abs;
+	return ((me->m_Lambda_59));
+}
+
+
+
 int main() {
 	puts("start");
-	EXPR_0{}.eval(nullptr); 
-	EXPR_1{}.eval(nullptr); 
-	EXPR_2{}.eval(nullptr); 
 	puts("end");
 	return 0; 
 }
+

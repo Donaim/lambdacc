@@ -10,8 +10,8 @@ def get_leaf_name(le: Leaf) -> str:
     if type(le) is Lambda:
         return 'Lambda_' + str(le.unique_id)
     if type(le) is Bind:
-        return 'Bind_' + str(le.unique_id)
-    return 'kek'
+        return 'Bind_' + str(le.name)
+    raise Exception('Unknown type {}'.format(type(le)))
 def get_member_name(leaf_name: str) -> str:
     return leaf_name + '_m'
 def get_ovv_member_name(mem: Leaf):
@@ -20,8 +20,6 @@ def get_ovv_member_name(mem: Leaf):
     t = type(mem)
     if t is Bind or t is Lambda:
         return '(&{})'.format(name)
-    elif t is Argument:
-        return name
     else:
         raise Exception('expected types {} and {} '.format(Bind, Argument, Lambda))
 
@@ -68,16 +66,18 @@ def write_lambda(file, le: Leaf):
     name = get_leaf_name(le)
     file.write('der({}) {{\n'.format(name))
     
-    for l in le.leafs:
-        if type(l) is Lambda:
-            name = get_leaf_name(l)
-            name_m = get_member_name(name)
-            file.write('\t{} {};\n'.format(name, name_m))
-        elif type(l) is Bind:
-            name = get_leaf_name(l)
-            name_m = get_member_name(name)
-            file.write('\t{} {};\n'.format(name, name_m))
+    constructor = '\t{}(ff p) : fun(p)'.format(name)
     
+    for l in le.leafs:
+        if type(l) is Lambda or type(l) is Bind:
+            name = get_leaf_name(l)
+            name_m = get_member_name(name)
+            file.write('\t{} {};\n'.format(name, name_m))
+            constructor += ', {}(this)'.format(name_m)
+    
+    constructor += ' {}\n\n'
+    file.write(constructor)
+
     file.write('\tovv {')
     for line in get_ovv(le):
         file.write('\n\t\t' + line)

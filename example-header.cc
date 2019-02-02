@@ -101,5 +101,5 @@ inline uint8_t * ALLOC_GET(int size)
 
 static void ALLOC_INIT()
 {
-	pool_cur = ALLOC_NEW_POOL(320000);
+	pool_cur = ALLOC_NEW_POOL(20111000);
 }

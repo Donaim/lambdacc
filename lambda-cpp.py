@@ -36,7 +36,7 @@ def join_lines(lines: iter) -> iter:
 
 def filter_lines(lines: iter) -> iter:
 	for o in lines:
-		if len(o) < 1 or o.isspace():
+		if len(o) < 1 or o.isspace() or o[0] == ';':
 			continue
 		if '#' in o:
 			(pre, _, post) = o.partition('#')

@@ -8,9 +8,11 @@ class SplittedOut:
 
 		self.template = ''
 		self.struct_declarations = ''
-		self.func_declarations = ''
+		self.init_declarations = ''
+		self.exec_declarations = ''
 		self.struct_definitions = ''
-		self.func_definitions = ''
+		self.init_definitions = ''
+		self.exec_definitions = ''
 		self.footer = ''
 
 	def dump(self):
@@ -18,17 +20,20 @@ class SplittedOut:
 			for t in [
 					self.template,
 					self.struct_declarations,
-					self.func_declarations,
+					self.init_declarations,
+					self.exec_declarations,
 					self.struct_definitions,
-					self.func_definitions,
+					self.init_definitions,
+					self.exec_definitions,
 					self.footer,
 					]:
 				w.write(t)
 				w.write('\n\n')
 
 class CFunction:
-	def __init__(self, leaf_name):
+	def __init__(self, leaf_name: str, t: str):
 		self.name = leaf_name
+		self.t = t
 
 def get_leaf_name(le) -> str:
 	if type(le) is Leaf:
@@ -40,7 +45,12 @@ def get_leaf_name(le) -> str:
 	if type(le) is Bind:
 		return 'Bind_' + str(le.name)
 	if type(le) is CFunction:
-		return "Exec_" + str(le.name)
+		if le.t == 'exec':
+			return "Exec_" + str(le.name)
+		elif le.t == 'init':
+			return "Init_" + str(le.name)
+		else:
+			raise Exception("Unknown CFuntion type: {}".format(le.t))
 	raise Exception('Unknown type {}'.format(type(le)))
 def get_member_name(leaf_name: str) -> str:
 	return 'm_' + leaf_name
@@ -101,13 +111,23 @@ def get_ovv(le: Leaf) -> str:
 		return 'return ' + exec_line + '->eval(x)' + ';'
 	else:
 		raise Exception('get_ovv expects {} or {} but got {}'.format(Bind, Lambda, lt))
-def get_exec_func(out: SplittedOut, le: Leaf, lambda_name) -> str:
-	exec_name = get_leaf_name(CFunction(lambda_name))
+def get_exec_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
+	exec_name = get_leaf_name(CFunction(lambda_name, 'exec'))
 	decl = 'ff {:<30} (ff me_abs, ff x)'.format(exec_name)
-	out.func_declarations += decl + ';\n'
+	out.exec_declarations += decl + ';\n'
 	cast = 'struct {} * me = (struct {} *)me_abs;'.format(lambda_name, lambda_name)
 	ret  = get_ovv(le)                             # RETURN STATEMENT
-	out.func_definitions += '{} {{\n\t{}\n\t{}\n}}\n\n'.format(decl, cast, ret)
+	out.exec_definitions += '{} {{\n\t{}\n\t{}\n}}\n\n'.format(decl, cast, ret)
+def get_init_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
+	init_name = get_leaf_name(CFunction(lambda_name, 'init'))
+	exec_name = get_leaf_name(CFunction(lambda_name, 'exec'))
+	decl = 'int {:<30} (struct {} *me)'.format(init_name, lambda_name)
+	out.init_declarations += decl + ';\n'
+	body  = '	if (me->eval_now == NULL) {\n'
+	body += '		me->eval_now = {};\n'.format(exec_name)
+	body += '	}\n'
+	ret   = 'return 0;'
+	out.init_definitions += '{} {{\n{}\n\t{}\n}}\n\n'.format(decl, body, ret)
 
 def get_lambda_members(le: Lambda) -> iter:
 	for l in le.leafs:
@@ -163,6 +183,7 @@ def write_named_lambda(out: SplittedOut, le: Lambda, lambda_name: str):
 	out.struct_definitions += st_members
 	out.struct_definitions += ('};\n')
 
+	get_init_func(out, le, lambda_name)
 	get_exec_func(out, le, lambda_name)
 
 def write_lambda(out: SplittedOut, le: Leaf):

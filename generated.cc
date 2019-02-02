@@ -9,17 +9,17 @@ typedef fun * ff;
 typedef ff (*exec_t)(ff, ff);
 
 class fun {
-private:
 protected:
 	fun() {}
 public:
-	bool first_call = true;
 	const fun * parent = nullptr;
 	ff x;
 	ff eval(ff x) {
 		this->x = x;
 		return eval_now(this, x);
 	}
+	// virtual void initme() = 0;
+	// virtual ff eval_now(ff x) = 0;
 	exec_t eval_now;
 };
 
@@ -90,6 +90,31 @@ struct Bind_suc;
 struct Bind_pred;
 struct Lambda_59;
 struct Bind_get0;
+
+
+int Init_Bind_id                   (struct Bind_id *me);
+int Init_Lambda_7                  (struct Lambda_7 *me);
+int Init_Bind_true                 (struct Bind_true *me);
+int Init_Lambda_12                 (struct Lambda_12 *me);
+int Init_Bind_false                (struct Bind_false *me);
+int Init_Bind_not                  (struct Bind_not *me);
+int Init_Lambda_22                 (struct Lambda_22 *me);
+int Init_Lambda_20                 (struct Lambda_20 *me);
+int Init_Bind_if                   (struct Bind_if *me);
+int Init_Lambda_29                 (struct Lambda_29 *me);
+int Init_Lambda_27                 (struct Lambda_27 *me);
+int Init_Bind_kek                  (struct Bind_kek *me);
+int Init_Lambda_36                 (struct Lambda_36 *me);
+int Init_Lambda_34                 (struct Lambda_34 *me);
+int Init_Bind_pair                 (struct Bind_pair *me);
+int Init_Bind_fst                  (struct Bind_fst *me);
+int Init_Bind_snd                  (struct Bind_snd *me);
+int Init_Bind_zero                 (struct Bind_zero *me);
+int Init_Bind_is0                  (struct Bind_is0 *me);
+int Init_Bind_suc                  (struct Bind_suc *me);
+int Init_Bind_pred                 (struct Bind_pred *me);
+int Init_Lambda_59                 (struct Lambda_59 *me);
+int Init_Bind_get0                 (struct Bind_get0 *me);
 
 
 ff Exec_Bind_id                   (ff me_abs, ff x);
@@ -259,6 +284,192 @@ der(Bind_get0) {
 
 	Lambda_59                      * m_Lambda_59;
 };
+
+
+int Init_Bind_id                   (struct Bind_id *me) {
+	if (me->eval_now == NULL) {
+		me->eval_now = Exec_Bind_id;
+	}
+
+	return 0;
+}
+
+int Init_Lambda_7                  (struct Lambda_7 *me) {
+	if (me->eval_now == NULL) {
+		me->eval_now = Exec_Lambda_7;
+	}
+
+	return 0;
+}
+
+int Init_Bind_true                 (struct Bind_true *me) {
+	if (me->eval_now == NULL) {
+		me->eval_now = Exec_Bind_true;
+	}
+
+	return 0;
+}
+
+int Init_Lambda_12                 (struct Lambda_12 *me) {
+	if (me->eval_now == NULL) {
+		me->eval_now = Exec_Lambda_12;
+	}
+
+	return 0;
+}
+
+int Init_Bind_false                (struct Bind_false *me) {
+	if (me->eval_now == NULL) {
+		me->eval_now = Exec_Bind_false;
+	}
+
+	return 0;
+}
+
+int Init_Bind_not                  (struct Bind_not *me) {
+	if (me->eval_now == NULL) {
+		me->eval_now = Exec_Bind_not;
+	}
+
+	return 0;
+}
+
+int Init_Lambda_22                 (struct Lambda_22 *me) {
+	if (me->eval_now == NULL) {
+		me->eval_now = Exec_Lambda_22;
+	}
+
+	return 0;
+}
+
+int Init_Lambda_20                 (struct Lambda_20 *me) {
+	if (me->eval_now == NULL) {
+		me->eval_now = Exec_Lambda_20;
+	}
+
+	return 0;
+}
+
+int Init_Bind_if                   (struct Bind_if *me) {
+	if (me->eval_now == NULL) {
+		me->eval_now = Exec_Bind_if;
+	}
+
+	return 0;
+}
+
+int Init_Lambda_29                 (struct Lambda_29 *me) {
+	if (me->eval_now == NULL) {
+		me->eval_now = Exec_Lambda_29;
+	}
+
+	return 0;
+}
+
+int Init_Lambda_27                 (struct Lambda_27 *me) {
+	if (me->eval_now == NULL) {
+		me->eval_now = Exec_Lambda_27;
+	}
+
+	return 0;
+}
+
+int Init_Bind_kek                  (struct Bind_kek *me) {
+	if (me->eval_now == NULL) {
+		me->eval_now = Exec_Bind_kek;
+	}
+
+	return 0;
+}
+
+int Init_Lambda_36                 (struct Lambda_36 *me) {
+	if (me->eval_now == NULL) {
+		me->eval_now = Exec_Lambda_36;
+	}
+
+	return 0;
+}
+
+int Init_Lambda_34                 (struct Lambda_34 *me) {
+	if (me->eval_now == NULL) {
+		me->eval_now = Exec_Lambda_34;
+	}
+
+	return 0;
+}
+
+int Init_Bind_pair                 (struct Bind_pair *me) {
+	if (me->eval_now == NULL) {
+		me->eval_now = Exec_Bind_pair;
+	}
+
+	return 0;
+}
+
+int Init_Bind_fst                  (struct Bind_fst *me) {
+	if (me->eval_now == NULL) {
+		me->eval_now = Exec_Bind_fst;
+	}
+
+	return 0;
+}
+
+int Init_Bind_snd                  (struct Bind_snd *me) {
+	if (me->eval_now == NULL) {
+		me->eval_now = Exec_Bind_snd;
+	}
+
+	return 0;
+}
+
+int Init_Bind_zero                 (struct Bind_zero *me) {
+	if (me->eval_now == NULL) {
+		me->eval_now = Exec_Bind_zero;
+	}
+
+	return 0;
+}
+
+int Init_Bind_is0                  (struct Bind_is0 *me) {
+	if (me->eval_now == NULL) {
+		me->eval_now = Exec_Bind_is0;
+	}
+
+	return 0;
+}
+
+int Init_Bind_suc                  (struct Bind_suc *me) {
+	if (me->eval_now == NULL) {
+		me->eval_now = Exec_Bind_suc;
+	}
+
+	return 0;
+}
+
+int Init_Bind_pred                 (struct Bind_pred *me) {
+	if (me->eval_now == NULL) {
+		me->eval_now = Exec_Bind_pred;
+	}
+
+	return 0;
+}
+
+int Init_Lambda_59                 (struct Lambda_59 *me) {
+	if (me->eval_now == NULL) {
+		me->eval_now = Exec_Lambda_59;
+	}
+
+	return 0;
+}
+
+int Init_Bind_get0                 (struct Bind_get0 *me) {
+	if (me->eval_now == NULL) {
+		me->eval_now = Exec_Bind_get0;
+	}
+
+	return 0;
+}
+
 
 
 ff Exec_Bind_id                   (ff me_abs, ff x) {

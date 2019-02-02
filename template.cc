@@ -6,22 +6,17 @@
 class fun;
 typedef fun * ff;
 
-typedef ff (*exec_t)(ff);
+typedef ff (*exec_t)(ff, ff);
 
 class fun {
-private:
-	bool first_call = false;
 protected:
 	fun() {}
 public:
 	const fun * parent = nullptr;
 	ff x;
 	ff eval(ff x) {
-		if (first_call) {
-			// initme();
-		}
 		this->x = x;
-		return eval_now(x);
+		return eval_now(this, x);
 	}
 	// virtual void initme() = 0;
 	// virtual ff eval_now(ff x) = 0;

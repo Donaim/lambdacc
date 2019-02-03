@@ -213,35 +213,15 @@ def get_exec_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 
 	defi  = decl + ' {\n'
 	defi += '	struct {} * me = (struct {} *)me_abs;\n'.format(lambda_name, lambda_name)
-	defi += '	me->x = x;\n'
-
-	if out.config.count_total_exec:
-		defi += '	{}++;\n'.format(COUNT_TOTAL_EXEC_NAME)
 
 	if out.config.show_debug:
 		defi += '	printf ("Lam [%s] got [%s]\\n", me->tostr(), x->tostr());\n'
-
-	if out.config.do_caching:
-		defi += '\n'
-		defi += '	{} key = me->cache(me);\n'.format(MAPKEY_T)
-		defi += '	ff find = {}.find(key)->second;\n'.format(CACHING_MAP_NAME)
-		defi += '	if (find != nullptr) {\n'
-		if out.config.count_total_exec:
-			defi += '		{}++;             \n'.format(COUNT_CACHE_NAME)
-		defi += '		return find;      \n'
-		defi += '	}                     \n'
-		# defi += '	{} '
 
 	defi += init_children(le=le, parent_lambda_name=lambda_name)
 
 	# Return statement (depends on caching)
 	return_statement = get_ovv(out=out, le=le)
-	if out.config.do_caching:
-		defi += '	ff ret = ' + return_statement + '\n'
-		defi += '	{}.insert( std::pair<{}, ff> {{ key, ret }}); \n'.format(CACHING_MAP_NAME, MAPKEY_T)
-		defi += '	return ret;'
-	else:
-		defi += '	return ' + return_statement + '\n'
+	defi += '	return ' + return_statement + '\n'
 
 	defi += '\n}\n\n'
 	out.exec_definitions += defi
@@ -367,6 +347,8 @@ def write_some(config: OutConfig, binds: list):
 		out.header += '#define USE_TYPEID\n'
 	if out.config.do_caching:
 		out.header += '#define DO_CACHING\n'
+	if out.config.count_total_exec:
+		out.header += '#define COUNT_TOTAL_EXEC\n'
 
 	proper_binds = []
 	exec_expr = []

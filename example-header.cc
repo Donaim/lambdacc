@@ -16,8 +16,10 @@ typedef fun * ff;
 
 map<mapkey_t,ff> g_caching_map;
 
+#ifdef COUNT_TOTAL_EXEC
 int g_cache_hits_count = 0;
 int total_eval_count = 0;
+#endif
 
 typedef ff (*exec_t)(ff, ff);
 
@@ -28,21 +30,29 @@ public:
 	fun * parent = nullptr;
 	ff x;
 	ff eval(ff x) {
-		// if (x->eval_now == nullptr) {
-		// 	printf ("My x value is uninitialized!\n");
-		// 	printf ("My it's named : %s !\n", x->tostr());
-		// }
+		this->x = x;
 
-		// if (eval_now == nullptr) {
-		// 	puts ("ERROR uninitialized type:");
-		// 	printf ("%d", this->typeuuid);
-		// }
-		return eval_now(this, x);
+		this->cache_key = this->cache(this);
+		ff ret = g_caching_map.find(this->cache_key)->second;
+
+#ifdef COUNT_TOTAL_EXEC
+		total_eval_count++;
+		if (ret != nullptr) {
+			g_cache_hits_count++;
+		}
+#endif
+
+		if (ret == nullptr) {
+			ret = eval_now(this, x);
+			g_caching_map.insert( std::pair<mapkey_t, ff> { this->cache_key, ret });
+		}
+		return ret;
 	}
 	exec_t eval_now;
 
 #ifdef DO_CACHING
 	mapkey_t (*cache)(ff me);
+	mapkey_t cache_key;
 #endif
 
 #ifdef USE_TYPEID

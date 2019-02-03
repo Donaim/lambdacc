@@ -175,9 +175,9 @@ def get_ovv(out: SplittedOut, le: Leaf) -> str:
 
 	lt = type(le)
 	if lt is Lambda:
-		return 'return ' + exec_line + ';'
+		return exec_line + ';'
 	elif lt is Leaf or lt is Argument or lt is Bind:
-		return 'return ' + exec_line + '->eval(x)' + ';'
+		return exec_line + '->eval(x)' + ';'
 	else:
 		raise Exception('get_ovv expects {} or {} but got {}'.format(Bind, Lambda, lt))
 def init_children(le: Leaf, parent_lambda_name: str) -> str:
@@ -223,12 +223,21 @@ def get_exec_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 	if out.config.do_caching:
 		defi += '\n'
 		defi += '	{} key = me->cache(me);\n'.format(MAPKEY_T)
-		defi += '	auto ff = {}.find(key);\n'.format(CACHING_MAP_NAME)
-		defi += '	printf ("kek %p", ff->second);\n'
+		defi += '	auto find = {}.find(key);\n'.format(CACHING_MAP_NAME)
+		defi += '	printf ("kek %p", find->second);\n'
 		# defi += '	{} '
 
 	defi += init_children(le=le, parent_lambda_name=lambda_name)
-	defi += '	' + get_ovv(out=out, le=le)                                                # RETURN STATEMENT
+
+	# Return statement (depends on caching)
+	return_statement = get_ovv(out=out, le=le)
+	if out.config.do_caching:
+		defi += '	ff ret = ' + return_statement + '\n'
+		defi += '	{}.insert( std::pair<{}, ff> {{ key, ret }}); \n'.format(CACHING_MAP_NAME, MAPKEY_T)
+		defi += '	return ret;'
+	else:
+		defi += '	return ' + return_statement + '\n'
+
 	defi += '\n}\n\n'
 	out.exec_definitions += defi
 def get_init_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:

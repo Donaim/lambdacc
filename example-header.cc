@@ -34,31 +34,23 @@ public:
 	ff eval(ff x) {
 		this->x = x;
 
+#ifdef COUNT_TOTAL_EXEC
+		total_eval_count++;
+#endif
+
 #ifdef DO_CACHING
-		ff ret = nullptr;
 		this->cache_key = this->cache(this);
 		auto find = g_caching_map->find(this->cache_key);
 		if (find != g_caching_map->end()) {
-			ret = find->second;
-			puts("FOUND");
-		}
-#endif
-
 #ifdef COUNT_TOTAL_EXEC
-		total_eval_count++;
-#ifdef DO_CACHING
-		if (ret != nullptr) {
 			g_cache_hits_count++;
-		}
 #endif
-#endif
-
-#ifdef DO_CACHING
-		if (ret == nullptr) {
-			ret = eval_now(this, x);
+			return find->second;
+		} else {
+			ff ret = eval_now(this, x);
 			g_caching_map->insert( std::pair<mapkey_t, ff> { this->cache_key, ret });
+			return ret;
 		}
-		return ret;
 #else
 		return eval_now(this, x);
 #endif

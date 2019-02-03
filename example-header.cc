@@ -14,6 +14,8 @@ using std::map;
 #include <vector>
 using std::vector;
 typedef vector<int> mapkey_t;
+#include <unordered_set>
+typedef std::unordered_set<void*> recursion_set;
 
 map<mapkey_t,ff> * g_caching_map = new map<mapkey_t,ff>{};
 
@@ -37,18 +39,14 @@ public:
 	ff eval(ff x) {
 		this->x = x;
 
-		if (x == nullptr) {
-			int k = *(int*)(NULL);
-			printf ("NULL : %d\n", k);
-		}
-
 #ifdef COUNT_TOTAL_EXEC
 		total_eval_count++;
 #endif
 
 #ifdef DO_CACHING
 		this->cache_key.clear();
-		this->cache(this, &(this->cache_key), true);
+		recursion_set set;
+		this->cache(this, &(this->cache_key), &set);
 
 		auto find = g_caching_map->find(this->cache_key);
 		if (find != g_caching_map->end()) {
@@ -69,7 +67,7 @@ public:
 	exec_t eval_now;
 
 #ifdef DO_CACHING
-	bool (*cache)(ff me, mapkey_t * ret, bool);
+	bool (*cache)(ff me, mapkey_t * ret, recursion_set * set);
 	mapkey_t cache_key;
 #endif
 

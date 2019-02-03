@@ -249,16 +249,25 @@ def get_caching_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 
 	funcname = get_leaf_name(CFunction(lambda_name, 'cache'))
 
-	decl = 'bool {:<30} (ff me, {} * ret, bool top)'.format(funcname, MAPKEY_T)
+	decl = 'bool {:<30} (ff me, {} * ret, recursion_set * set)'.format(funcname, MAPKEY_T)
 	out.caching_declarations += decl + ';\n'
 
 	lines = []
+
+	lines.append('if (set->count(me) > 0) {')
+	lines.append('	ret->push_back(-2);')
+	lines.append('	ret->push_back(me->typeuuid);')
+	lines.append('	return false;')
+	lines.append('} else {')
+	lines.append('	ret->push_back(me->typeuuid);')
+	lines.append('	set->insert(me);')
+	lines.append('}')
+
 	# Get cache key of our type
-	lines.append('ret->push_back(me->typeuuid);')
 
 	# Get cache key of our x value if exists
-	lines.append('if (me->x && me->x->typeuuid != me->typeuuid) {')
-	lines.append('	ret->push_back(me->x->cache(me->x, ret, false));')
+	lines.append('if (me->x) {')
+	lines.append('	ret->push_back(me->x->cache(me->x, ret, set));')
 	lines.append('} else {')
 	lines.append('	ret->push_back(0);')
 	lines.append('}')
@@ -267,7 +276,7 @@ def get_caching_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 	current_str = 'me->parent'
 	current_parent = le.parent
 	while not (current_parent is None or current_parent.parent is None):
-		lines.append('ret->push_back({}->x->cache({}->x, ret, false));'.format(current_str, current_str))
+		lines.append('ret->push_back({}->x->cache({}->x, ret, set));'.format(current_str, current_str))
 
 		current_str += '->parent'
 		current_parent = current_parent.parent

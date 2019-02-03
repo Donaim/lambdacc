@@ -33,12 +33,12 @@ ff Exec_Bind_print_false (ff me_abs, ff x);
 ff Exec_Bind_print_true  (ff me_abs, ff x);
 ff Exec_Bind_ec          (ff me_abs, ff x);
 
-int g_unique_ret = 0;
+int g_unique_ret = -1000;
 
 #ifdef DO_CACHING
-bool _simple_cache(ff me, mapkey_t * ret, bool top) {
+bool _simple_cache(ff me, mapkey_t * ret, recursion_set * set) {
 	ret->push_back(me->typeuuid);
-	ret->push_back(g_unique_ret++);
+	ret->push_back(g_unique_ret--);
 	return true;
 }
 #endif

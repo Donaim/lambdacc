@@ -4,7 +4,9 @@ import parser
 from parser import *
 
 MAPKEY_T = 'mapkey_t'
+CACHING_MAP_NAME = 'g_caching_map'
 TYPEID_TYPE = 'int'
+COUNT_TOTAL_EXEC_NAME = 'total_eval_count'
 
 class OutConfig:
 	def __init__(self,
@@ -15,7 +17,8 @@ class OutConfig:
 			declare_file: str,
 			define_file: str,
 			footerfile: str,
-			do_caching: bool = True):
+			do_caching: bool = True,
+			count_total_exec: bool = True):
 		self.filename = filename
 		self.show_debug = show_debug
 		self.use_typeid = use_typeid
@@ -24,6 +27,7 @@ class OutConfig:
 		self.define_file = define_file
 		self.footerfile = footerfile
 		self.do_caching = do_caching
+		self.count_total_exec = count_total_exec
 
 		if do_caching and not use_typeid:
 			raise Exception("Caching requires TYPE IDs!")
@@ -208,10 +212,22 @@ def get_exec_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 
 	defi  = decl + ' {\n'
 	defi += '	struct {} * me = (struct {} *)me_abs;\n'.format(lambda_name, lambda_name)
+	defi += '	me->x = x;\n'
+
+	if out.config.count_total_exec:
+		defi += '	{}++;\n'.format(COUNT_TOTAL_EXEC_NAME)
+
 	if out.config.show_debug:
 		defi += '	printf ("Lam [%s] got [%s]\\n", me->tostr(), x->tostr());\n'
+
+	if out.config.do_caching:
+		defi += '\n'
+		defi += '	{} key = me->cache(me);\n'.format(MAPKEY_T)
+		defi += '	auto ff = {}.find(key);\n'.format(CACHING_MAP_NAME)
+		defi += '	printf ("kek %p", ff->second);\n'
+		# defi += '	{} '
+
 	defi += init_children(le=le, parent_lambda_name=lambda_name)
-	defi += '	me->x = x;\n'
 	defi += '	' + get_ovv(out=out, le=le)                                                # RETURN STATEMENT
 	defi += '\n}\n\n'
 	out.exec_definitions += defi
@@ -251,7 +267,7 @@ def get_caching_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 	# Get cache keys of parents
 	current_str = 'me->parent'
 	current_parent = le.parent
-	while not current_parent is None:
+	while not (current_parent is None or current_parent.parent is None):
 		lines.append('ret.push_back({}->typeuuid)'.format(current_str, current_str))
 
 		current_str += '->parent'
@@ -368,8 +384,13 @@ def write_some(config: OutConfig, binds: list):
 		footer += '	{}({});\n'.format(init_name, varname);
 		footer += '	{}->eval(bind_err);\n\n'.format(varname);
 	footer += ('\tputs("end");\n')
+
+	if out.config.count_total_exec:
+		footer += '\n	printf("TOTAL EVAL COUNT = %d; \\n", {});\n'.format(COUNT_TOTAL_EXEC_NAME)
+
 	footer += ('\treturn 0; \n}')
 	out.footer += footer
+
 
 	out.dump()
 	print('write some ended')

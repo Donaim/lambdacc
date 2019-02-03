@@ -256,9 +256,11 @@ def get_caching_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 	# Get cache key of our type
 	lines.append('ret->push_back(me->typeuuid);')
 
-	# Get cache key of our x value if this is top level cache
-	lines.append('if (top) {')
+	# Get cache key of our x value if exists
+	lines.append('if (me->x && me->x->typeuuid != me->typeuuid) {')
 	lines.append('	ret->push_back(me->x->cache(me->x, ret, false));')
+	lines.append('} else {')
+	lines.append('	ret->push_back(0);')
 	lines.append('}')
 
 	# Get cache keys of parents

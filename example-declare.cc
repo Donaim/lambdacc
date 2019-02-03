@@ -124,7 +124,13 @@ ff Exec_Bind_ec (ff me_abs, ff x) {
 	}
 
 	me->x = x;
-	me->counter++;
 
-	return me;
+	struct Bind_ec * newme = ALLOC(Bind_ec);
+	newme->parent = me->parent;
+	newme->x = nullptr;
+	Init_Bind_ec(newme);
+
+	newme->counter = me->counter + 1;
+
+	return newme;
 }

@@ -34,10 +34,9 @@ ff Exec_Bind_print_true  (ff me_abs, ff x);
 ff Exec_Bind_ec          (ff me_abs, ff x);
 
 #ifdef DO_CACHING
-mapkey_t _simple_cache(ff me) {
-	mapkey_t ret;
-	ret.push_back(me->typeuuid);
-	return ret;
+bool _simple_cache(ff me, mapkey_t * ret, bool top) {
+	ret->push_back(me->typeuuid);
+	return true;
 }
 #endif
 

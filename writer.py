@@ -238,6 +238,7 @@ def get_init_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 	if out.config.do_caching:
 		cache_funcname = get_leaf_name(CFunction(lambda_name, 'cache'))
 		body += '\n		me->cache = {};\n'.format(cache_funcname)
+		body += '\n		me->cache_key = vector<int>{};\n'
 
 	body += '	}\n'
 	ret   = 'return 0;'
@@ -248,28 +249,30 @@ def get_caching_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 
 	funcname = get_leaf_name(CFunction(lambda_name, 'cache'))
 
-	decl = '{} {:<30} (ff me)'.format(MAPKEY_T, funcname, TYPEID_TYPE)
+	decl = 'bool {:<30} (ff me, {} * ret, bool top)'.format(funcname, MAPKEY_T)
 	out.caching_declarations += decl + ';\n'
 
-	lines = ['{} ret'.format(MAPKEY_T)]
+	lines = []
 	# Get cache key of our type
-	lines.append('ret.push_back(me->typeuuid)')
+	lines.append('ret->push_back(me->typeuuid);')
 
-	# Get cache key of our x value
-	lines.append('ret.push_back(me->x->typeuuid)')
+	# Get cache key of our x value if this is top level cache
+	lines.append('if (top) {')
+	lines.append('	ret->push_back(me->x->cache(me->x, ret, false));')
+	lines.append('}')
 
 	# Get cache keys of parents
 	current_str = 'me->parent'
 	current_parent = le.parent
 	while not (current_parent is None or current_parent.parent is None):
-		lines.append('ret.push_back({}->typeuuid)'.format(current_str, current_str))
+		lines.append('ret->push_back({}->x->cache({}->x, ret, false));'.format(current_str, current_str))
 
 		current_str += '->parent'
 		current_parent = current_parent.parent
 
-	lines.append('return ret')
+	lines.append('return false;')
 
-	re = decl + ' {\n\t' + str.join(';\n\t', lines) + ';\n}\n'
+	re = decl + ' {\n\t' + str.join('\n\t', lines) + '\n}\n'
 	out.caching_definitions += re
 
 def get_lambda_members(le: Lambda) -> iter:

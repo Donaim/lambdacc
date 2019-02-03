@@ -37,12 +37,19 @@ public:
 	ff eval(ff x) {
 		this->x = x;
 
+		if (x == nullptr) {
+			int k = *(int*)(NULL);
+			printf ("NULL : %d\n", k);
+		}
+
 #ifdef COUNT_TOTAL_EXEC
 		total_eval_count++;
 #endif
 
 #ifdef DO_CACHING
-		this->cache_key = this->cache(this);
+		this->cache_key.clear();
+		this->cache(this, &(this->cache_key), true);
+
 		auto find = g_caching_map->find(this->cache_key);
 		if (find != g_caching_map->end()) {
 #ifdef COUNT_TOTAL_EXEC
@@ -62,7 +69,7 @@ public:
 	exec_t eval_now;
 
 #ifdef DO_CACHING
-	mapkey_t (*cache)(ff me);
+	bool (*cache)(ff me, mapkey_t * ret, bool);
 	mapkey_t cache_key;
 #endif
 

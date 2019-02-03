@@ -391,7 +391,6 @@ def write_some(config: OutConfig, binds: list):
 	footer += ('\treturn 0; \n}')
 	out.footer += footer
 
-
 	out.dump()
 	print('write some ended')
 

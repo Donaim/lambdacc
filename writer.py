@@ -230,7 +230,6 @@ def get_exec_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 			defi += '		{}++;             \n'.format(COUNT_CACHE_NAME)
 		defi += '		return find;      \n'
 		defi += '	}                     \n'
-		defi += '	printf ("kek %p\\n", find);\n'
 		# defi += '	{} '
 
 	defi += init_children(le=le, parent_lambda_name=lambda_name)

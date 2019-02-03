@@ -3,7 +3,11 @@
 
 #define der(name)    struct name : fun
 #define ovv      ff eval_now(ff x) override
-// #define dlajdkladjlkasjdla {}
+
+class fun;
+typedef fun * ff;
+
+#ifdef DO_CACHING
 
 #include <map>
 using std::map;
@@ -11,10 +15,9 @@ using std::map;
 using std::vector;
 typedef vector<int> mapkey_t;
 
-class fun;
-typedef fun * ff;
-
 map<mapkey_t,ff> * g_caching_map = new map<mapkey_t,ff>{};
+
+#endif
 
 #ifdef COUNT_TOTAL_EXEC
 int total_eval_count = 0;

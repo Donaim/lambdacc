@@ -74,11 +74,6 @@ int Init_Bind_print_true (ff me) {
 	return 0;
 }
 
-mapkey_t Cache_Bind_print_false (ff me) {
-	mapkey_t ret;
-	ret.push_back(me->typeuuid);
-	return ret;
-}
 int Init_Bind_print_false (ff me) {
 	// puts ("FALS INITED");
 	me->eval_now = Exec_Bind_print_false;

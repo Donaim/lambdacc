@@ -14,11 +14,13 @@ typedef vector<int> mapkey_t;
 class fun;
 typedef fun * ff;
 
-map<mapkey_t,ff> g_caching_map;
+map<mapkey_t,ff> * g_caching_map = new map<mapkey_t,ff>{};
 
 #ifdef COUNT_TOTAL_EXEC
-int g_cache_hits_count = 0;
 int total_eval_count = 0;
+#ifdef DO_CACHING
+int g_cache_hits_count = 0;
+#endif
 #endif
 
 typedef ff (*exec_t)(ff, ff);
@@ -32,21 +34,34 @@ public:
 	ff eval(ff x) {
 		this->x = x;
 
+#ifdef DO_CACHING
+		ff ret = nullptr;
 		this->cache_key = this->cache(this);
-		ff ret = g_caching_map.find(this->cache_key)->second;
+		auto find = g_caching_map->find(this->cache_key);
+		if (find != g_caching_map->end()) {
+			ret = find->second;
+			puts("FOUND");
+		}
+#endif
 
 #ifdef COUNT_TOTAL_EXEC
 		total_eval_count++;
+#ifdef DO_CACHING
 		if (ret != nullptr) {
 			g_cache_hits_count++;
 		}
 #endif
+#endif
 
+#ifdef DO_CACHING
 		if (ret == nullptr) {
 			ret = eval_now(this, x);
-			g_caching_map.insert( std::pair<mapkey_t, ff> { this->cache_key, ret });
+			g_caching_map->insert( std::pair<mapkey_t, ff> { this->cache_key, ret });
 		}
 		return ret;
+#else
+		return eval_now(this, x);
+#endif
 	}
 	exec_t eval_now;
 

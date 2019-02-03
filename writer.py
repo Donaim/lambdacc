@@ -7,6 +7,7 @@ MAPKEY_T = 'mapkey_t'
 CACHING_MAP_NAME = 'g_caching_map'
 TYPEID_TYPE = 'int'
 COUNT_TOTAL_EXEC_NAME = 'total_eval_count'
+COUNT_CACHE_NAME      = 'g_cache_hits_count'
 
 class OutConfig:
 	def __init__(self,
@@ -223,8 +224,13 @@ def get_exec_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 	if out.config.do_caching:
 		defi += '\n'
 		defi += '	{} key = me->cache(me);\n'.format(MAPKEY_T)
-		defi += '	auto find = {}.find(key);\n'.format(CACHING_MAP_NAME)
-		defi += '	printf ("kek %p", find->second);\n'
+		defi += '	ff find = {}.find(key)->second;\n'.format(CACHING_MAP_NAME)
+		defi += '	if (find != nullptr) {\n'
+		if out.config.count_total_exec:
+			defi += '		{}++;             \n'.format(COUNT_CACHE_NAME)
+		defi += '		return find;      \n'
+		defi += '	}                     \n'
+		defi += '	printf ("kek %p\\n", find);\n'
 		# defi += '	{} '
 
 	defi += init_children(le=le, parent_lambda_name=lambda_name)
@@ -396,6 +402,8 @@ def write_some(config: OutConfig, binds: list):
 
 	if out.config.count_total_exec:
 		footer += '\n	printf("TOTAL EVAL COUNT = %d; \\n", {});\n'.format(COUNT_TOTAL_EXEC_NAME)
+		if out.config.do_caching:
+			footer += '\n	printf("TOTAL CACHE HITS COUNT = %d; \\n", {});\n'.format(COUNT_CACHE_NAME)
 
 	footer += ('\treturn 0; \n}')
 	out.footer += footer

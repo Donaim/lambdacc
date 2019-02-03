@@ -16,7 +16,7 @@ typedef fun * ff;
 
 map<mapkey_t,ff> g_caching_map;
 
-int cache_hits = 0;
+int g_cache_hits_count = 0;
 int total_eval_count = 0;
 
 typedef ff (*exec_t)(ff, ff);

@@ -4,6 +4,11 @@
 [x] inline bindings: do not introduce overhead from bindings (think of implications to call-trace)
 [x] allow order-independent bindings
 [ ] cache evalutations [hard]
+	[x] use simple hash map and store whole environment as cache key
+	[ ] determine which lambda abstractions are actually used in evaluation (will get more cache hits)
+	[ ] make base class (fun) more consistant
+	[ ] add command line argument for caching
+	[ ] use more efficient map than std::map and better keys than std::vector<int>
 [ ] representation: find a good way to print numbers, strings
 [x] make more names legal
 [ ] stackoverflow: use queue instead

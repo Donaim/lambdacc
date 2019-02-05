@@ -65,7 +65,7 @@ inline uint8_t * ALLOC_GET(int size)
 #if TRACK_ALLOCS
 #define ALLOC(x) ((x*)ALLOC_GET(sizeof(x), QUOTE(x)))
 #else
-#define ALLOC(x) (new x{})
+#define ALLOC(x) ((x*)ALLOC_GET(sizeof(x)))
 #endif
 
 static void ALLOC_INIT()

@@ -27,7 +27,7 @@ class OutConfig:
 		self.declare_file = declare_file
 		self.define_file = define_file
 		self.footerfile = footerfile
-		self.do_caching = do_caching
+		self.do_caching = False
 		self.count_total_exec = count_total_exec
 
 		if do_caching and not use_typeid:
@@ -241,6 +241,7 @@ def get_init_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 		body += '\n		me->cache_key = vector<int>{};\n'
 
 	body += '	}\n'
+	body += '	me->mysize = sizeof(*me);\n'
 	ret   = 'return 0;'
 	out.init_definitions += '{} {{\n{}\n\t{}\n}}\n\n'.format(decl, body, ret)
 def get_caching_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:

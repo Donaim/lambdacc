@@ -31,6 +31,7 @@ int g_cache_hits_count = 0;
 typedef ff (*exec_t)(ff, ff);
 
 #include "memorypool.cc"
+#include <cstring>
 
 class fun {
 protected:
@@ -38,32 +39,39 @@ protected:
 public:
 	fun * parent = nullptr;
 	ff x;
+
+	int mysize;
+
 	ff eval(ff x) {
-		this->x = x;
+
+		fun * my_copy = (fun*)ALLOC_GET(this->mysize);
+		memcpy(my_copy, this, this->mysize);
+
+		my_copy->x = x;
 
 #ifdef COUNT_TOTAL_EXEC
 		total_eval_count++;
 #endif
 
 #ifdef DO_CACHING
-		this->cache_key.clear();
+		my_copy->cache_key.clear();
 		recursion_set set;
-		this->cache(this, &(this->cache_key), &set);
+		my_copy->cache(my_copy, &(my_copy->cache_key), &set);
 
-		auto find = g_caching_map->find(this->cache_key);
+		auto find = g_caching_map->find(my_copy->cache_key);
 		if (find != g_caching_map->end()) {
 #ifdef COUNT_TOTAL_EXEC
 			g_cache_hits_count++;
 #endif
-			return eval_now(this, x);
+			return my_copy->eval_now(my_copy, x);
 			// return find->second;
 		} else {
-			ff ret = eval_now(this, x);
-			g_caching_map->insert( std::pair<mapkey_t, ff> { this->cache_key, ret });
+			ff ret = my_copy->eval_now(my_copy, x);
+			g_caching_map->insert( std::pair<mapkey_t, ff> { my_copy->cache_key, ret });
 			return ret;
 		}
 #else
-		return eval_now(this, x);
+		return eval_now(my_copy, x);
 #endif
 	}
 	exec_t eval_now;

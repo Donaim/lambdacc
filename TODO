@@ -10,6 +10,7 @@
 	[ ] make base class (fun) more consistant
 	[ ] add command line argument for caching
 	[ ] use more efficient map than std::map and better keys than std::vector<int>
+	[ ] use definitional irrelevance for smarter equality [hard]
 [ ] representation: find a good way to print numbers, strings
 [x] make more names legal
 [ ] stackoverflow: use queue instead

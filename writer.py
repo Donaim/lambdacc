@@ -27,7 +27,7 @@ class OutConfig:
 		self.declare_file = declare_file
 		self.define_file = define_file
 		self.footerfile = footerfile
-		self.do_caching = False
+		self.do_caching = do_caching
 		self.count_total_exec = count_total_exec
 
 		if do_caching and not use_typeid:

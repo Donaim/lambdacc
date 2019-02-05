@@ -273,22 +273,21 @@ def get_caching_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 	lines.append('	ret->push_back(0);')
 	lines.append('}')
 
-	# Get cache keys of parents
+	# Get cache keys of parent abstractions arguments
 	def app(s: str):
 		lines.append('ret->push_back({}->x->cache({}->x, ret, set));'.format(current_str, current_str))
 
 	current_str = 'me->parent'
 	current_parent = le.parent
-	while not (current_parent is None or current_parent.parent is None):
+	while not current_parent is None:
 		t = type(current_parent)
-
-		# Skipping leafs, they are not important
 
 		if t is Lambda:
 			arg = current_parent.arg
-			app(current_str)
-		if t is Bind:
-			app(current_str)
+			usages = arg.count_usages(le)
+			# print ("Arg [{}] used {} times in [{}]".format(arg, usages, lambda_name))
+			if usages > 0:
+				app(current_str)
 
 		current_str += '->parent'
 		current_parent = current_parent.parent

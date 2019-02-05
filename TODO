@@ -5,7 +5,8 @@
 [x] allow order-independent bindings
 [ ] cache evalutations [hard]
 	[x] use simple hash map and store whole environment as cache key
-	[ ] determine which lambda abstractions are actually used in evaluation (will get more cache hits)
+	[x] determine which lambda abstractions are actually used in evaluation (will get more cache hits)
+	[ ] fix (or find reason for) cache drop when using inlining - expected to have more hits than without inlining
 	[ ] make base class (fun) more consistant
 	[ ] add command line argument for caching
 	[ ] use more efficient map than std::map and better keys than std::vector<int>

@@ -48,12 +48,12 @@ bool _simple_cache(ff me, mapkey_t * ret, recursion_set * set) {
 int Init_Bind_error (ff me_abs) {
 	struct Bind_error * me = (struct Bind_error *) me_abs;
 	me->eval_now = Exec_Bind_error;
-	me->mysize = sizeof(*me);
 
 #ifdef USE_TYPEID
 	me->typeuuid = BIND_ERROR_TYPEUUID;
 #endif
 #ifdef DO_CACHING
+	me->mysize = sizeof(*me);
 	me->cache = _simple_cache;
 #endif
 	return 0;
@@ -69,11 +69,11 @@ int Init_Bind_print_true (ff me_abs) {
 	struct Bind_print_true * me = (struct Bind_print_true *) me_abs;
 	// puts ("TRUE INITED");
 	me->eval_now = Exec_Bind_print_true;
-	me->mysize = sizeof(*me);
 #ifdef USE_TYPEID
 	me->typeuuid = -10;
 #endif
 #ifdef DO_CACHING
+	me->mysize = sizeof(*me);
 	me->cache = _simple_cache;
 #endif
 	return 0;
@@ -83,11 +83,11 @@ int Init_Bind_print_false (ff me_abs) {
 	struct Bind_print_true * me = (struct Bind_print_true *) me_abs;
 	// puts ("FALS INITED");
 	me->eval_now = Exec_Bind_print_false;
-	me->mysize = sizeof(*me);
 #ifdef USE_TYPEID
 	me->typeuuid = -11;
 #endif
 #ifdef DO_CACHING
+	me->mysize = sizeof(*me);
 	me->cache = _simple_cache;
 #endif
 	return 0;
@@ -113,11 +113,11 @@ ff Exec_Bind_print_false (ff me_abs, ff x) {
 int Init_Bind_ec (ff me_abs) {
 	struct Bind_ec * me = (struct Bind_ec *)me_abs;
 	me->eval_now = Exec_Bind_ec;
-	me->mysize = sizeof(*me);
 #ifdef USE_TYPEID
 	me->typeuuid = -12;
 #endif
 #ifdef DO_CACHING
+	me->mysize = sizeof(*me);
 	me->cache = _simple_cache;
 #endif
 	return 0;

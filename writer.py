@@ -239,9 +239,9 @@ def get_init_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 		cache_funcname = get_leaf_name(CFunction(lambda_name, 'cache'))
 		body += '\n		me->cache = {};\n'.format(cache_funcname)
 		body += '\n		me->cache_key = vector<int>{};\n'
+		body += '\n		me->mysize = sizeof(*me);\n'
 
 	body += '	}\n'
-	body += '	me->mysize = sizeof(*me);\n'
 	ret   = 'return 0;'
 	out.init_definitions += '{} {{\n{}\n\t{}\n}}\n\n'.format(decl, body, ret)
 def get_caching_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:

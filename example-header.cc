@@ -40,20 +40,19 @@ public:
 	fun * parent = nullptr;
 	ff x;
 
-	int mysize;
-
 	ff eval(ff x) {
-
-		fun * my_copy = (fun*)ALLOC_GET(this->mysize);
-		memcpy(my_copy, this, this->mysize);
-
-		my_copy->x = x;
 
 #ifdef COUNT_TOTAL_EXEC
 		total_eval_count++;
 #endif
 
 #ifdef DO_CACHING
+		/* If we do caching, it is important to make copies of expressions,
+		 * to ensure immutability */
+		fun * my_copy = (fun*)ALLOC_GET(this->mysize);
+		memcpy(my_copy, this, this->mysize);
+		my_copy->x = x;
+
 		my_copy->cache_key.clear();
 		recursion_set set;
 		my_copy->cache(my_copy, &(my_copy->cache_key), &set);
@@ -71,12 +70,14 @@ public:
 			return ret;
 		}
 #else
-		return eval_now(my_copy, x);
+		this->x = x;
+		return eval_now(this, x);
 #endif
 	}
 	exec_t eval_now;
 
 #ifdef DO_CACHING
+	int mysize; /* For copying */
 	bool (*cache)(ff me, mapkey_t * ret, recursion_set * set);
 	mapkey_t cache_key;
 #endif

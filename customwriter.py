@@ -91,6 +91,7 @@ def get_init_func(o: lambda_obj) -> str:
 	if len(o.exec_func.args) <= 1:
 		re += 'int Init_Bind_{} (ff me_abs) {{\n'.format(o.name)
 		re += '	struct Bind_{} * me = (struct Bind_{} *)me_abs; \n'.format(o.name, o.name)
+		re += '	me->eval_now = Exec_Bind_{}; \n'.format(o.name)
 
 		for m in o.mems:
 			re += '	me->{} = {};\n'.format(m, o.mems[m][1])

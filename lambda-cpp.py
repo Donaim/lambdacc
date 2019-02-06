@@ -206,8 +206,8 @@ def processone(args):
 		declare_file=args.declare_file,
 		define_file=args.define_file,
 		footerfile=args.footerfile,
-                do_caching=args.do_caching,
-                count_total_exec=args.count_total_exec)
+		do_caching=args.do_caching,
+		count_total_exec=args.count_total_exec)
 	writer.write_some(config=config, binds=binds)
 
 def main():

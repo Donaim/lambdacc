@@ -38,6 +38,7 @@ class SplittedOut:
 		self.config = config
 
 		self.header = ''
+		self.typeuuids = ''
 		self.struct_declarations = ''
 		self.caching_declarations = ''
 		self.init_declarations = ''
@@ -63,9 +64,9 @@ class SplittedOut:
 		
 		writeone(self.header)
 		include(self.config.headerfile)
-		writearr([self.struct_declarations, self.caching_declarations, self.init_declarations, self.exec_declarations])
+		writearr([self.typeuuids, self.struct_declarations, self.caching_declarations, self.init_declarations, self.exec_declarations])
 		include(self.config.declare_file)
-		writearr([self.struct_definitions, self.caching_definitions, self.init_definitions, self.exec_definitions])
+		writearr([self.typeuuids, self.struct_definitions, self.caching_definitions, self.init_definitions, self.exec_definitions])
 		include(self.config.define_file)
 		writeone(self.footer)
 		include(self.config.footerfile)
@@ -118,6 +119,8 @@ def get_leaf_name(le) -> str:
 			return "Init_" + str(le.name)
 		elif le.t == 'cache':
 			return 'Cache_' + str(le.name)
+		elif le.t == 'typeid':
+			return 'Typeid_' + str(le.name)
 		else:
 			raise Exception("Unknown CFuntion type: {}".format(le.t))
 	raise Exception('Unknown type {}'.format(type(le)))
@@ -233,7 +236,9 @@ def get_init_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 	body  = '	if (me->eval_now == NULL) {\n'
 	body += '		me->eval_now = {};\n'.format(exec_name)
 	if out.config.use_typeid:
-		body += '\n		me->typeuuid = {};\n'.format(le.unique_id)
+		typeid_name = get_leaf_name(CFunction(lambda_name, 'typeid'))
+		out.typeuuids += '#define {} __COUNTER__ \n'.format(typeid_name)
+		body += '\n		me->typeuuid = {};\n'.format(typeid_name)
 
 	if out.config.do_caching:
 		cache_funcname = get_leaf_name(CFunction(lambda_name, 'cache'))

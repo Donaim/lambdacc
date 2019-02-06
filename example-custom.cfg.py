@@ -10,7 +10,7 @@ class ec:
 
 	counter = 'int'
 
-	def exec(arg):
+	def exec(arg : str = 'lol'):
 		'''
 		me->counter++;
 		return me;

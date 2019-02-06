@@ -3,6 +3,7 @@
 import inspect
 import importlib.util
 import os, sys
+from collections import OrderedDict
 
 def get_arguments():
 	import argparse
@@ -27,9 +28,6 @@ def load_dynamic(path: str):
 
 	return re
 
-def func_get_args(f) -> dict:
-	return dict( inspect.signature(f).parameters )
-
 def get_classes(mod) -> list:
 	ret = []
 	mems = inspect.getmembers(mod)
@@ -48,8 +46,21 @@ class lambda_obj:
 		di   = dict ( map( lambda k: (k, v[k]), filt) )
 		self.mems = di
 
-	def __str__(self):
-		return self.mems
+		self.exec_func = lambda_obj.func(target_class.exec)
+
+	class func:
+		def __init__(self, f):
+			self.f = f
+			self.sign = inspect.signature(f)
+			self.name = f.__name__
+			self.args = OrderedDict(self.sign.parameters)
+
+			self.code = f.__doc__
+
+			curr_str = 'me'
+			for a in reversed(self.args):
+				self.code = self.code.replace('{' + a + '}', curr_str + '->x')
+				curr_str += '->parent'
 
 def loadcfg(path: str):
 	mod = load_dynamic(path)

@@ -10,7 +10,9 @@ def get_arguments():
 	parser = argparse.ArgumentParser()
 
 	parser.add_argument('src', help='Source file of lambdas definitions')
-	parser.add_argument('dest', help='Destination file for generated code')
+	parser.add_argument('declarations', help='Destination file for generated declarations')
+	parser.add_argument('definitions', help='Destination file for generated definitions')
+	parser.add_argument('typeids', help='Destination file for generated type ids')
 
 	return parser.parse_args()
 
@@ -62,17 +64,39 @@ class lambda_obj:
 				self.code = self.code.replace('{' + a + '}', curr_str + '->x')
 				curr_str += '->parent'
 
-def loadcfg(path: str):
+def loadcfg(path: str) -> list:
 	mod = load_dynamic(path)
 	cl = get_classes(mod)
 	objs = list(map(lambda_obj, cl))
 
 	return objs
 
+def get_definition(o: lambda_obj) -> str:
+	re = ''
+	if len(o.exec_func.args) <= 1:
+		re += 'der(Bind_{}) {{\n'.format(o.name)
+		for m in o.mems:
+			re += '\t{} {};\n'.format(o.mems[m], m)
+		re += '};\n'
+	else:
+		pass
+		# raise Exception('not supported')
+	return re
+
+def get_init_func(o: lambda_obj) -> str:
+	
+
+def write(objs, args):
+	for o in objs:
+		defi = get_definition(o)
+		print("defi:\n{}".format(defi))
+		
+		init = get_init_func(o)
+
 def devel():
 	args = get_arguments()
-	cfg = loadcfg('example-custom.cfg.py')
-	print(cfg)
+	objs = loadcfg(args.src)
+	write(objs, args)
 
 def main():
 	print ('start')

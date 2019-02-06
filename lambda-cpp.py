@@ -143,6 +143,16 @@ def get_arguments():
 	group.add_argument('--no-make-inline', dest='make_inline', action='store_false', help=None)
 	group.set_defaults(make_inline=True)
 
+	group = parser.add_mutually_exclusive_group()
+	group.add_argument('--do-caching', dest='do_caching', action='store_true', help='Cache all aplications to not repeat the work')
+	group.add_argument('--no-do-caching', dest='do_caching', action='store_false', help=None)
+	group.set_defaults(do_caching=True)
+
+	group = parser.add_mutually_exclusive_group()
+	group.add_argument('--count-total-exec', dest='count_total_exec', action='store_true', help='Count number of applications')
+	group.add_argument('--no-count-total-exec', dest='count_total_exec', action='store_false', help=None)
+	group.set_defaults(count_total_exec=True)
+
 	def includehelp(name): return 'File to be included after generated file "{}" section'.format(name)
 	parser.add_argument('--headerfile', help=includehelp('header'))
 	parser.add_argument('--declare-file', help=includehelp('declare'))
@@ -195,7 +205,9 @@ def processone(args):
 		headerfile=args.headerfile,
 		declare_file=args.declare_file,
 		define_file=args.define_file,
-		footerfile=args.footerfile)
+		footerfile=args.footerfile,
+                do_caching=args.do_caching,
+                count_total_exec=args.count_total_exec)
 	writer.write_some(config=config, binds=binds)
 
 def main():

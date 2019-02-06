@@ -18,8 +18,8 @@ class OutConfig:
 			declare_file: str,
 			define_file: str,
 			footerfile: str,
-			do_caching: bool = True,
-			count_total_exec: bool = True):
+			do_caching: bool,
+			count_total_exec: bool):
 		self.filename = filename
 		self.show_debug = show_debug
 		self.use_typeid = use_typeid

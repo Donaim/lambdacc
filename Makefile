@@ -19,7 +19,9 @@ $(PROJ).exe: $(PROJ).cc
 $(PROJ).cc: $(PROJ).ini $(headers) $(additional-deps)
 	./lambda-cpp.py --source $(PROJ).ini --dest $(PROJ).cc \
 		--no-make-inline \
+		--do-caching \
 		--no-print-intermediate \
+		--count-total-exec \
 		--no-show-debug \
 		--use-typeid \
 		--headerfile $(PROJ)-header.cc \

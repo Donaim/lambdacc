@@ -83,13 +83,22 @@ def get_definition(o: lambda_obj) -> str:
 		# raise Exception('not supported yet')
 	return re
 
+def get_typeid_str(o: lambda_obj) -> str:
+	return '#define Typeid_Bind_{} __COUNTER__\n'.format(o.name)
+
 def get_init_func(o: lambda_obj) -> str:
 	re = ''
 	if len(o.exec_func.args) <= 1:
 		re += 'int Init_Bind_{} (ff me_abs) {{\n'.format(o.name)
 		re += '	struct Bind_{} * me = (struct Bind_{} *)me_abs; \n'.format(o.name, o.name)
+
 		for m in o.mems:
 			re += '	me->{} = {};\n'.format(m, o.mems[m][1])
+
+		re += '#ifdef USE_TYPEID\n'
+		re += '	me->typeuuid = Typeid_Bind_{}; \n'.format(o.name)
+		re += '#endif\n'
+
 		re += '};\n'
 	else:
 		pass
@@ -103,6 +112,9 @@ def write(objs, args):
 		
 		init = get_init_func(o)
 		print('init:\n{}'.format(init))
+
+		typeid = get_typeid_str(o)
+		print('typeid = {}'.format(typeid))
 
 def devel():
 	args = get_arguments()

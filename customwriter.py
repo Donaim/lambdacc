@@ -44,7 +44,7 @@ class lambda_obj:
 		self.name = target_class.__name__
 
 		v    = dict ( vars (target_class) )
-		filt = filter( lambda k: type( v[k] ) is str and not k.startswith('_'), v)
+		filt = filter( lambda k: type( v[k] ) is tuple and not k.startswith('_'), v)
 		di   = dict ( map( lambda k: (k, v[k]), filt) )
 		self.mems = di
 
@@ -76,15 +76,25 @@ def get_definition(o: lambda_obj) -> str:
 	if len(o.exec_func.args) <= 1:
 		re += 'der(Bind_{}) {{\n'.format(o.name)
 		for m in o.mems:
-			re += '\t{} {};\n'.format(o.mems[m], m)
+			re += '	{} {};\n'.format(o.mems[m][0], m)
 		re += '};\n'
 	else:
 		pass
-		# raise Exception('not supported')
+		# raise Exception('not supported yet')
 	return re
 
 def get_init_func(o: lambda_obj) -> str:
-	
+	re = ''
+	if len(o.exec_func.args) <= 1:
+		re += 'int Init_Bind_{} (ff me_abs) {{\n'.format(o.name)
+		re += '	struct Bind_{} * me = (struct Bind_{} *)me_abs; \n'.format(o.name, o.name)
+		for m in o.mems:
+			re += '	me->{} = {};\n'.format(m, o.mems[m][1])
+		re += '};\n'
+	else:
+		pass
+		# raise Exception('not supported yet')
+	return re
 
 def write(objs, args):
 	for o in objs:
@@ -92,6 +102,7 @@ def write(objs, args):
 		print("defi:\n{}".format(defi))
 		
 		init = get_init_func(o)
+		print('init:\n{}'.format(init))
 
 def devel():
 	args = get_arguments()

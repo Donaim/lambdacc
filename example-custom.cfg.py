@@ -8,7 +8,7 @@ def pure(x):
 @pure
 class ec:
 
-	counter = 'int'
+	counter = ('int', '0')
 
 	def exec(arg : str = 'lol'):
 		'''

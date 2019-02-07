@@ -189,7 +189,7 @@ def get_exec_func(o: lambda_obj) -> str:
 
 def write(objs, args):
 
-	with open(args.declarations) as declarations_f:
+	with open(args.declarations, 'w') as declarations_f:
 		for o in objs:
 			typeid = get_typeid_str(o)
 			declarations_f.write(typeid)
@@ -210,7 +210,7 @@ def write(objs, args):
 			exec_decl = get_exec_decl(o)
 			declarations_f.write(exec_decl)
 
-	with open(args.definitions) as definitions_f:
+	with open(args.definitions, 'w') as definitions_f:
 		for o in objs:
 			defi = get_definition(o)
 			definitions_f.write(defi)

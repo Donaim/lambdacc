@@ -210,12 +210,13 @@ def write(objs, args):
 		for f in fs:
 			for o in objs:
 				declarations_f.write(f(o))
-				declarations_f.write(';\n\n')
+				declarations_f.write(';\n')
+			declarations_f.write('\n')
 
 		declarations_f.write('#ifdef DO_CACHING\n')
 		for o in objs:
 			declarations_f.write(get_cache_decl(o))
-			declarations_f.write('\n')
+			declarations_f.write(';\n')
 		declarations_f.write('#endif\n')
 
 	with open(args.definitions, 'w') as definitions_f:

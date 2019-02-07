@@ -11,6 +11,9 @@
 	[ ] add command line argument for caching
 	[ ] use more efficient map than std::map and better keys than std::vector<int>
 	[ ] use definitional irrelevance for smarter equality [hard]
+[ ] make possible to create custom expressions with more than 1 argument (ex. add)
+[ ] pass 'parent' as argument to exec
+	[ ] do ALLOC("X") and Init_Bind_"X" in its parent Init instead of its parent Exec
 [ ] representation: find a good way to print numbers, strings
 [x] make more names legal
 [ ] stackoverflow: use queue instead

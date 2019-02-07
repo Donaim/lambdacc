@@ -1,7 +1,7 @@
 
 # This is a config file for custom lambda expressions that may produce effects
 
-class error:
+class final:
 	def exec(x):
 		'''
 		puts("This should not be evaluated!");
@@ -34,27 +34,27 @@ class print_false:
 		return me;
 		'''
 
-class add:
+# class add:
 
-	def exec(a, b):
-		'''
-		struct Bind_ec * re = ALLOC(Bind_ec);
-		Init_Bind_ec(re);
+# 	def exec(a, b):
+# 		'''
+# 		struct Bind_ec * re = ALLOC(Bind_ec);
+# 		Init_Bind_ec(re);
 
-		if ({a}->typeuuid != re->typeuuid || {b}->typeuuid != re->typeuuid) {
-			puts ("Expected numbers but got some shit!");
-		}
+# 		if ({a}->typeuuid != re->typeuuid || {b}->typeuuid != re->typeuuid) {
+# 			puts ("Expected numbers but got some shit!");
+# 		}
 
-		struct Bind_ec * a = (struct Bind_ec *){a};
-		struct Bind_ec * b = (struct Bind_ec *){b};
+# 		struct Bind_ec * a = (struct Bind_ec *){a};
+# 		struct Bind_ec * b = (struct Bind_ec *){b};
 
-		re->counter = a->counter + b->counter;
+# 		re->counter = a->counter + b->counter;
 
-		return re;
-		'''
+# 		return re;
+# 		'''
 
-	def cache() -> list:
-		return []
+# 	def cache() -> list:
+# 		return []
 
 print ('hello')
 print (ec.exec('hi there'))

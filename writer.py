@@ -400,15 +400,15 @@ def write_some(config: OutConfig, binds: list):
 	footer += 'int main() {\n'
 	footer += '\tputs("start");\n'
 	footer += '\tALLOC_INIT();\n'
-	footer += '\tbind_err = ALLOC(Bind_error);\n'
-	footer += '\tInit_Bind_error(bind_err);\n'
+	footer += '\tstruct Bind_final * bind_final = ALLOC(Bind_final);\n'
+	footer += '\tInit_Bind_final(bind_final);\n'
 	footer += '\n'
 	for e in exec_expr:
 		init_name = get_leaf_name(CFunction(e.name, 'init'))
 		varname = e.name + '_var';
 		footer += '	struct {} * {} = ALLOC({});\n'.format(e.name, varname, e.name)
 		footer += '	{}({});\n'.format(init_name, varname);
-		footer += '	{}->eval(bind_err);\n\n'.format(varname);
+		footer += '	{}->eval(bind_final);\n\n'.format(varname);
 	footer += ('\tputs("end");\n')
 
 	if out.config.count_total_exec:

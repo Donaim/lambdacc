@@ -60,6 +60,3 @@ class print_false:
 
 # 	def cache() -> list:
 # 		return []
-
-print ('hello')
-print (ec.exec('hi there'))

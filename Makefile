@@ -30,3 +30,6 @@ $(PROJ).cc: $(PROJ).ini $(headers) $(additional-deps)
 		--footerfile $(PROJ)-footer.cc \
 
 	@echo translated
+
+$(PROJ)-declare.cc $(PROJ)-define.cc: $(PROJ)-custom.cfg.py $(additional-deps)
+	./customwriter.py $(PROJ)-custom.cfg.py $(PROJ)-declare.cc $(PROJ)-define.cc

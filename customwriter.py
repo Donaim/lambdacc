@@ -1,15 +1,9 @@
-
+#!/usr/bin/env python3
 
 import inspect
 import importlib.util
 import os, sys
 from collections import OrderedDict
-
-# Purity tag
-def pure(x):
-	x._pure = True
-	print ("Got {}".format(x))
-	return x
 
 def get_arguments():
 	import argparse

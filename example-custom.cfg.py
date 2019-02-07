@@ -1,11 +1,13 @@
 
 # This is a config file for custom lambda expressions that may produce effects
 
-def pure(x):
-	print ("Got {}".format(x))
-	return x
+class error:
+	def exec(x):
+		'''
+		puts("This should not be evaluated!");
+		return me;
+		'''
 
-@pure
 class ec:
 
 	counter = ('int', '0')
@@ -15,6 +17,9 @@ class ec:
 		me->counter++;
 		return me;
 		'''
+
+	def cache() -> list:
+		return ['me->counter']
 
 class print_true:
 	def exec(x):
@@ -29,7 +34,6 @@ class print_false:
 		return me;
 		'''
 
-@pure
 class add:
 
 	def exec(a, b):
@@ -49,6 +53,8 @@ class add:
 		return re;
 		'''
 
+	def cache() -> list:
+		return []
 
 print ('hello')
 print (ec.exec('hi there'))

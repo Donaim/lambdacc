@@ -5,6 +5,12 @@ import importlib.util
 import os, sys
 from collections import OrderedDict
 
+# Purity tag
+def pure(x):
+	x._pure = True
+	print ("Got {}".format(x))
+	return x
+
 def get_arguments():
 	import argparse
 	parser = argparse.ArgumentParser()
@@ -49,6 +55,9 @@ class lambda_obj:
 		self.mems = di
 
 		self.exec_func = lambda_obj.func(target_class.exec)
+		self.cache_func = lambda_obj.func(target_class.cache) if 'cache' in vars(target_class) else None
+
+		self.pure = not self.cache_func is None
 
 	class func:
 		def __init__(self, f):
@@ -58,11 +67,17 @@ class lambda_obj:
 			self.args = OrderedDict(self.sign.parameters)
 
 			self.code = f.__doc__
+			if not self.code:
+				return
 
 			curr_str = 'me'
 			for a in reversed(self.args):
 				self.code = self.code.replace('{' + a + '}', curr_str + '->x')
 				curr_str += '->parent'
+
+			self.code = self.code.split('\n')
+			self.code = map(lambda s: '\t' + s.strip(), self.code)
+			self.code = '\n'.join(self.code)
 
 def loadcfg(path: str) -> list:
 	mod = load_dynamic(path)
@@ -86,10 +101,12 @@ def get_definition(o: lambda_obj) -> str:
 def get_typeid_str(o: lambda_obj) -> str:
 	return '#define Typeid_Bind_{} __COUNTER__\n'.format(o.name)
 
+def get_init_decl(o: lambda_obj) -> str:
+	return 'int Init_Bind_{} (ff me_abs)'.format(o.name)
 def get_init_func(o: lambda_obj) -> str:
 	re = ''
 	if len(o.exec_func.args) <= 1:
-		re += 'int Init_Bind_{} (ff me_abs) {{\n'.format(o.name)
+		re += get_init_decl(o) + '{\n'
 		re += '	struct Bind_{} * me = (struct Bind_{} *)me_abs; \n'.format(o.name, o.name)
 		re += '	me->eval_now = Exec_Bind_{}; \n'.format(o.name)
 
@@ -106,6 +123,68 @@ def get_init_func(o: lambda_obj) -> str:
 		# raise Exception('not supported yet')
 	return re
 
+def get_cache_decl(o: lambda_obj) -> str:
+	return 'bool Cache_Bind_{} (ff me_abs, mapkey_t * ret, recursion_set * set)'.format(o.name)
+def get_cache_func(o: lambda_obj) -> str:
+	re = ''
+	re += get_cache_decl(o) + ' {\n'
+	re += '	struct Bind_{} * me = (struct Bind_{} *)me_abs; \n'.format(o.name, o.name)
+
+	if o.pure:
+		re += '''
+	if (set->count(me_abs) > 0) {
+		ret->push_back(-2);
+		ret->push_back(me->typeuuid);
+		return false;
+	} else {
+		ret->push_back(me->typeuuid);
+		set->insert(me_abs);
+	}
+	if (me->x) {
+		ret->push_back(me->x->cache(me->x, ret, set));
+	} else {
+		ret->push_back(-1);
+	}\n\n'''
+
+		# use custom code from cache function doc
+		if o.cache_func.code:
+			re += o.cache_func.code
+
+		# call cache function to get the rest
+		rest = o.cache_func.f()
+
+		for r in rest:
+			re += '	ret->push_back({});\n'.format(r)
+
+		re += '\n'
+		re += '	return false;'
+		re += '\n}'
+
+		if len(o.exec_func.args) > 1:
+			print("not supported")
+	else:
+		re += '''
+	ret->push_back(me->typeuuid);
+	ret->push_back(g_unique_ret--);
+	return true;
+}\n'''
+
+	return re
+
+def get_exec_decl(o: lambda_obj) -> str:
+	return 'ff Exec_Bind_{} (ff me_abs, ff x)'.format(o.name)
+def get_exec_func(o: lambda_obj) -> str:
+	re = ''
+	if len(o.exec_func.args) <= 1:
+		re += get_exec_decl(o) + ' {\n'
+		re += '	struct Bind_{} * me = (struct Bind_{} *)me_abs; \n'.format(o.name, o.name)
+		re += o.exec_func.code
+		re += '\n}'
+	else:
+		print("not supported")
+
+	return re
+
 def write(objs, args):
 	for o in objs:
 		defi = get_definition(o)
@@ -116,6 +195,12 @@ def write(objs, args):
 
 		typeid = get_typeid_str(o)
 		print('typeid = {}'.format(typeid))
+
+		cache = get_cache_func(o)
+		print('cache:\n{}'.format(cache))
+
+		exec = get_exec_func(o)
+		print('exec:\n{}'.format(exec))
 
 def devel():
 	args = get_arguments()

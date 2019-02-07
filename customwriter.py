@@ -161,11 +161,12 @@ def get_init_func(o: lambda_obj) -> str:
 	me->mysize = sizeof(*me);
 #endif
 '''.format(o.name)
-
-		re += '}'
 	else:
 		pass
 		# raise Exception('not supported yet')
+
+	re += '	return 0;\n'
+	re += '}'
 	return re
 
 def get_cache_decl(o: lambda_obj) -> str:

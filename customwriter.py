@@ -199,7 +199,6 @@ def write(objs, args):
 
 	with open(args.declarations, 'w') as declarations_f:
 		fs = [get_struct_decl,
-		      get_cache_decl,
 		      get_init_decl,
 		      get_exec_decl]
 
@@ -213,9 +212,14 @@ def write(objs, args):
 				declarations_f.write(f(o))
 				declarations_f.write(';\n\n')
 
+		declarations_f.write('#ifdef DO_CACHING\n')
+		for o in objs:
+			declarations_f.write(get_cache_decl(o))
+			declarations_f.write('\n')
+		declarations_f.write('#endif\n')
+
 	with open(args.definitions, 'w') as definitions_f:
 		fs = [get_definition,
-		      get_cache_func,
 		      get_init_func,
 		      get_exec_func]
 
@@ -223,6 +227,12 @@ def write(objs, args):
 			for o in objs:
 				definitions_f.write(f(o))
 				definitions_f.write('\n\n')
+
+		definitions_f.write('#ifdef DO_CACHING\n')
+		for o in objs:
+			definitions_f.write(get_cache_func(o))
+			definitions_f.write('\n')
+		definitions_f.write('#endif\n')
 
 def main():
 	args = get_arguments()

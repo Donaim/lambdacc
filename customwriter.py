@@ -190,16 +190,20 @@ def get_exec_func(o: lambda_obj) -> str:
 def write(objs, args):
 
 	with open(args.declarations, 'w') as declarations_f:
-		fs = [get_typeid_str,
-		      get_struct_decl,
+		fs = [get_struct_decl,
 		      get_cache_decl,
 		      get_init_decl,
 		      get_exec_decl]
 
+		for o in objs:
+			declarations_f.write(get_typeid_str(o))
+			declarations_f.write('\n')
+		declarations_f.write('\n')
+
 		for f in fs:
 			for o in objs:
 				declarations_f.write(f(o))
-				declarations_f.write('\n\n')
+				declarations_f.write(';\n\n')
 
 	with open(args.definitions, 'w') as definitions_f:
 		fs = [get_definition,
@@ -212,15 +216,12 @@ def write(objs, args):
 				definitions_f.write(f(o))
 				definitions_f.write('\n\n')
 
-def devel():
+def main():
 	args = get_arguments()
 	objs = loadcfg(args.src)
 	write(objs, args)
-
-def main():
-	print ('start')
+	print('done')
 
 if __name__ == '__main__':
-	# main()
-	devel()
+	main()
 

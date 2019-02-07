@@ -37,13 +37,13 @@ class print_true:
 	def exec(x):
 		'''
 		puts("true");
-		return me;
+		return &Instance_Bind_error;
 		'''
 class print_false:
 	def exec(x):
 		'''
 		puts("false");
-		return me;
+		return &Instance_Bind_error;
 		'''
 
 class facc:
@@ -58,12 +58,7 @@ class facc:
 
 		if (result->typeuuid != Typeid_Bind_ec) {
 			printf ("Expected ec (%d) but got %d \\n", Typeid_Bind_ec, {arg}->typeuuid);
-
-			printf ("Typeid of result is %d \\n", result->typeuuid);
-
-			exit(0);
-
-			return me;
+			return &Instance_Bind_error;
 		}
 
 		struct Bind_ec * r = (struct Bind_ec *)result;

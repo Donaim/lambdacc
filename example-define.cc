@@ -139,12 +139,7 @@ ff Exec_Bind_facc (ff me_abs, ff x) {
 	
 	if (result->typeuuid != Typeid_Bind_ec) {
 	printf ("Expected ec (%d) but got %d \n", Typeid_Bind_ec, me->x->typeuuid);
-	
-	printf ("Typeid of result is %d \n", result->typeuuid);
-	
-	exit(0);
-	
-	return me;
+	return &Instance_Bind_error;
 	}
 	
 	struct Bind_ec * r = (struct Bind_ec *)result;
@@ -173,7 +168,7 @@ ff Exec_Bind_print_false (ff me_abs, ff x) {
 	struct Bind_print_false * me = (struct Bind_print_false *)me_abs; 
 	
 	puts("false");
-	return me;
+	return &Instance_Bind_error;
 	
 }
 
@@ -181,7 +176,7 @@ ff Exec_Bind_print_true (ff me_abs, ff x) {
 	struct Bind_print_true * me = (struct Bind_print_true *)me_abs; 
 	
 	puts("true");
-	return me;
+	return &Instance_Bind_error;
 	
 }
 

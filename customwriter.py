@@ -124,6 +124,8 @@ def get_init_func(o: lambda_obj) -> str:
 		re += '''
 #ifdef DO_CACHING
 	me->cache = Cache_Bind_{};
+	me->cache_key = vector<int>{{}};
+	me->mysize = sizeof(*me);
 #endif
 '''.format(o.name)
 

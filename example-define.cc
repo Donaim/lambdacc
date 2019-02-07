@@ -22,6 +22,8 @@ int Init_Bind_ec (ff me_abs){
 
 #ifdef DO_CACHING
 	me->cache = Cache_Bind_ec;
+	me->cache_key = vector<int>{};
+	me->mysize = sizeof(*me);
 #endif
 }
 
@@ -35,6 +37,8 @@ int Init_Bind_final (ff me_abs){
 
 #ifdef DO_CACHING
 	me->cache = Cache_Bind_final;
+	me->cache_key = vector<int>{};
+	me->mysize = sizeof(*me);
 #endif
 }
 
@@ -48,6 +52,8 @@ int Init_Bind_print_false (ff me_abs){
 
 #ifdef DO_CACHING
 	me->cache = Cache_Bind_print_false;
+	me->cache_key = vector<int>{};
+	me->mysize = sizeof(*me);
 #endif
 }
 
@@ -61,6 +67,8 @@ int Init_Bind_print_true (ff me_abs){
 
 #ifdef DO_CACHING
 	me->cache = Cache_Bind_print_true;
+	me->cache_key = vector<int>{};
+	me->mysize = sizeof(*me);
 #endif
 }
 

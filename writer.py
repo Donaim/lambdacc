@@ -67,7 +67,7 @@ class SplittedOut:
 		include(self.config.declare_file)
 		writearr([self.typeuuids, self.struct_declarations, self.caching_declarations, self.init_declarations, self.exec_declarations])
 		include(self.config.define_file)
-		writearr([self.typeuuids, self.struct_definitions, self.caching_definitions, self.init_definitions, self.exec_definitions])
+		writearr([self.struct_definitions, self.caching_definitions, self.init_definitions, self.exec_definitions])
 		writeone(self.footer)
 		include(self.config.footerfile)
 
@@ -237,7 +237,7 @@ def get_init_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 	body += '		me->eval_now = {};\n'.format(exec_name)
 	if out.config.use_typeid:
 		typeid_name = get_leaf_name(CFunction(lambda_name, 'typeid'))
-		out.typeuuids += '#define {} __COUNTER__ \n'.format(typeid_name)
+		out.typeuuids += 'const int {} = __COUNTER__ ; \n'.format(typeid_name)
 		body += '\n		me->typeuuid = {};\n'.format(typeid_name)
 
 	if out.config.do_caching:

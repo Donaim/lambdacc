@@ -19,12 +19,12 @@ int Init_Bind_final (ff me_abs);
 int Init_Bind_print_false (ff me_abs);
 int Init_Bind_print_true (ff me_abs);
 
-ff Exec_Bind_ec (ff me_abs, ff x);
-ff Exec_Bind_error (ff me_abs, ff x);
-ff Exec_Bind_facc (ff me_abs, ff x);
-ff Exec_Bind_final (ff me_abs, ff x);
-ff Exec_Bind_print_false (ff me_abs, ff x);
-ff Exec_Bind_print_true (ff me_abs, ff x);
+ff Exec_Bind_ec (ff me_abs, ff __x);
+ff Exec_Bind_error (ff me_abs, ff __x);
+ff Exec_Bind_facc (ff me_abs, ff __x);
+ff Exec_Bind_final (ff me_abs, ff __x);
+ff Exec_Bind_print_false (ff me_abs, ff __x);
+ff Exec_Bind_print_true (ff me_abs, ff __x);
 
 #ifdef DO_CACHING
 bool Cache_Bind_ec (ff me_abs, mapkey_t * ret, recursion_set * set);

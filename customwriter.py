@@ -69,9 +69,27 @@ class lambda_obj:
 			if not self.code:
 				return
 
+			codepre = ''
+			for arg in self.args:
+				if self.args[arg].annotation is inspect._empty:
+					codepre += 'ff {name} = ${name};\n'.format(name = arg)
+				else:
+					arg_t = self.args[arg].annotation.__name__
+					codepre += '''
+					struct Bind_{t} * {name} = (struct Bind_{t} *) (${name}->eval(&Instance_Bind_error));
+
+					if ({name}->typeuuid != Typeid_Bind_{t}) {{
+						puts("Type error");
+						return &Instance_Bind_error;
+					}}
+
+					'''.format(t = arg_t, name = arg)
+
+			self.code = codepre + self.code
+
 			curr_str = 'me'
 			for a in reversed(self.args):
-				self.code = self.code.replace('{' + a + '}', curr_str + '->x')
+				self.code = self.code.replace('$' + a, curr_str + '->x')
 				curr_str += '->parent'
 
 			self.code = self.code.split('\n')
@@ -189,7 +207,7 @@ def get_cache_func(o: lambda_obj) -> str:
 	return re
 
 def get_exec_decl(o: lambda_obj) -> str:
-	return 'ff Exec_Bind_{} (ff me_abs, ff x)'.format(o.name)
+	return 'ff Exec_Bind_{} (ff me_abs, ff __x)'.format(o.name)
 def get_exec_func(o: lambda_obj) -> str:
 	re = ''
 	if len(o.exec_func.args) <= 1:

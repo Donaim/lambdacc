@@ -110,11 +110,12 @@ int Init_Bind_print_true (ff me_abs){
 #endif
 }
 
-ff Exec_Bind_ec (ff me_abs, ff x) {
+ff Exec_Bind_ec (ff me_abs, ff __x) {
 	struct Bind_ec * me = (struct Bind_ec *)me_abs; 
+	ff arg = me->x;
 	
 	
-	if (me->x->typeuuid == Typeid_Bind_final) {
+	if (arg->typeuuid == Typeid_Bind_final) {
 	printf("Counter = %d\n", me->counter);
 	}
 	
@@ -123,32 +124,31 @@ ff Exec_Bind_ec (ff me_abs, ff x) {
 	
 }
 
-ff Exec_Bind_error (ff me_abs, ff x) {
+ff Exec_Bind_error (ff me_abs, ff __x) {
 	struct Bind_error * me = (struct Bind_error *)me_abs; 
+	ff x = me->x;
 	
 	puts("This should not be evaluated!");
 	return me;
 	
 }
 
-ff Exec_Bind_facc (ff me_abs, ff x) {
+ff Exec_Bind_facc (ff me_abs, ff __x) {
 	struct Bind_facc * me = (struct Bind_facc *)me_abs; 
 	
+	struct Bind_ec * arg = (struct Bind_ec *) (me->x->eval(&Instance_Bind_error));
 	
-	ff result = me->x->eval(&Instance_Bind_error);
-	
-	if (result->typeuuid != Typeid_Bind_ec) {
-	printf ("Expected ec (%d) but got %d \n", Typeid_Bind_ec, me->x->typeuuid);
+	if (arg->typeuuid != Typeid_Bind_ec) {
+	puts("Type error");
 	return &Instance_Bind_error;
 	}
 	
-	struct Bind_ec * r = (struct Bind_ec *)result;
 	
 	struct Bind_ec * ret = ALLOC(Bind_ec);
 	Init_Bind_ec(ret);
 	ret->counter = 1;
 	
-	for (int i = 2; i < r->counter; i++) {
+	for (int i = 2; i < arg->counter; i++) {
 	ret->counter *= i;
 	}
 	
@@ -156,24 +156,27 @@ ff Exec_Bind_facc (ff me_abs, ff x) {
 	
 }
 
-ff Exec_Bind_final (ff me_abs, ff x) {
+ff Exec_Bind_final (ff me_abs, ff __x) {
 	struct Bind_final * me = (struct Bind_final *)me_abs; 
+	ff x = me->x;
 	
 	puts("This should not be evaluated!");
 	return me;
 	
 }
 
-ff Exec_Bind_print_false (ff me_abs, ff x) {
+ff Exec_Bind_print_false (ff me_abs, ff __x) {
 	struct Bind_print_false * me = (struct Bind_print_false *)me_abs; 
+	ff x = me->x;
 	
 	puts("false");
 	return &Instance_Bind_error;
 	
 }
 
-ff Exec_Bind_print_true (ff me_abs, ff x) {
+ff Exec_Bind_print_true (ff me_abs, ff __x) {
 	struct Bind_print_true * me = (struct Bind_print_true *)me_abs; 
+	ff x = me->x;
 	
 	puts("true");
 	return &Instance_Bind_error;

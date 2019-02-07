@@ -19,10 +19,10 @@ class ec:
 
 	counter = ('int', '0')
 
-	def exec(arg : str = 'lol'):
+	def exec(arg):
 		'''
 
-		if ({arg}->typeuuid == Typeid_Bind_final) {
+		if (arg->typeuuid == Typeid_Bind_final) {
 			printf("Counter = %d\\n", me->counter);
 		}
 
@@ -53,21 +53,11 @@ class facc:
 
 	def exec(arg: ec) -> ec:
 		'''
-
-		ff result = {arg}->eval(&Instance_Bind_error);
-
-		if (result->typeuuid != Typeid_Bind_ec) {
-			printf ("Expected ec (%d) but got %d \\n", Typeid_Bind_ec, {arg}->typeuuid);
-			return &Instance_Bind_error;
-		}
-
-		struct Bind_ec * r = (struct Bind_ec *)result;
-
 		struct Bind_ec * ret = ALLOC(Bind_ec);
 		Init_Bind_ec(ret);
 		ret->counter = 1;
 
-		for (int i = 2; i < r->counter; i++) {
+		for (int i = 2; i < arg->counter; i++) {
 			ret->counter *= i;
 		}
 

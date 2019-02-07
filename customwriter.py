@@ -94,14 +94,14 @@ def get_definition(o: lambda_obj) -> str:
 		re += 'der(Bind_{}) {{\n'.format(o.name)
 		for m in o.mems:
 			re += '	{} {};\n'.format(o.mems[m][0], m)
-		re += '};\n'
+		re += '};'
 	else:
 		pass
 		# raise Exception('not supported yet')
 	return re
 
 def get_typeid_str(o: lambda_obj) -> str:
-	return '#define Typeid_Bind_{} __COUNTER__\n'.format(o.name)
+	return '#define Typeid_Bind_{} __COUNTER__'.format(o.name)
 
 def get_init_decl(o: lambda_obj) -> str:
 	return 'int Init_Bind_{} (ff me_abs)'.format(o.name)
@@ -119,7 +119,7 @@ def get_init_func(o: lambda_obj) -> str:
 		re += '	me->typeuuid = Typeid_Bind_{}; \n'.format(o.name)
 		re += '#endif\n'
 
-		re += '};\n'
+		re += '};'
 	else:
 		pass
 		# raise Exception('not supported yet')
@@ -169,7 +169,7 @@ def get_cache_func(o: lambda_obj) -> str:
 	ret->push_back(me->typeuuid);
 	ret->push_back(g_unique_ret--);
 	return true;
-}\n'''
+}'''
 
 	return re
 
@@ -190,42 +190,27 @@ def get_exec_func(o: lambda_obj) -> str:
 def write(objs, args):
 
 	with open(args.declarations, 'w') as declarations_f:
-		for o in objs:
-			typeid = get_typeid_str(o)
-			declarations_f.write(typeid)
+		fs = [get_typeid_str,
+		      get_struct_decl,
+		      get_cache_decl,
+		      get_init_decl,
+		      get_exec_decl]
 
-		for o in objs:
-			decl = get_struct_decl(o)
-			declarations_f.write(decl)
-
-		for o in objs:
-			cache_decl = get_cache_decl(o)
-			declarations_f.write(cache_decl)
-
-		for o in objs:
-			init_decl = get_init_decl(o)
-			declarations_f.write(init_decl)
-
-		for o in objs:
-			exec_decl = get_exec_decl(o)
-			declarations_f.write(exec_decl)
+		for f in fs:
+			for o in objs:
+				declarations_f.write(f(o))
+				declarations_f.write('\n\n')
 
 	with open(args.definitions, 'w') as definitions_f:
-		for o in objs:
-			defi = get_definition(o)
-			definitions_f.write(defi)
+		fs = [get_definition,
+		      get_cache_func,
+		      get_init_func,
+		      get_exec_func]
 
-		for o in objs:
-			code = get_cache_func(o)
-			definitions_f.write(code)
-
-		for o in objs:
-			code = get_init_func(o)
-			definitions_f.write(code)
-
-		for o in objs:
-			code = get_exec_func(o)
-			definitions_f.write(code)
+		for f in fs:
+			for o in objs:
+				definitions_f.write(f(o))
+				definitions_f.write('\n\n')
 
 def devel():
 	args = get_arguments()

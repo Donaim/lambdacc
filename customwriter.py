@@ -5,6 +5,11 @@ import importlib.util
 import os, sys
 from collections import OrderedDict
 
+def instance(x):
+	''' Flag for classes that want to have their instance predefined '''
+	x._instance = True
+	return x
+
 def get_arguments():
 	import argparse
 	parser = argparse.ArgumentParser()
@@ -51,6 +56,7 @@ class lambda_obj:
 		self.cache_func = lambda_obj.func(target_class.cache) if 'cache' in vars(target_class) else None
 
 		self.pure = not self.cache_func is None
+		self.insance = '_instance' in vars(target_class)
 
 	class func:
 		def __init__(self, f):
@@ -88,7 +94,12 @@ def get_definition(o: lambda_obj) -> str:
 		re += 'der(Bind_{}) {{\n'.format(o.name)
 		for m in o.mems:
 			re += '	{} {};\n'.format(o.mems[m][0], m)
-		re += '};'
+
+		if o.insance:
+			re += 'Bind_{name}() {{ Init_Bind_{name}(this); }} \n'.format(name=o.name)
+			re += '}} Instance_Bind_{};'.format(o.name)
+		else:
+			re += '};'
 	else:
 		pass
 		# raise Exception('not supported yet')

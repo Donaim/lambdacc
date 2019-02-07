@@ -2,8 +2,16 @@ der(Bind_ec) {
 	int counter;
 };
 
-der(Bind_final) {
+der(Bind_error) {
+Bind_error() { Init_Bind_error(this); } 
+} Instance_Bind_error;
+
+der(Bind_facc) {
 };
+
+der(Bind_final) {
+Bind_final() { Init_Bind_final(this); } 
+} Instance_Bind_final;
 
 der(Bind_print_false) {
 };
@@ -22,6 +30,36 @@ int Init_Bind_ec (ff me_abs){
 
 #ifdef DO_CACHING
 	me->cache = Cache_Bind_ec;
+	me->cache_key = vector<int>{};
+	me->mysize = sizeof(*me);
+#endif
+}
+
+int Init_Bind_error (ff me_abs){
+	struct Bind_error * me = (struct Bind_error *)me_abs; 
+	me->eval_now = Exec_Bind_error; 
+
+#ifdef USE_TYPEID
+	me->typeuuid = Typeid_Bind_error;
+#endif
+
+#ifdef DO_CACHING
+	me->cache = Cache_Bind_error;
+	me->cache_key = vector<int>{};
+	me->mysize = sizeof(*me);
+#endif
+}
+
+int Init_Bind_facc (ff me_abs){
+	struct Bind_facc * me = (struct Bind_facc *)me_abs; 
+	me->eval_now = Exec_Bind_facc; 
+
+#ifdef USE_TYPEID
+	me->typeuuid = Typeid_Bind_facc;
+#endif
+
+#ifdef DO_CACHING
+	me->cache = Cache_Bind_facc;
 	me->cache_key = vector<int>{};
 	me->mysize = sizeof(*me);
 #endif
@@ -85,6 +123,43 @@ ff Exec_Bind_ec (ff me_abs, ff x) {
 	
 }
 
+ff Exec_Bind_error (ff me_abs, ff x) {
+	struct Bind_error * me = (struct Bind_error *)me_abs; 
+	
+	puts("This should not be evaluated!");
+	return me;
+	
+}
+
+ff Exec_Bind_facc (ff me_abs, ff x) {
+	struct Bind_facc * me = (struct Bind_facc *)me_abs; 
+	
+	
+	if (me->x->typeuuid != Typeid_Bind_ec) {
+	printf ("Expected ec (%d) but got %d \n", Typeid_Bind_ec, me->x->typeuuid);
+	
+	ff result = me->x->eval(&Instance_Bind_error);
+	printf ("Typeid of result is %d \n", result->typeuuid);
+	
+	exit(0);
+	
+	return me;
+	}
+	
+	struct Bind_ec * arg = (struct Bind_ec *)me->x;
+	
+	struct Bind_ec * ret = ALLOC(Bind_ec);
+	Init_Bind_ec(ret);
+	ret->counter = 1;
+	
+	for (int i = 2; i < arg->counter; i++) {
+	ret->counter *= i;
+	}
+	
+	return ret;
+	
+}
+
 ff Exec_Bind_final (ff me_abs, ff x) {
 	struct Bind_final * me = (struct Bind_final *)me_abs; 
 	
@@ -130,6 +205,20 @@ bool Cache_Bind_ec (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	ret->push_back(me->counter);
 
 	return false;
+}
+bool Cache_Bind_error (ff me_abs, mapkey_t * ret, recursion_set * set) {
+	struct Bind_error * me = (struct Bind_error *)me_abs; 
+
+	ret->push_back(me->typeuuid);
+	ret->push_back(g_unique_cache_type--);
+	return true;
+}
+bool Cache_Bind_facc (ff me_abs, mapkey_t * ret, recursion_set * set) {
+	struct Bind_facc * me = (struct Bind_facc *)me_abs; 
+
+	ret->push_back(me->typeuuid);
+	ret->push_back(g_unique_cache_type--);
+	return true;
 }
 bool Cache_Bind_final (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	struct Bind_final * me = (struct Bind_final *)me_abs; 

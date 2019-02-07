@@ -1,12 +1,19 @@
 
 # This is a config file for custom lambda expressions that may produce effects
 
+from customwriter import instance
+
+@instance
 class final:
 	def exec(x):
 		'''
 		puts("This should not be evaluated!");
 		return me;
 		'''
+
+@instance
+class error(final):
+	pass
 
 class ec:
 
@@ -37,6 +44,38 @@ class print_false:
 		'''
 		puts("false");
 		return me;
+		'''
+
+class facc:
+	'''
+	fast factorial
+	'''
+
+	def exec(arg: ec) -> ec:
+		'''
+
+		if ({arg}->typeuuid != Typeid_Bind_ec) {
+			printf ("Expected ec (%d) but got %d \\n", Typeid_Bind_ec, {arg}->typeuuid);
+
+			ff result = {arg}->eval(&Instance_Bind_error);
+			printf ("Typeid of result is %d \\n", result->typeuuid);
+
+			exit(0);
+
+			return me;
+		}
+
+		struct Bind_ec * arg = (struct Bind_ec *){arg};
+
+		struct Bind_ec * ret = ALLOC(Bind_ec);
+		Init_Bind_ec(ret);
+		ret->counter = 1;
+
+		for (int i = 2; i < arg->counter; i++) {
+			ret->counter *= i;
+		}
+
+		return ret;
 		'''
 
 # class add:

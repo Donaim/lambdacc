@@ -115,11 +115,19 @@ def get_init_func(o: lambda_obj) -> str:
 		for m in o.mems:
 			re += '	me->{} = {};\n'.format(m, o.mems[m][1])
 
-		re += '#ifdef USE_TYPEID\n'
-		re += '	me->typeuuid = Typeid_Bind_{}; \n'.format(o.name)
-		re += '#endif\n'
+		re += '''
+#ifdef USE_TYPEID
+	me->typeuuid = Typeid_Bind_{};
+#endif
+'''.format(o.name)
 
-		re += '};'
+		re += '''
+#ifdef DO_CACHING
+	me->cache = Cache_Bind_{};
+#endif
+'''.format(o.name)
+
+		re += '}'
 	else:
 		pass
 		# raise Exception('not supported yet')
@@ -167,7 +175,7 @@ def get_cache_func(o: lambda_obj) -> str:
 	else:
 		re += '''
 	ret->push_back(me->typeuuid);
-	ret->push_back(g_unique_ret--);
+	ret->push_back(g_unique_cache_type--);
 	return true;
 }'''
 

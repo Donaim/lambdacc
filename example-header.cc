@@ -64,8 +64,8 @@ public:
 #ifdef COUNT_TOTAL_EXEC
 			g_cache_hits_count++;
 #endif
-			// return my_copy->eval_now(my_copy, x);
-			return find->second;
+			return my_copy->eval_now(my_copy, x);
+			// return find->second;
 		} else {
 			ff ret = my_copy->eval_now(my_copy, x);
 			g_caching_map->insert( std::pair<mapkey_t, ff> { my_copy->cache_key, ret });

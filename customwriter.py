@@ -18,7 +18,6 @@ def get_arguments():
 	parser.add_argument('src', help='Source file of lambdas definitions')
 	parser.add_argument('declarations', help='Destination file for generated declarations')
 	parser.add_argument('definitions', help='Destination file for generated definitions')
-	parser.add_argument('typeids', help='Destination file for generated type ids')
 
 	return parser.parse_args()
 
@@ -85,6 +84,9 @@ def loadcfg(path: str) -> list:
 	objs = list(map(lambda_obj, cl))
 
 	return objs
+
+def get_struct_decl(o: lambda_obj) -> str:
+	return 'struct Bind_{}'.format(o.name)
 
 def get_definition(o: lambda_obj) -> str:
 	re = ''
@@ -186,21 +188,44 @@ def get_exec_func(o: lambda_obj) -> str:
 	return re
 
 def write(objs, args):
-	for o in objs:
-		defi = get_definition(o)
-		print("defi:\n{}".format(defi))
-		
-		init = get_init_func(o)
-		print('init:\n{}'.format(init))
 
-		typeid = get_typeid_str(o)
-		print('typeid = {}'.format(typeid))
+	with open(args.declarations) as declarations_f:
+		for o in objs:
+			typeid = get_typeid_str(o)
+			declarations_f.write(typeid)
 
-		cache = get_cache_func(o)
-		print('cache:\n{}'.format(cache))
+		for o in objs:
+			decl = get_struct_decl(o)
+			declarations_f.write(decl)
 
-		exec = get_exec_func(o)
-		print('exec:\n{}'.format(exec))
+		for o in objs:
+			cache_decl = get_cache_decl(o)
+			declarations_f.write(cache_decl)
+
+		for o in objs:
+			init_decl = get_init_decl(o)
+			declarations_f.write(init_decl)
+
+		for o in objs:
+			exec_decl = get_exec_decl(o)
+			declarations_f.write(exec_decl)
+
+	with open(args.definitions) as definitions_f:
+		for o in objs:
+			defi = get_definition(o)
+			definitions_f.write(defi)
+
+		for o in objs:
+			code = get_cache_func(o)
+			definitions_f.write(code)
+
+		for o in objs:
+			code = get_init_func(o)
+			definitions_f.write(code)
+
+		for o in objs:
+			code = get_exec_func(o)
+			definitions_f.write(code)
 
 def devel():
 	args = get_arguments()

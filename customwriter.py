@@ -85,6 +85,16 @@ class lambda_obj:
 
 					'''.format(t = arg_t, name = arg)
 
+			if not self.sign.return_annotation is inspect._empty:
+				arg_t = self.sign.return_annotation.__name__
+				codepre += '''
+				struct Bind_{t} * ret = ALLOC(Bind_{t});
+				if (Init_Bind_{t}(ret)) {{
+					puts("Initialization failed");
+					return &Instance_Bind_error;
+				}}
+				'''.format(t = arg_t)
+
 			self.code = codepre + self.code
 
 			curr_str = 'me'

@@ -53,8 +53,6 @@ class facc:
 
 	def exec(arg: ec) -> ec:
 		'''
-		struct Bind_ec * ret = ALLOC(Bind_ec);
-		Init_Bind_ec(ret);
 		ret->counter = 1;
 
 		for (int i = 2; i < arg->counter; i++) {

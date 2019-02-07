@@ -145,7 +145,11 @@ ff Exec_Bind_facc (ff me_abs, ff __x) {
 	
 	
 	struct Bind_ec * ret = ALLOC(Bind_ec);
-	Init_Bind_ec(ret);
+	if (Init_Bind_ec(ret)) {
+	puts("Initialization failed");
+	return &Instance_Bind_error;
+	}
+	
 	ret->counter = 1;
 	
 	for (int i = 2; i < arg->counter; i++) {

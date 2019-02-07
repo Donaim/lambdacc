@@ -101,7 +101,7 @@ def get_definition(o: lambda_obj) -> str:
 	return re
 
 def get_typeid_str(o: lambda_obj) -> str:
-	return '#define Typeid_Bind_{} __COUNTER__'.format(o.name)
+	return 'const int Typeid_Bind_{} = __COUNTER__ ;'.format(o.name)
 
 def get_init_decl(o: lambda_obj) -> str:
 	return 'int Init_Bind_{} (ff me_abs)'.format(o.name)

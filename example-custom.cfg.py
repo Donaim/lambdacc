@@ -14,6 +14,11 @@ class ec:
 
 	def exec(arg : str = 'lol'):
 		'''
+
+		if ({arg}->typeuuid == Typeid_Bind_final) {
+			printf("Counter = %d\\n", me->counter);
+		}
+
 		me->counter++;
 		return me;
 		'''

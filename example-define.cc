@@ -135,10 +135,11 @@ ff Exec_Bind_facc (ff me_abs, ff x) {
 	struct Bind_facc * me = (struct Bind_facc *)me_abs; 
 	
 	
-	if (me->x->typeuuid != Typeid_Bind_ec) {
+	ff result = me->x->eval(&Instance_Bind_error);
+	
+	if (result->typeuuid != Typeid_Bind_ec) {
 	printf ("Expected ec (%d) but got %d \n", Typeid_Bind_ec, me->x->typeuuid);
 	
-	ff result = me->x->eval(&Instance_Bind_error);
 	printf ("Typeid of result is %d \n", result->typeuuid);
 	
 	exit(0);
@@ -146,13 +147,13 @@ ff Exec_Bind_facc (ff me_abs, ff x) {
 	return me;
 	}
 	
-	struct Bind_ec * arg = (struct Bind_ec *)me->x;
+	struct Bind_ec * r = (struct Bind_ec *)result;
 	
 	struct Bind_ec * ret = ALLOC(Bind_ec);
 	Init_Bind_ec(ret);
 	ret->counter = 1;
 	
-	for (int i = 2; i < arg->counter; i++) {
+	for (int i = 2; i < r->counter; i++) {
 	ret->counter *= i;
 	}
 	

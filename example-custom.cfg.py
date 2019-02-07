@@ -54,10 +54,11 @@ class facc:
 	def exec(arg: ec) -> ec:
 		'''
 
-		if ({arg}->typeuuid != Typeid_Bind_ec) {
+		ff result = {arg}->eval(&Instance_Bind_error);
+
+		if (result->typeuuid != Typeid_Bind_ec) {
 			printf ("Expected ec (%d) but got %d \\n", Typeid_Bind_ec, {arg}->typeuuid);
 
-			ff result = {arg}->eval(&Instance_Bind_error);
 			printf ("Typeid of result is %d \\n", result->typeuuid);
 
 			exit(0);
@@ -65,13 +66,13 @@ class facc:
 			return me;
 		}
 
-		struct Bind_ec * arg = (struct Bind_ec *){arg};
+		struct Bind_ec * r = (struct Bind_ec *)result;
 
 		struct Bind_ec * ret = ALLOC(Bind_ec);
 		Init_Bind_ec(ret);
 		ret->counter = 1;
 
-		for (int i = 2; i < arg->counter; i++) {
+		for (int i = 2; i < r->counter; i++) {
 			ret->counter *= i;
 		}
 

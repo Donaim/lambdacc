@@ -19,8 +19,6 @@ typedef std::unordered_set<void*> recursion_set;
 
 map<mapkey_t,ff> * g_caching_map = new map<mapkey_t,ff>{};
 
-int g_unique_cache_type = -1000;
-
 #endif
 
 #ifdef COUNT_TOTAL_EXEC

@@ -141,7 +141,7 @@ def get_init_decl(o: lambda_obj) -> str:
 def get_init_func(o: lambda_obj) -> str:
 	re = ''
 	if len(o.exec_func.args) <= 1:
-		re += get_init_decl(o) + '{\n'
+		re += get_init_decl(o) + ' {\n'
 		re += '	struct Bind_{} * me = (struct Bind_{} *)me_abs; \n'.format(o.name, o.name)
 		re += '	me->eval_now = Exec_Bind_{}; \n'.format(o.name)
 

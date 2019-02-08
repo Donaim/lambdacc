@@ -3,7 +3,7 @@ der(Bind_ec) {
 };
 
 der(Bind_error) {
-Bind_error() { Init_Bind_error(this); } 
+	Bind_error() { Init_Bind_error(this); } 
 } Instance_Bind_error;
 
 der(Bind_facc) {

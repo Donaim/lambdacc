@@ -124,7 +124,7 @@ def get_definition(o: lambda_obj) -> str:
 			re += '	{} {};\n'.format(o.mems[m][0], m)
 
 		if o.insance:
-			re += 'Bind_{name}() {{ Init_Bind_{name}(this); }} \n'.format(name=o.name)
+			re += '	Bind_{name}() {{ Init_Bind_{name}(this); }} \n'.format(name=o.name)
 			re += '}} Instance_Bind_{};'.format(o.name)
 		else:
 			re += '};'

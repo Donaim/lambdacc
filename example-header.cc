@@ -101,13 +101,19 @@ struct fin_t : fun {
 		fprintf(stderr, "%s", "fin should not be evaluated!");
 		return me;
 	}
+#ifdef DO_CACHING
 	static bool fcache(ff me, mapkey_t * ret, recursion_set * set) {
 		return true;
 	}
+#endif
 	fin_t() {
 		this->eval_now = fin_t::eval;
+#ifdef DO_CACHING
 		this->cache = fin_t::fcache;
+#endif
+#ifdef USE_TYPEID
 		this->typeuuid = __COUNTER__;
+#endif
 	}
 };
 fin_t * fin = new fin_t{};

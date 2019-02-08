@@ -62,6 +62,9 @@ class facc:
 		return ret;
 		'''
 
+	def cache():
+		return []
+
 # class add:
 
 # 	def exec(a, b):

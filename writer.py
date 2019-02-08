@@ -97,6 +97,8 @@ def bind_fix_name(bind: Bind):
 	return ret
 
 def bind_get_valid_name(bind: Bind):
+	if bind.name is None:
+		return 'Expr_' + str(bind.unique_id)
 	if all( map (bind_is_valid_char, bind.name) ):
 		return 'Bind_' + bind.name
 	else:
@@ -273,7 +275,7 @@ def get_caching_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 
 	# Get cache key of our x value if exists
 	lines.append('if (me->x) {')
-	lines.append('	if(me->x->cache(me->x, ret, set)) {{ return true; }}')
+	lines.append('	if(me->x->cache(me->x, ret, set)) { return true; }')
 	lines.append('} else {')
 	lines.append('	ret->push_back(-1);')
 	lines.append('}')
@@ -299,7 +301,7 @@ def get_caching_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 
 	lines.append('return false;')
 
-	re = decl + ' {\n\t' + str.join('\n\t', lines) + '\n}\n'
+	re = decl + ' {\n\t' + str.join('\n\t', lines) + '\n}\n\n'
 	out.caching_definitions += re
 
 def get_lambda_members(le: Lambda) -> iter:
@@ -382,19 +384,12 @@ def write_some(config: OutConfig, binds: list):
 
 	proper_binds = []
 	exec_expr = []
-	expr_count = 0
 	for b in binds:
 		if b.name is None:
-			b.name = 'EXPR_' + str(expr_count)
-			expr_count += 1
 			exec_expr.append(b)
 		else:
 			proper_binds.append(b)
-			
-	for b in proper_binds:
 		write(out=out, le=b)
-	for e in exec_expr:
-		write_named_lambda(out=out, le=e.target, lambda_name=e.name)
 
 	footer = ''
 	footer += 'int main() {\n'
@@ -404,9 +399,10 @@ def write_some(config: OutConfig, binds: list):
 	footer += '\tInit_Bind_final(bind_final);\n'
 	footer += '\n'
 	for e in exec_expr:
-		init_name = get_leaf_name(CFunction(e.name, 'init'))
-		varname = e.name + '_var';
-		footer += '	struct {} * {} = ALLOC({});\n'.format(e.name, varname, e.name)
+		name = get_leaf_name(e)
+		init_name = get_leaf_name(CFunction(name, 'init'))
+		varname = name + '_var';
+		footer += '	struct {} * {} = ALLOC({});\n'.format(name, varname, name)
 		footer += '	{}({});\n'.format(init_name, varname);
 		footer += '	{}->eval(bind_final);\n\n'.format(varname);
 	footer += ('\tputs("end");\n')

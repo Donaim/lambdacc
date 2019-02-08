@@ -57,10 +57,14 @@ public:
 
 		my_copy->cache_key.clear();
 		recursion_set set;
-		my_copy->cache(my_copy, &(my_copy->cache_key), &set);
+		bool efectful = my_copy->cache(my_copy, &(my_copy->cache_key), &set);
+
+		if (efectful) {
+			return my_copy->eval_now(my_copy, x);
+		}
 
 		auto find = g_caching_map->find(my_copy->cache_key);
-		if (find != g_caching_map->end()) {
+		if (!efectful && find != g_caching_map->end()) {
 #ifdef COUNT_TOTAL_EXEC
 			g_cache_hits_count++;
 #endif

@@ -174,9 +174,10 @@ def get_cache_decl(o: lambda_obj) -> str:
 def get_cache_func(o: lambda_obj) -> str:
 	re = ''
 	re += get_cache_decl(o) + ' {\n'
-	re += '	struct Bind_{} * me = (struct Bind_{} *)me_abs; \n'.format(o.name, o.name)
 
 	if o.pure:
+		re += '	struct Bind_{} * me = (struct Bind_{} *)me_abs; \n'.format(o.name, o.name)
+
 		re += '''
 	if (set->count(me_abs) > 0) {
 		ret->push_back(-2);
@@ -209,11 +210,7 @@ def get_cache_func(o: lambda_obj) -> str:
 		if len(o.exec_func.args) > 1:
 			print("not supported")
 	else:
-		re += '''
-	ret->push_back(me->typeuuid);
-	ret->push_back(g_unique_cache_type--);
-	return true;
-}'''
+		re += '	return true;\n}'
 
 	return re
 
@@ -268,7 +265,7 @@ def write(objs, args):
 		definitions_f.write('#ifdef DO_CACHING\n')
 		for o in objs:
 			definitions_f.write(get_cache_func(o))
-			definitions_f.write('\n')
+			definitions_f.write('\n\n')
 		definitions_f.write('#endif\n')
 
 def main():

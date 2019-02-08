@@ -215,13 +215,11 @@ bool Cache_Bind_ec (ff me_abs, mapkey_t * ret, recursion_set * set) {
 
 	return false;
 }
-bool Cache_Bind_error (ff me_abs, mapkey_t * ret, recursion_set * set) {
-	struct Bind_error * me = (struct Bind_error *)me_abs; 
 
-	ret->push_back(me->typeuuid);
-	ret->push_back(g_unique_cache_type--);
+bool Cache_Bind_error (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	return true;
 }
+
 bool Cache_Bind_facc (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	struct Bind_facc * me = (struct Bind_facc *)me_abs; 
 
@@ -242,25 +240,17 @@ bool Cache_Bind_facc (ff me_abs, mapkey_t * ret, recursion_set * set) {
 
 	return false;
 }
+
 bool Cache_Bind_final (ff me_abs, mapkey_t * ret, recursion_set * set) {
-	struct Bind_final * me = (struct Bind_final *)me_abs; 
-
-	ret->push_back(me->typeuuid);
-	ret->push_back(g_unique_cache_type--);
 	return true;
 }
+
 bool Cache_Bind_print_false (ff me_abs, mapkey_t * ret, recursion_set * set) {
-	struct Bind_print_false * me = (struct Bind_print_false *)me_abs; 
-
-	ret->push_back(me->typeuuid);
-	ret->push_back(g_unique_cache_type--);
 	return true;
 }
+
 bool Cache_Bind_print_true (ff me_abs, mapkey_t * ret, recursion_set * set) {
-	struct Bind_print_true * me = (struct Bind_print_true *)me_abs; 
-
-	ret->push_back(me->typeuuid);
-	ret->push_back(g_unique_cache_type--);
 	return true;
 }
+
 #endif

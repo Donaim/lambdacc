@@ -62,7 +62,7 @@ public:
 		}
 
 		auto find = g_caching_map->find(my_copy->cache_key);
-		if (!efectful && find != g_caching_map->end()) {
+		if (find != g_caching_map->end()) {
 #ifdef COUNT_TOTAL_EXEC
 			g_cache_hits_count++;
 #endif

@@ -22,7 +22,7 @@ struct ALLOCPOOL * ALLOC_NEW_POOL(int size)
 	uint8_t *mem = (uint8_t*)malloc(sizeof(ALLOCPOOL) + size);
 
 #if TRACK_POOL_ALLOCS
-	printf ("ALLOCATED NEW MEM: [%p] of size %d\n", mem, size);
+	fprintf (stderr, "ALLOCATED NEW MEM: [%p] of size %d\n", mem, size);
 #endif
 	
 	struct ALLOCPOOL * ret = (struct ALLOCPOOL*)mem;
@@ -37,7 +37,7 @@ struct ALLOCPOOL * ALLOC_NEW_POOL(int size)
 #if TRACK_ALLOCS
 inline uint8_t * ALLOC_GET(int size, const char * name)
 {
-	printf ("ALLOCATING [%s]\n", name);
+	fprintf (stderr, "ALLOCATING [%s]\n", name);
 #else
 inline uint8_t * ALLOC_GET(int size)
 {

@@ -393,7 +393,6 @@ def write_some(config: OutConfig, binds: list):
 
 	footer = ''
 	footer += 'int main() {\n'
-	footer += '\tputs("start");\n'
 	footer += '\tALLOC_INIT();\n'
 	footer += '\n'
 	for e in exec_expr:
@@ -403,14 +402,13 @@ def write_some(config: OutConfig, binds: list):
 		footer += '	struct {} * {} = ALLOC({});\n'.format(name, varname, name)
 		footer += '	{}({});\n'.format(init_name, varname);
 		footer += '	{}->eval(fin);\n\n'.format(varname);
-	footer += ('\tputs("end");\n')
 
 	if out.config.count_total_exec:
-		footer += '\n	printf("TOTAL EVAL COUNT = %d; \\n", {});\n'.format(COUNT_TOTAL_EXEC_NAME)
+		footer += '\n	fprintf(stderr, "TOTAL EVAL COUNT = %d; \\n", {});\n'.format(COUNT_TOTAL_EXEC_NAME)
 		if out.config.do_caching:
-			footer += '\n	printf("TOTAL CACHE HITS COUNT = %d; \\n", {});\n'.format(COUNT_CACHE_NAME)
+			footer += '	fprintf(stderr, "TOTAL CACHE HITS COUNT = %d; \\n", {});\n'.format(COUNT_CACHE_NAME)
 
-	footer += ('\treturn 0; \n}')
+	footer += ('\n\treturn 0; \n}')
 	out.footer += footer
 
 	out.dump()

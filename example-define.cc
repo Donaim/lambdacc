@@ -225,9 +225,22 @@ bool Cache_Bind_error (ff me_abs, mapkey_t * ret, recursion_set * set) {
 bool Cache_Bind_facc (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	struct Bind_facc * me = (struct Bind_facc *)me_abs; 
 
-	ret->push_back(me->typeuuid);
-	ret->push_back(g_unique_cache_type--);
-	return true;
+	if (set->count(me_abs) > 0) {
+		ret->push_back(-2);
+		ret->push_back(me->typeuuid);
+		return false;
+	} else {
+		ret->push_back(me->typeuuid);
+		set->insert(me_abs);
+	}
+	if (me->x) {
+		ret->push_back(me->x->cache(me->x, ret, set));
+	} else {
+		ret->push_back(-1);
+	}
+
+
+	return false;
 }
 bool Cache_Bind_final (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	struct Bind_final * me = (struct Bind_final *)me_abs; 

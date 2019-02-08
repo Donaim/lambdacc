@@ -273,14 +273,14 @@ def get_caching_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 
 	# Get cache key of our x value if exists
 	lines.append('if (me->x) {')
-	lines.append('	ret->push_back(me->x->cache(me->x, ret, set));')
+	lines.append('	me->x->cache(me->x, ret, set);')
 	lines.append('} else {')
 	lines.append('	ret->push_back(-1);')
 	lines.append('}')
 
 	# Get cache keys of parent abstractions arguments
 	def app(s: str):
-		lines.append('ret->push_back({}->x->cache({}->x, ret, set));'.format(current_str, current_str))
+		lines.append('{}->x->cache({}->x, ret, set);'.format(current_str, current_str))
 
 	current_str = 'me->parent'
 	current_parent = le.parent

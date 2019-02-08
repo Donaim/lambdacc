@@ -66,22 +66,10 @@ class facc:
 		return []
 
 # class add:
-
-# 	def exec(a, b):
+# 	def exec(a: ec, b: ec) -> ec:
 # 		'''
-# 		struct Bind_ec * re = ALLOC(Bind_ec);
-# 		Init_Bind_ec(re);
-
-# 		if ({a}->typeuuid != re->typeuuid || {b}->typeuuid != re->typeuuid) {
-# 			puts ("Expected numbers but got some shit!");
-# 		}
-
-# 		struct Bind_ec * a = (struct Bind_ec *){a};
-# 		struct Bind_ec * b = (struct Bind_ec *){b};
-
-# 		re->counter = a->counter + b->counter;
-
-# 		return re;
+# 		ret->counter = a->counter + b->counter;
+# 		return ret;
 # 		'''
 
 # 	def cache() -> list:

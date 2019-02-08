@@ -94,3 +94,20 @@ public:
 	virtual const char * tostr() = 0;
 #endif
 };
+
+
+struct fin_t : fun {
+	static ff eval(ff me, ff x) {
+		fprintf(stderr, "%s", "fin should not be evaluated!");
+		return me;
+	}
+	static bool fcache(ff me, mapkey_t * ret, recursion_set * set) {
+		return true;
+	}
+	fin_t() {
+		this->eval_now = fin_t::eval;
+		this->cache = fin_t::fcache;
+		this->typeuuid = __COUNTER__;
+	}
+};
+fin_t * fin = new fin_t{};

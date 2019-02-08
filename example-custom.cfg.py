@@ -22,7 +22,7 @@ class ec:
 	def exec(arg):
 		'''
 
-		if (arg->typeuuid == Typeid_Bind_final) {
+		if (arg == fin) {
 			printf("Counter = %d\\n", me->counter);
 		}
 

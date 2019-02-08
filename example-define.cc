@@ -121,7 +121,7 @@ ff Exec_Bind_ec (ff me_abs, ff __x) {
 	ff arg = me->x;
 	
 	
-	if (arg->typeuuid == Typeid_Bind_final) {
+	if (arg == fin) {
 	printf("Counter = %d\n", me->counter);
 	}
 	

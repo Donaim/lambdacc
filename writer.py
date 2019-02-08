@@ -395,8 +395,6 @@ def write_some(config: OutConfig, binds: list):
 	footer += 'int main() {\n'
 	footer += '\tputs("start");\n'
 	footer += '\tALLOC_INIT();\n'
-	footer += '\tstruct Bind_final * bind_final = ALLOC(Bind_final);\n'
-	footer += '\tInit_Bind_final(bind_final);\n'
 	footer += '\n'
 	for e in exec_expr:
 		name = get_leaf_name(e)
@@ -404,7 +402,7 @@ def write_some(config: OutConfig, binds: list):
 		varname = name + '_var';
 		footer += '	struct {} * {} = ALLOC({});\n'.format(name, varname, name)
 		footer += '	{}({});\n'.format(init_name, varname);
-		footer += '	{}->eval(bind_final);\n\n'.format(varname);
+		footer += '	{}->eval(fin);\n\n'.format(varname);
 	footer += ('\tputs("end");\n')
 
 	if out.config.count_total_exec:

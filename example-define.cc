@@ -9,10 +9,6 @@ Bind_error() { Init_Bind_error(this); }
 der(Bind_facc) {
 };
 
-der(Bind_final) {
-Bind_final() { Init_Bind_final(this); } 
-} Instance_Bind_final;
-
 der(Bind_print_false) {
 };
 
@@ -62,22 +58,6 @@ int Init_Bind_facc (ff me_abs){
 
 #ifdef DO_CACHING
 	me->cache = Cache_Bind_facc;
-	me->cache_key = vector<int>{};
-	me->mysize = sizeof(*me);
-#endif
-	return 0;
-}
-
-int Init_Bind_final (ff me_abs){
-	struct Bind_final * me = (struct Bind_final *)me_abs; 
-	me->eval_now = Exec_Bind_final; 
-
-#ifdef USE_TYPEID
-	me->typeuuid = Typeid_Bind_final;
-#endif
-
-#ifdef DO_CACHING
-	me->cache = Cache_Bind_final;
 	me->cache_key = vector<int>{};
 	me->mysize = sizeof(*me);
 #endif
@@ -134,7 +114,10 @@ ff Exec_Bind_error (ff me_abs, ff __x) {
 	struct Bind_error * me = (struct Bind_error *)me_abs; 
 	ff x = me->x;
 	
-	puts("This should not be evaluated!");
+	if (x == fin) {
+	puts("ERROR");
+	}
+	fprintf(stderr, "%s", "Error evaluated!");
 	return me;
 	
 }
@@ -163,15 +146,6 @@ ff Exec_Bind_facc (ff me_abs, ff __x) {
 	}
 	
 	return ret;
-	
-}
-
-ff Exec_Bind_final (ff me_abs, ff __x) {
-	struct Bind_final * me = (struct Bind_final *)me_abs; 
-	ff x = me->x;
-	
-	puts("This should not be evaluated!");
-	return me;
 	
 }
 
@@ -239,10 +213,6 @@ bool Cache_Bind_facc (ff me_abs, mapkey_t * ret, recursion_set * set) {
 
 
 	return false;
-}
-
-bool Cache_Bind_final (ff me_abs, mapkey_t * ret, recursion_set * set) {
-	return true;
 }
 
 bool Cache_Bind_print_false (ff me_abs, mapkey_t * ret, recursion_set * set) {

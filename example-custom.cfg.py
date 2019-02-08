@@ -4,16 +4,15 @@
 from customwriter import instance
 
 @instance
-class final:
+class error:
 	def exec(x):
 		'''
-		puts("This should not be evaluated!");
+		if (x == fin) {
+			puts("ERROR");
+		}
+		fprintf(stderr, "%s", "Error evaluated!");
 		return me;
 		'''
-
-@instance
-class error(final):
-	pass
 
 class ec:
 

@@ -335,6 +335,10 @@ def get_lambda_members(le: Lambda) -> iter:
 
 def get_fields(le: Lambda) -> list:
 	re = []
+	if type(le) is Bind:
+		if type(le.target) is Bind:
+			return [StructField(leaf=le.target, name='m_target')]
+
 	for (i, leaf) in enumerate(le.leafs):
 		t = type(leaf)
 		name = leaf.name if t is Argument else 'm_' + str(i)
@@ -386,7 +390,10 @@ def write(out: SplittedOut, le: Leaf):
 		return write_lambda(out=out, le=le)
 	elif type(le) is Bind:
 		name = get_leaf_name(le)
-		return write_named_lambda(out=out, le=le.target, lambda_name=name)
+		if type(le.target) is Bind:
+			return write_named_lambda(out=out, le=le, lambda_name=name)
+		else:
+			return write_named_lambda(out=out, le=le.target, lambda_name=name)
 	else:
 		raise Exception('Dont know how to start writing from {} type'.format(type(le)))
 def write_some(config: OutConfig, binds: list):

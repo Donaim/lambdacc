@@ -273,12 +273,22 @@ def get_caching_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 
 	# Get cache key of our type
 
-	# Get cache key of our x value if exists
-	lines.append('if (me->x) {')
-	lines.append('	if(me->x->cache(me->x, ret, set)) { return true; }')
-	lines.append('} else {')
-	lines.append('	ret->push_back(-1);')
-	lines.append('}')
+	# Get cache key of our x value if exists and if x is used
+	if type(le) is Lambda:
+		if any( map( lambda leaf: le.arg.count_usages(leaf) > 0, le.leafs ) ):
+			lines.append('if (me->x) {')
+			lines.append('	if(me->x->cache(me->x, ret, set)) { return true; }')
+			lines.append('} else {')
+			lines.append('	ret->push_back(-1);')
+			lines.append('}')
+		# else:
+		# 	print('{} does not use its arg {}: \n{}\n'.format(lambda_name, le.arg.name, le.print(0)))
+	else:
+		lines.append('if (me->x) {')
+		lines.append('	if(me->x->cache(me->x, ret, set)) { return true; }')
+		lines.append('} else {')
+		lines.append('	ret->push_back(-1);')
+		lines.append('}')
 
 	# Get cache keys of parent abstractions arguments
 	def app(s: str):

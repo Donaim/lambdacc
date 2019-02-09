@@ -9,8 +9,13 @@ You can write code in lambda-calculus and let the script generate C++ translatio
 # Features
 
 - Based on True lazy untyped lambda-calculus
-- Can define expression bindings
-- No predefined bindings (except for ones for printing but can be disabled)
+- Easily extensible
+- Allows to define expression bindings
+- Optional caching of evaluations (most of the time allow for exponential speed up)
+- Easy to hack into generated translation as it is using classes and inheritance and preserves the names
+- Easy to define efectful bindings by using special syntax (example at example-custom.cfg.py)
+- No predefined symbols
+- Optional expanding of bindigs a.k.a inlining
 - Call stack trace is available at will
 
 # TODO

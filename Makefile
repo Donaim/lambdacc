@@ -23,7 +23,7 @@ $(PROJ).cc: $(PROJ).ini $(headers) $(additional-deps)
 		--no-print-intermediate \
 		--count-total-exec \
 		--no-show-debug \
-		--use-typeid \
+		--no-use-typeid \
 		--headerfile $(PROJ)-header.cc \
 		--declare-file $(PROJ)-declare.cc \
 		--define-file $(PROJ)-define.cc \

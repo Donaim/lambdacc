@@ -45,24 +45,24 @@ class print_false:
 		return &Instance_Bind_error;
 		'''
 
-class facc:
-	'''
-	fast factorial
-	'''
+# class facc:
+# 	'''
+# 	fast factorial
+# 	'''
 
-	def exec(arg: ec) -> ec:
-		'''
-		ret->counter = 1;
+# 	def exec(arg: ec) -> ec:
+# 		'''
+# 		ret->counter = 1;
 
-		for (int i = 2; i < arg->counter; i++) {
-			ret->counter *= i;
-		}
+# 		for (int i = 2; i < arg->counter; i++) {
+# 			ret->counter *= i;
+# 		}
 
-		return ret;
-		'''
+# 		return ret;
+# 		'''
 
-	def cache():
-		return []
+# 	def cache():
+# 		return []
 
 # class add:
 # 	def exec(a: ec, b: ec) -> ec:

@@ -181,17 +181,19 @@ def get_cache_func(o: lambda_obj) -> str:
 		re += '''
 	if (set->count(me_abs) > 0) {
 		ret->push_back(-2);
-		ret->push_back(me->typeuuid);
 		return false;
 	} else {
-		ret->push_back(me->typeuuid);
 		set->insert(me_abs);
 	}
+
+	ret->push_back(-9);
+	ret->push_back(Typeid_Bind_%s);
+
 	if (me->x) {
 		ret->push_back(me->x->cache(me->x, ret, set));
 	} else {
 		ret->push_back(-1);
-	}\n\n'''
+	}\n\n''' % o.name
 
 		# use custom code from cache function doc
 		if o.cache_func.code:

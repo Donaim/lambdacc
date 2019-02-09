@@ -30,9 +30,6 @@ class OutConfig:
 		self.do_caching = do_caching
 		self.count_total_exec = count_total_exec
 
-		if do_caching and not use_typeid:
-			raise Exception("Caching requires TYPE IDs!")
-
 class SplittedOut:
 	def __init__(self, config: OutConfig):
 		self.config = config

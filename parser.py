@@ -122,13 +122,18 @@ class Argument(Leaf):
 		return ('\t' * indent) + '[' + self.name + ']'
 
 	def count_usages(self, target: Leaf) -> int:
-		re = 0
-		for leaf in target.leafs:
-			if leaf == self:
-				re += 1
-			if not type(leaf) is Bind:
-				re += self.count_usages(leaf)
-		return re
+		if type(target) is Argument:
+			if target.name == self.name:
+				return 1
+			else:
+				return 0
+		elif type(target) is Lambda and target.arg.name == self.name:
+			return 0
+		else:
+			ret = 0
+			for leaf in target.leafs:
+				ret += self.count_usages(leaf)
+			return ret
 
 class Lambda(Leaf):
 	def __init__(self, scope: list, arg: Argument, leafs: list, parent: Leaf):

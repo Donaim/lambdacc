@@ -22,7 +22,7 @@ class ec:
 		'''
 
 		if (arg == fin) {
-			printf("Counter = %d\\n", me->counter);
+			printf("Counter(%d)\\n", me->counter);
 		}
 
 		me->counter++;

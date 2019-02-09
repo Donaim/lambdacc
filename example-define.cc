@@ -102,7 +102,7 @@ ff Exec_Bind_ec (ff me_abs, ff __x) {
 	
 	
 	if (arg == fin) {
-	printf("Counter = %d\n", me->counter);
+	printf("Counter(%d)\n", me->counter);
 	}
 	
 	me->counter++;

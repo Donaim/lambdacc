@@ -19,7 +19,8 @@ class OutConfig:
 			define_file: str,
 			footerfile: str,
 			do_caching: bool,
-			count_total_exec: bool):
+			count_total_exec: bool,
+			echo_expr: bool):
 		self.filename = filename
 		self.show_debug = show_debug
 		self.use_typeid = use_typeid
@@ -29,6 +30,7 @@ class OutConfig:
 		self.footerfile = footerfile
 		self.do_caching = do_caching
 		self.count_total_exec = count_total_exec
+		self.echo_expr = echo_expr
 
 class SplittedOut:
 	def __init__(self, config: OutConfig):
@@ -417,8 +419,16 @@ def write_some(config: OutConfig, binds: list):
 		init_name = get_leaf_name(CFunction(name, 'init'))
 		varname = name + '_var';
 		footer += '	struct {} * {} = ALLOC({});\n'.format(name, varname, name)
-		footer += '	{}({});\n'.format(init_name, varname);
-		footer += '	{}->eval(fin);\n\n'.format(varname);
+		footer += '	{}({});\n'.format(init_name, varname)
+
+		if out.config.echo_expr:
+			footer += '	puts("{}");\n'.format(e.target.to_text().replace('\\', '\\\\'))
+			footer += '	printf("  = ");\n'
+
+		footer += '	{}->eval(fin);\n\n'.format(varname)
+
+		if out.config.echo_expr:
+			footer += '	puts("");\n'
 
 	if out.config.count_total_exec:
 		footer += '\n	fprintf(stderr, "TOTAL EVAL COUNT = %d; \\n", {});\n'.format(COUNT_TOTAL_EXEC_NAME)

@@ -148,6 +148,24 @@ class Leaf:
 				raise Exception('Unexpected type "{}"'.format(t))
 		return buf
 
+	def to_text(self) -> str:
+		t = type(self)
+		if t is Lambda:
+			ret = LAMBDA_DECL + self.arg.name + ' ' + LAMBDA_SYMBOL + ' '
+			leafs = list(map(lambda x: x.to_text(), self.leafs))
+			ret += ' '.join(leafs)
+			return '(' + ret + ')'
+		if t is Argument:
+			return self.name
+		if t is Bind:
+			return self.name
+		if t is Leaf:
+			leafs = list(map(lambda x: x.to_text(), self.leafs))
+			ret = ' '.join(leafs)
+			return '(' + ret + ')'
+		else:
+			raise Exception("Unexpected leaf type: {}".format(t))
+
 class Argument(Leaf):
 	def __init__(self, name: str, parent: Leaf):
 		super(Argument, self).__init__(leafs=[], parent=parent)

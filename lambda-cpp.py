@@ -153,6 +153,11 @@ def get_arguments():
 	group.add_argument('--no-count-total-exec', dest='count_total_exec', action='store_false', help=None)
 	group.set_defaults(count_total_exec=True)
 
+	group = parser.add_mutually_exclusive_group()
+	group.add_argument('--echo-expr', dest='echo_expr', action='store_true', help='Echo expression to be evaluated')
+	group.add_argument('--no-echo-expr', dest='echo_expr', action='store_false', help=None)
+	group.set_defaults(echo_expr=True)
+
 	def includehelp(name): return 'File to be included after generated file "{}" section'.format(name)
 	parser.add_argument('--headerfile', help=includehelp('header'))
 	parser.add_argument('--declare-file', help=includehelp('declare'))
@@ -207,7 +212,8 @@ def processone(args):
 		define_file=args.define_file,
 		footerfile=args.footerfile,
 		do_caching=args.do_caching,
-		count_total_exec=args.count_total_exec)
+		count_total_exec=args.count_total_exec,
+		echo_expr=args.echo_expr)
 	writer.write_some(config=config, binds=binds)
 
 def main():

@@ -78,10 +78,12 @@ class lambda_obj:
 					codepre += '''
 					struct Bind_{t} * {name} = (struct Bind_{t} *) (${name}->eval(&Instance_Bind_error));
 
+					#ifdef USE_TYPEID
 					if ({name}->typeuuid != Typeid_Bind_{t}) {{
 						puts("Type error");
 						return &Instance_Bind_error;
 					}}
+					#endif
 
 					'''.format(t = arg_t, name = arg)
 

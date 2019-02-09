@@ -3,7 +3,7 @@ You can write code in lambda-calculus and let the script generate C++ translatio
 
 # Usage
 
-1) Write lambda script to example.ini
+1) Write lambda script to example/script.ini
 2) `$ make`
 
 # Features

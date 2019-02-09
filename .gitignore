@@ -9,3 +9,4 @@ rawc/
 *.cpp
 *.c++
 *.inline.ini
+*.txt

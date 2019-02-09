@@ -13,6 +13,18 @@ run: all
 all: $(PROJ).exe
 	@echo compiled
 
+test:
+	$(MAKE) all PROJ=test
+	test/checkout.sh
+	$(MAKE) all PROJ=test   TFLAGS='--no-do-caching'
+	test/checkout.sh
+	$(MAKE) all PROJ=test   TFLAGS='--no-do-caching --no-use-typeid'
+	test/checkout.sh
+	$(MAKE) all PROJ=test   TFLAGS='--make-inline --no-do-caching --no-use-typeid'
+	test/checkout.sh
+	$(MAKE) all PROJ=test   TFLAGS='--make-inline --no-use-typeid'
+	test/checkout.sh
+
 clean:
 	- rm -f $(PROJ).cc $(PROJ).exe $(PROJ)/script.inline.ini
 
@@ -38,3 +50,5 @@ $(PROJ).cc: $(PROJ)/script.ini $(headers) $(additional-deps)
 
 $(PROJ)/declare.hh $(PROJ)/define.cc: $(PROJ)/custom.cfg.py $(additional-deps)
 	./customwriter.py $(PROJ)/custom.cfg.py $(PROJ)/declare.hh $(PROJ)/define.cc
+
+.PHONY: test clean all run

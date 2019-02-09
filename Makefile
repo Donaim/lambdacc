@@ -4,6 +4,9 @@ PROJ = example
 headers = $(PROJ)/header.hh $(PROJ)/declare.hh $(PROJ)/define.cc $(PROJ)/footer.cc
 additional-deps = Makefile  $(shell ls *.py)
 
+CFLAGS = -O3
+TFLAGS =
+
 run: all
 	./$(PROJ).exe
 
@@ -14,7 +17,7 @@ clean:
 	- rm -f $(PROJ).cc $(PROJ).exe $(PROJ)/script.inline.ini
 
 $(PROJ).exe: $(PROJ).cc
-	g++ -o $@ $^ -O3
+	g++ -o $@ $^ $(CFLAGS)
 
 $(PROJ).cc: $(PROJ)/script.ini $(headers) $(additional-deps)
 	./lambda-cpp.py --source $(PROJ)/script.ini --dest $(PROJ).cc \
@@ -29,6 +32,7 @@ $(PROJ).cc: $(PROJ)/script.ini $(headers) $(additional-deps)
 		--declare-file $(PROJ)/declare.hh \
 		--define-file $(PROJ)/define.cc \
 		--footerfile $(PROJ)/footer.cc \
+		$(TFLAGS)
 
 	@echo translated
 

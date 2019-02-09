@@ -54,19 +54,24 @@ def split_binding_and_def(cline: ClassifiedLine) -> SplittedLine:
 		post = line.strip()
 		pre = None
 	return SplittedLine (pre=pre, post=post, all=cline.all)
-	
+
 def join_lines(lines: iter) -> iter:
 	prev = None
+	lasto = None
 	for o in lines:
-		if  o.startswith('\t') or o.startswith('    '):
-			prev += ' ' + o.strip()
-			yield ''
+		if  o.all.startswith('\t') or o.all.startswith('  '):
+			prev += ' ' + o.good.strip()
 		else:
 			if not prev is None:
-				yield prev
-			prev = o
-	prev = prev.strip()
-	if prev: yield prev
+				lasto.good = prev
+			if not lasto is None:
+				yield lasto
+			lasto = o
+			prev = o.good
+
+	if prev:
+		lasto.good = prev
+		yield lasto
 
 def filter_lines(lines: iter) -> iter:
 	for o in lines:
@@ -84,8 +89,8 @@ def filter_lines(lines: iter) -> iter:
 
 def parse_text(text: str) -> iter:
 	linesR = text.split('\n')
-	linesR = list(join_lines(linesR))
-	lines = list(filter_lines(linesR))
+	linesR = list(filter_lines(linesR))
+	lines = list(join_lines(linesR))
 	tuples = map(split_binding_and_def, lines)
 	toks = map(SplittedLine.get_name_and_token, tuples)
 

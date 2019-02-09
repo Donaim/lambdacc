@@ -112,6 +112,42 @@ class Leaf:
 	def __ne__(self, other) -> bool:
 		return not self == other
 
+	# TODO: should I increment index on every parent, or only when the parent is Lambda?
+	def get_argument_index(self, arg) -> int:
+		''' How far up argument is declared '''
+		re = 0
+		le = self
+		while not le is None:
+			if type(le) is Lambda:
+				if le.arg.name == arg.name:
+					return re
+			le = le.parent
+			re += 1
+
+		raise Exception('Argument {} not found when traversing parents of: \n{}\n'.format(arg.name, le.print(0)))
+
+	def encode_as_vector(self) -> list:
+		''' Returns structural representation of this Leaf tree as vector of integers '''
+		buf = []
+		for leaf in self.leafs:
+			t = type(leaf)
+			if t is Argument:
+				buf.append(self.get_argument_index(arg=leaf))
+			elif t is Lambda:
+				buf.append(-4)
+				buf += leaf.encode_as_vector()
+				buf.append(-5)
+			elif t is Leaf:
+				buf.append(-6)
+				buf += leaf.encode_as_vector()
+				buf.append(-7)
+			elif t is Bind:
+				buf.append(-8)
+				buf.append(leaf.unique_id)
+			else:
+				raise Exception('Unexpected type "{}"'.format(t))
+		return buf
+
 class Argument(Leaf):
 	def __init__(self, name: str, parent: Leaf):
 		super(Argument, self).__init__(leafs=[], parent=parent)

@@ -264,14 +264,14 @@ def get_caching_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 
 	lines.append('if (set->count(me) > 0) {')
 	lines.append('	ret->push_back(-2);')
-	lines.append('	ret->push_back(me->typeuuid);')
 	lines.append('	return false;')
 	lines.append('} else {')
-	lines.append('	ret->push_back(me->typeuuid);')
 	lines.append('	set->insert(me);')
 	lines.append('}')
 
-	# Get cache key of our type
+	encoded_me = le.encode_as_vector()
+	for i in encoded_me:
+		lines.append('	ret->push_back({});'.format(i))
 
 	# Get cache key of our x value if exists and if x is used
 	if type(le) is Lambda:

@@ -67,8 +67,8 @@ class SplittedOut:
 		writearr([self.typeuuids, self.struct_declarations, self.caching_declarations, self.init_declarations, self.exec_declarations])
 		include(self.config.define_file)
 		writearr([self.struct_definitions, self.caching_definitions, self.init_definitions, self.exec_definitions])
-		writeone(self.footer)
 		include(self.config.footerfile)
+		writeone(self.footer)
 
 		w.close()
 

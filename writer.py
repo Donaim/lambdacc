@@ -281,8 +281,9 @@ def get_caching_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 			lines.append('} else {')
 			lines.append('	ret->push_back(-1);')
 			lines.append('}')
-		# else:
-		# 	print('{} does not use its arg {}: \n{}\n'.format(lambda_name, le.arg.name, le.print(0)))
+		else:
+			# print('{} does not use its arg {}: \n{}\n'.format(lambda_name, le.arg.name, le.print(0)))
+			pass
 	else:
 		lines.append('if (me->x) {')
 		lines.append('	if(me->x->cache(me->x, ret, set)) { return true; }')
@@ -296,15 +297,24 @@ def get_caching_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 
 	current_str = 'me->parent'
 	current_parent = le.parent
+	names = {}
+	if type(le) is Lambda:
+		names[le.arg.name] = True
+
 	while not current_parent is None:
 		t = type(current_parent)
 
 		if t is Lambda:
 			arg = current_parent.arg
-			usages = arg.count_usages(le)
-			# print ("Arg [{}] used {} times in [{}]".format(arg, usages, lambda_name))
-			if usages > 0:
-				app(current_str)
+			if not arg.name in names:
+				names[arg.name] = True
+				usages = arg.count_usages(le)
+				# print ("Arg [{}] used {} times in [{}]".format(arg, usages, lambda_name))
+				if usages > 0:
+					app(current_str)
+			else:
+				# print('Arg [{}] in {} redefied'.format(arg.name, lambda_name))
+				pass
 
 		current_str += '->parent'
 		current_parent = current_parent.parent

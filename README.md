@@ -27,17 +27,17 @@ This project is under active development
 - [x] inline bindings: do not introduce overhead from bindings (think of implications - to call-trace)
 - [x] allow order-independent bindings
 - [ ] cache evalutations [hard]
-- [x] use simple hash map and store whole environment as cache key
-- [x] determine which lambda abstractions are actually used in evaluation (will get - more cache hits)
-- [x] fix (or find reason for) cache drop when using inlining - expected to have more - hits than without inlining
-- [ ] make base class (fun) more consistant
-- [x] add command line argument for caching
-- [ ] use more efficient map than std::map and better keys than std::vector<int>
-- [x] use definitional irrelevance for smarter equality [hard]
-- [ ] never duplicate work (using Levy's definition) [hard]
+	- [x] use simple hash map and store whole environment as cache key
+	- [x] determine which lambda abstractions are actually used in evaluation (will get - more cache hits)
+	- [x] fix (or find reason for) cache drop when using inlining - expected to have more - hits than without inlining
+	- [ ] make base class (fun) more consistant
+	- [x] add command line argument for caching
+	- [ ] use more efficient map than std::map and better keys than std::vector<int>
+	- [x] use definitional irrelevance for smarter equality [hard]
+	- [ ] never duplicate work (using Levy's definition) [hard]
 - [ ] efectful expression
-- [x] create translator that is going to use configs as definitions for efectful - expressions (customwriter)
-- [ ] make possible to create custom expressions with more than 1 argument (ex. add, - multiply)
+	- [x] create translator that is going to use configs as definitions for efectful - expressions (customwriter)
+	- [ ] make possible to create custom expressions with more than 1 argument (ex. add, - multiply)
 - [ ] pass 'parent' as argument to exec
 - [ ] do ALLOC("X") and Init_Bind_"X" in its parent Init instead of its parent Exec
 - [ ] representation: find a good way to print numbers, strings

@@ -217,8 +217,6 @@ def processone(args):
 	writer.write_some(config=config, binds=binds)
 
 def main():
-	print('macro parser loaded :)')
-
 	args = get_arguments()
 	processone(args)
 	

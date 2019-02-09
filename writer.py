@@ -439,22 +439,3 @@ def write_some(config: OutConfig, binds: list):
 	out.footer += footer
 
 	out.dump()
-	print('write some ended')
-
-def main():
-	# expr = r'\b -> b x y'
-	# expr = r'\a b -> x a'
-	expr = r'\a b c -> x (a b) c'
-	# expr = r'\a b -> b'
-
-	p = parse_tokens(expr)
-	p = parse_structure(p, [], [Bind('x', Leaf([], None))], None)
-	# t = p.print(0)
-	# print(t)
-
-	out = SplittedOut('test.cc')
-	write(out, p)
-	print('end writing')
-
-if __name__ == '__main__':
-	main()

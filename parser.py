@@ -295,27 +295,3 @@ def parse_structure(b: Branch, scope: list, binds: list, parent: Leaf) -> Leaf:
 			return lfs[0]
 		re.leafs = lfs
 		return re
-
-def main():
-	# expr = r'   \    a -> \    b ->    (\x    ->    b hello)    a  '
-	# expr = r'   \    a b ->    (\x    ->    b hello)    a  '
-	expr = r'\n f x -> n(\g h -> h (g f h)) (\u -> x) (\u ->u)'
-	# expr = r'\n f x . n(\g h . h (g f h)) (\u . x) (\u .u)'
-	# expr = r'\n f x.n(\g h.h(g f h))(\u.x)(\u.u)'
-	# expr = r'x y z\k -> y z x'
-	# expr = r'\f -> (\x -> x x)(\x -> f(x x))'
-	# expr = r'\x->x y'
-	# expr = r'\a b -> a'
-	# expr = r'\b -> b x y'
-
-	expr = trimSpaces(expr)
-	print(expr)
-	expr = transformMultipleLambdas(expr)
-	print(expr)
-
-	p = parse_tokens(expr)
-	p = parse_structure(p, [], [Bind('x', Leaf([], None), None)], None)
-	t = p.print(0)
-	print(t)
-if __name__ == '__main__':
-	main()

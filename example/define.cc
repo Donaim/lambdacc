@@ -15,8 +15,7 @@ der(Bind_print_false) {
 der(Bind_print_true) {
 };
 
-int Init_Bind_ec (ff me_abs) {
-	struct Bind_ec * me = (struct Bind_ec *)me_abs; 
+int Init_Bind_ec (struct Bind_ec *me) {
 	me->eval_now = Exec_Bind_ec; 
 	me->counter = 0;
 
@@ -32,8 +31,7 @@ int Init_Bind_ec (ff me_abs) {
 	return 0;
 }
 
-int Init_Bind_error (ff me_abs) {
-	struct Bind_error * me = (struct Bind_error *)me_abs; 
+int Init_Bind_error (struct Bind_error *me) {
 	me->eval_now = Exec_Bind_error; 
 
 #ifdef USE_TYPEID
@@ -48,8 +46,7 @@ int Init_Bind_error (ff me_abs) {
 	return 0;
 }
 
-int Init_Bind_facc (ff me_abs) {
-	struct Bind_facc * me = (struct Bind_facc *)me_abs; 
+int Init_Bind_facc (struct Bind_facc *me) {
 	me->eval_now = Exec_Bind_facc; 
 
 #ifdef USE_TYPEID
@@ -64,8 +61,7 @@ int Init_Bind_facc (ff me_abs) {
 	return 0;
 }
 
-int Init_Bind_print_false (ff me_abs) {
-	struct Bind_print_false * me = (struct Bind_print_false *)me_abs; 
+int Init_Bind_print_false (struct Bind_print_false *me) {
 	me->eval_now = Exec_Bind_print_false; 
 
 #ifdef USE_TYPEID
@@ -80,8 +76,7 @@ int Init_Bind_print_false (ff me_abs) {
 	return 0;
 }
 
-int Init_Bind_print_true (ff me_abs) {
-	struct Bind_print_true * me = (struct Bind_print_true *)me_abs; 
+int Init_Bind_print_true (struct Bind_print_true *me) {
 	me->eval_now = Exec_Bind_print_true; 
 
 #ifdef USE_TYPEID

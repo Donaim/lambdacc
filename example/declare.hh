@@ -10,11 +10,11 @@ struct Bind_facc;
 struct Bind_print_false;
 struct Bind_print_true;
 
-int Init_Bind_ec (ff me_abs);
-int Init_Bind_error (ff me_abs);
-int Init_Bind_facc (ff me_abs);
-int Init_Bind_print_false (ff me_abs);
-int Init_Bind_print_true (ff me_abs);
+int Init_Bind_ec (struct Bind_ec *me);
+int Init_Bind_error (struct Bind_error *me);
+int Init_Bind_facc (struct Bind_facc *me);
+int Init_Bind_print_false (struct Bind_print_false *me);
+int Init_Bind_print_true (struct Bind_print_true *me);
 
 ff Exec_Bind_ec (ff me_abs, ff __x);
 ff Exec_Bind_error (ff me_abs, ff __x);

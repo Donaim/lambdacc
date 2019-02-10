@@ -115,36 +115,49 @@ def loadcfg(path: str) -> list:
 
 	return objs
 
+def carry_bind_name(original_bind_name: str, argument_index: int) -> str:
+	return 'BindPriv_{}_{}'.format(original_bind_name, argument_index)
+
 def get_struct_decl(o: lambda_obj) -> str:
 	return 'struct Bind_{}'.format(o.name)
+def get_carry_struct_decl(original_bind_name: str, argument_index: int) -> str:
+	return 'struct ' + carry_bind_name(original_bind_name, argument_index)
+
+def get_carry_definition(original_bind_name: str, argument_index: int) -> str:
+	return 'der(BindPriv_{}_{}) {{ }};'.format(original_bind_name, argument_index)
 
 def get_definition(o: lambda_obj) -> str:
 	re = ''
-	if len(o.exec_func.args) <= 1:
-		re += 'der(Bind_{}) {{\n'.format(o.name)
-		for m in o.mems:
-			re += '	{} {};\n'.format(o.mems[m][0], m)
+	if len(o.exec_func.args) > 1:
+		for i, a in enumerate(o.exec_func.args):
+			re += get_carry_definition(o.name, i) + '\n'
 
-		if o.insance:
-			re += '	Bind_{name}() {{ Init_Bind_{name}(this); }} \n'.format(name=o.name)
-			re += '}} Instance_Bind_{};'.format(o.name)
-		else:
-			re += '};'
+	re += 'der(Bind_{}) {{\n'.format(o.name)
+	for m in o.mems:
+		re += '	{} {};\n'.format(o.mems[m][0], m)
+
+	if o.insance:
+		re += '	Bind_{name}() {{ Init_Bind_{name}(this); }} \n'.format(name=o.name)
+		re += '}} Instance_Bind_{};'.format(o.name)
 	else:
-		pass
-		# raise Exception('not supported yet')
+		re += '};'
+
 	return re
 
 def get_typeid_str(o: lambda_obj) -> str:
 	return 'const int Typeid_Bind_{} = __COUNTER__ ;'.format(o.name)
+def get_carry_typeid_str(original_bind_name: str, argument_index: int):
+	return 'const int Typeid_{} = __COUNTER__;'.format(carry_bind_name(original_bind_name, argument_index))
 
 def get_init_decl(o: lambda_obj) -> str:
-	return 'int Init_Bind_{} (ff me_abs)'.format(o.name)
+	return 'int Init_Bind_{name} (struct Bind_{name} *me)'.format(name=o.name)
+def get_carry_init_decl(original_bind_name: str, argument_index: int) -> str:
+	return 'int Init_{name} (struct {name} *me)'.format(name=carry_bind_name(original_bind_name, argument_index))
+
 def get_init_func(o: lambda_obj) -> str:
 	re = ''
 	if len(o.exec_func.args) <= 1:
 		re += get_init_decl(o) + ' {\n'
-		re += '	struct Bind_{} * me = (struct Bind_{} *)me_abs; \n'.format(o.name, o.name)
 		re += '	me->eval_now = Exec_Bind_{}; \n'.format(o.name)
 
 		for m in o.mems:

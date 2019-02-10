@@ -115,7 +115,10 @@ def parse_text(text: str) -> iter:
 
 			b = bdict[tid]
 			s = parse_structure( b=br, scope=[], binds=binds, parent=b )
-			b.target = s
+			if type(s) is Bind:
+				b.target = s.target
+			else:
+				b.target = s
 
 			yield ParsedLine(bind=b, all=t.all)
 		else:

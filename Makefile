@@ -6,6 +6,7 @@ additional-deps = Makefile  $(shell ls *.py)
 
 CFLAGS = -O3
 TFLAGS =
+CPP = clang++
 
 run: all
 	./$(PROJ).exe
@@ -14,22 +15,22 @@ all: $(PROJ).exe
 	@echo compiled
 
 test:
-	$(MAKE) all PROJ=test
+	$(MAKE) all PROJ=test CFLAGS=''
 	test/checkout.sh
-	$(MAKE) all PROJ=test   TFLAGS='--no-do-caching'
+	$(MAKE) all PROJ=test   TFLAGS='--no-do-caching' CFLAGS=''
 	test/checkout.sh
-	$(MAKE) all PROJ=test   TFLAGS='--no-do-caching --no-use-typeid'
+	$(MAKE) all PROJ=test   TFLAGS='--no-do-caching --no-use-typeid' CFLAGS=''
 	test/checkout.sh
-	$(MAKE) all PROJ=test   TFLAGS='--make-inline --no-do-caching --no-use-typeid'
+	$(MAKE) all PROJ=test   TFLAGS='--make-inline --no-do-caching --no-use-typeid' CFLAGS=''
 	test/checkout.sh
-	$(MAKE) all PROJ=test   TFLAGS='--make-inline --no-use-typeid'
+	$(MAKE) all PROJ=test   TFLAGS='--make-inline --no-use-typeid'  CFLAGS=''
 	test/checkout.sh
 
 clean:
 	- rm -f $(PROJ).cc $(PROJ).exe $(PROJ)/script.inline.ini
 
 $(PROJ).exe: $(PROJ).cc
-	g++ -o $@ $^ $(CFLAGS)
+	$(CPP) -o $@ $^ $(CFLAGS)
 
 $(PROJ).cc: $(PROJ)/script.ini $(headers) $(additional-deps)
 	./lambda-cpp.py --source $(PROJ)/script.ini --dest $(PROJ).cc \

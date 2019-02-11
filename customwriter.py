@@ -288,10 +288,9 @@ def get_exec_func(o: lambda_obj) -> str:
 							name = carry_bind_name(original_bind_name, argument_index),
 							ret_t = ret_t)
 
-		if len(o.exec_func.args) > 1:
-			for (i, arg) in enumerate(o.exec_func.args_pre):
-				ret_t = o.exec_func.args_pre[i] if i < len(o.exec_func.args_pre) - 1 else 'Bind_' + o.name
-				re += carry_common( o.name, i, ret_t )
+		for (i, arg) in enumerate(o.exec_func.args_pre):
+			ret_t = o.exec_func.args_pre[i] if i < len(o.exec_func.args_pre) - 1 else 'Bind_' + o.name
+			re += carry_common( o.name, i, ret_t )
 
 	return re
 

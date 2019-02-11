@@ -212,6 +212,8 @@ bool Cache_Bind_add (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	}
 
 
+	
+	
 
 
 	return false;
@@ -237,8 +239,9 @@ bool Cache_Bind_ec (ff me_abs, mapkey_t * ret, recursion_set * set) {
 		ret->push_back(-1);
 	}
 
-	ret->push_back(me->counter);
 
+	ret->push_back(me->counter);
+	
 
 
 	return false;
@@ -270,6 +273,8 @@ bool Cache_Bind_facc (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	}
 
 
+	
+	
 
 
 	return false;

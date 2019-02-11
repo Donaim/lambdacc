@@ -76,10 +76,10 @@ class lambda_obj:
 			codepre = ''
 			for arg in self.args:
 				if self.args[arg].annotation is inspect._empty:
-					codepre += 'ff {name} = ${name};\n'.format(name = arg)
+					codepre += '	ff {name} = ${name};\n'.format(name = arg)
 				else:
 					arg_t = self.args[arg].annotation.__name__
-					codepre += '''
+					codepre += tufold(block_norm('''
 					struct Bind_{t} * {name} = (struct Bind_{t} *) (${name}->eval(&Instance_Bind_error));
 
 					#ifdef USE_TYPEID
@@ -89,28 +89,25 @@ class lambda_obj:
 					}}
 					#endif
 
-					'''.format(t = arg_t, name = arg)
+					''', 1)).format(t = arg_t, name = arg)
 
 			if not self.sign.return_annotation is inspect._empty:
 				arg_t = self.sign.return_annotation.__name__
-				codepre += '''
+				codepre += tufold(block_norm('''
 				struct Bind_{t} * ret = ALLOC(Bind_{t});
 				if (Init_Bind_{t}(ret)) {{
 					puts("Initialization failed");
 					return &Instance_Bind_error;
 				}}
-				'''.format(t = arg_t)
+				''', 1)).format(t = arg_t)
 
+			self.code = tufold(block_norm(self.code, 1))
 			self.code = codepre + self.code
 
 			curr_str = 'me'
 			for a in reversed(self.args):
 				self.code = self.code.replace('$' + a, curr_str + '->x')
 				curr_str += '->parent'
-
-			self.code = self.code.split('\n')
-			self.code = map(lambda s: '\t' + s.strip(), self.code)
-			self.code = '\n'.join(self.code)
 
 def loadcfg(path: str) -> list:
 	mod = load_dynamic(path)

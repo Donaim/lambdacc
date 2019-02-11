@@ -198,7 +198,7 @@ def get_cache_func(o: lambda_obj) -> str:
 	re = get_cache_decl(o) + ' {'
 
 	if o.pure:
-		def common(fullname: str, decl: str, rest: list) -> list:
+		def common(fullname: str, decl: str, rest: list, custom_code: str) -> list:
 			# use custom code from cache function doc
 			
 			# call cache function to get the rest
@@ -209,8 +209,8 @@ def get_cache_func(o: lambda_obj) -> str:
 			custom_mems = tufold(block_norm(custom_mems, 1))
 
 			custom_block = ''
-			if o.cache_func.code:
-				custom_block = block_norm(o.cache_func.code, 1)
+			if custom_code:
+				custom_block = block_norm(custom_code, 1)
 
 			return tufold(block_norm('''
 				{declaration} {{
@@ -242,7 +242,7 @@ def get_cache_func(o: lambda_obj) -> str:
 						custom_mems=custom_mems,
 						name=fullname)
 
-		return common('Bind_' + o.name, get_cache_decl(o), rest=o.cache_func.f())
+		return common('Bind_' + o.name, get_cache_decl(o), rest=o.cache_func.f(), custom_code=o.cache_func.code)
 	else:
 		return tufold([(0, re), (1, 'return true;'), (0, '}')])
 

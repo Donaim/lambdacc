@@ -6,7 +6,7 @@ import os, sys
 from collections import OrderedDict
 
 import writer
-from writer import line, lfold, tufold
+from writer import line, lfold, tufold, block_norm
 
 def instance(x):
 	''' Flag for classes that want to have their instance predefined '''
@@ -195,49 +195,57 @@ def get_init_func(o: lambda_obj) -> str:
 def get_cache_decl(o: lambda_obj) -> str:
 	return 'bool Cache_Bind_{} (ff me_abs, mapkey_t * ret, recursion_set * set)'.format(o.name)
 def get_cache_func(o: lambda_obj) -> str:
-	re = ''
-	re += get_cache_decl(o) + ' {\n'
+	re = get_cache_decl(o) + ' {'
 
 	if o.pure:
-		re += '	struct Bind_{} * me = (struct Bind_{} *)me_abs; \n'.format(o.name, o.name)
+		def common(fullname: str, decl: str) -> list:
+			# use custom code from cache function doc
+			
+			# call cache function to get the rest
+			custom_mems = []
+			rest = o.cache_func.f()
+			for r in rest:
+				custom_mems.append('ret->push_back({});'.format(r))
+			custom_mems = lfold(custom_mems)
+			custom_mems = tufold(block_norm(custom_mems, 0))
 
-		re += '''
-	if (set->count(me_abs) > 0) {
-		ret->push_back(-2);
-		return false;
-	} else {
-		set->insert(me_abs);
-	}
+			custom_block = ''
+			if o.cache_func.code:
+				custom_block = block_norm(o.cache_func.code, 0)
 
-	ret->push_back(-9);
-	ret->push_back(Typeid_Bind_%s);
+			return tufold(block_norm('''
+				{declaration} {{
+					struct {name} * me = (struct {name} *)me_abs;
+					if (set->count(me_abs) > 0) {{
+						ret->push_back(-2);
+						return false;
+					}} else {{
+						set->insert(me_abs);
+					}}
 
-	if (me->x) {
-		ret->push_back(me->x->cache(me->x, ret, set));
-	} else {
-		ret->push_back(-1);
-	}\n\n''' % o.name
+					ret->push_back(-9);
+					ret->push_back(Typeid_{name});
 
-		# use custom code from cache function doc
-		if o.cache_func.code:
-			re += o.cache_func.code
+					if (me->x) {{
+						ret->push_back(me->x->cache(me->x, ret, set));
+					}} else {{
+						ret->push_back(-1);
+					}}
 
-		# call cache function to get the rest
-		rest = o.cache_func.f()
+					{custom_block}
+					{custom_mems}
 
-		for r in rest:
-			re += '	ret->push_back({});\n'.format(r)
+					return false;
+				}}
+				'''.format(
+						declaration=decl,
+						custom_block=custom_block,
+						custom_mems=custom_mems,
+						name=fullname), 0))
 
-		re += '\n'
-		re += '	return false;'
-		re += '\n}'
-
-		if len(o.exec_func.args) > 1:
-			print("not supported")
+		return common('Bind_' + o.name, get_cache_decl(o))
 	else:
-		re += '	return true;\n}'
-
-	return re
+		return tufold([(0, re), (1, 'return true;'), (0, '}')])
 
 def get_exec_decl(o: lambda_obj) -> str:
 	return 'ff Exec_Bind_{} (ff me_abs, ff __x)'.format(o.name)

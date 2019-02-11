@@ -15,6 +15,25 @@ def lfold(lines: list) -> str:
 	return '\n'.join(lines) + '\n'
 def tufold(tuples: list) -> str:
 	return lfold(map( lambda p: line(code=p[1], indent=p[0]), tuples))
+def block_norm(block: str, indent: int = 1) -> list:
+	lines = block.split('\n')
+	lines = list(filter(lambda line: not (len(line) > 0 and str.isspace(line)), lines))
+
+	def get_indent(line: str) -> int:
+		if len(line) == 0 or line.isspace():
+			return 999
+		count = 0
+		for c in line:
+			if c == '\t': count += 1
+			else: break
+		return count
+
+	ignore = min( map(get_indent, lines) )
+
+	lines = [line[ignore:] for line in lines]
+	lines = [(indent, line) for line in lines]
+
+	return lines
 
 class OutConfig:
 	def __init__(self,

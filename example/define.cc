@@ -1,5 +1,4 @@
 der(BindPriv_add_0) { };
-der(BindPriv_add_1) { };
 der(Bind_add) {
 };
 
@@ -39,18 +38,6 @@ int Init_BindPriv_add_0 (struct BindPriv_add_0 *me) {
 #endif
 #ifdef DO_CACHING
 	me->cache = Cache_BindPriv_add_0;
-	me->cache_key = vector<int>{};
-	me->mysize = sizeof(*me);
-#endif
-	return 0;
-}
-int Init_BindPriv_add_1 (struct BindPriv_add_1 *me) {
-	me->eval_now = Exec_BindPriv_add_1;
-#ifdef USE_TYPEID
-	me->typeuuid = Typeid_BindPriv_add_1;
-#endif
-#ifdef DO_CACHING
-	me->cache = Cache_BindPriv_add_1;
 	me->cache_key = vector<int>{};
 	me->mysize = sizeof(*me);
 #endif

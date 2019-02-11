@@ -67,6 +67,7 @@ class lambda_obj:
 			self.sign = inspect.signature(f)
 			self.name = f.__name__
 			self.args = OrderedDict(self.sign.parameters)
+			self.args_pre = list(self.args)[:-1]
 
 			self.code = f.__doc__
 			if not self.code:
@@ -132,7 +133,7 @@ def get_carry_definition(original_bind_name: str, argument_index: int) -> str:
 def get_definition(o: lambda_obj) -> str:
 	re = ''
 	if len(o.exec_func.args) > 1:
-		for i, a in enumerate(o.exec_func.args):
+		for i, a in enumerate(o.exec_func.args_pre):
 			re += get_carry_definition(o.name, i) + '\n'
 
 	re += 'der(Bind_{}) {{\n'.format(o.name)
@@ -186,7 +187,7 @@ def get_init_func(o: lambda_obj) -> str:
 	re = get_common_init('Bind_' + o.name, o.mems, get_init_decl(o))
 
 	if len(o.exec_func.args) > 1:
-		for (i, arg) in enumerate(o.exec_func.args):
+		for (i, arg) in enumerate(o.exec_func.args_pre):
 			re += get_common_init(carry_bind_name(o.name, i), {}, get_carry_init_decl(o.name, i))
 
 	return re

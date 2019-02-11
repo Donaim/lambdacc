@@ -119,6 +119,20 @@ int Init_Bind_print_true (struct Bind_print_true *me) {
 
 ff Exec_Bind_add (ff me_abs, ff __x) {
 	struct Bind_add * me = (struct Bind_add *)me_abs;
+
+	struct BindPriv_add_0 * ret = ALLOC(BindPriv_add_0);
+	if (Init_BindPriv_add_0(ret)) {
+		fprintf(stderr, "%s", "Could not initialize type BindPriv_add_0 \n");
+	}
+	ret->parent = me_abs;
+	ret->x = nullptr;
+
+	return ret;
+}
+
+
+ff Exec_BindPriv_add_0 (ff me_abs, ff __x) {
+	struct BindPriv_add_0 * me = (struct BindPriv_add_0 *)me_abs;
 	
 	struct Bind_ec * a = (struct Bind_ec *) (me->parent->x->eval(&Instance_Bind_error));
 	
@@ -149,19 +163,6 @@ ff Exec_Bind_add (ff me_abs, ff __x) {
 	ret->counter = a->counter + b->counter;
 	return ret;
 
-}
-
-ff Exec_BindPriv_add_0 (ff me_abs, ff __x) {
-	struct Bind_BindPriv_add_0 * me = (struct Bind_BindPriv_add_0 *)me_abs;
-
-	struct Bind_add * ret = ALLOC(Bind_add);
-	if (Init_Bind_add(ret)) {
-		fprintf(stderr, "%s", "Could not initialize type Bind_add \n");
-	}
-	ret->parent = me_abs;
-	ret->x = nullptr;
-
-	return ret;
 }
 
 

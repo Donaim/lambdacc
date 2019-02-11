@@ -258,21 +258,22 @@ def get_exec_decl(o: lambda_obj) -> str:
 def get_carry_exec_decl(original_bind_name: str, argument_index: int) -> str:
 	return 'ff Exec_{} (ff me_abs, ff __x)'.format(carry_bind_name(original_bind_name, argument_index))
 def get_exec_func(o: lambda_obj) -> str:
-	re = tufold(block_norm('''
+	def last_arg(fullname: str, decl: str, code: str) -> str:
+		return tufold(block_norm('''
 			{declaration} {{
-				struct Bind_{name} * me = (struct Bind_{name} *)me_abs;
+				struct {name} * me = (struct {name} *)me_abs;
 			{code}
 			}}
 			''', 0)).format(
-						declaration=get_exec_decl(o),
-						code=o.exec_func.code,
-						name=o.name)
+						declaration = decl,
+						code        = code,
+						name        = fullname)
 
 	if len(o.exec_func.args) > 1:
-		def carry_common(original_bind_name: str, argument_index: int, ret_t: str) -> str:
+		def carry_common(decl, fullname, ret_t: str) -> str:
 			return tufold(block_norm('''
 				{declaration} {{
-					struct Bind_{name} * me = (struct Bind_{name} *)me_abs;
+					struct {name} * me = (struct {name} *)me_abs;
 
 					struct {ret_t} * ret = ALLOC({ret_t});
 					if (Init_{ret_t}(ret)) {{
@@ -284,15 +285,35 @@ def get_exec_func(o: lambda_obj) -> str:
 					return ret;
 				}}
 				''', 0)).format(
-							declaration = get_carry_exec_decl(original_bind_name, argument_index),
-							name = carry_bind_name(original_bind_name, argument_index),
+							declaration = decl,
+							name = fullname,
 							ret_t = ret_t)
 
-		for (i, arg) in enumerate(o.exec_func.args_pre):
-			ret_t = o.exec_func.args_pre[i] if i < len(o.exec_func.args_pre) - 1 else 'Bind_' + o.name
-			re += carry_common( o.name, i, ret_t )
+		re = ''
 
-	return re
+		re += carry_common(
+			decl     = get_exec_decl(o),
+			fullname = 'Bind_' + o.name,
+			ret_t    = carry_bind_name(o.name, 0)) + '\n'
+
+		for (i, arg) in enumerate(o.exec_func.args_pre[:-1]):
+			ret_t = o.exec_func.args_pre[i + 1]
+			re += carry_common(
+				decl     = get_carry_exec_decl(o.name, i),
+				fullname = carry_bind_name(o.name, i),
+				ret_t    = ret_t )
+
+		re += last_arg(
+			decl     = get_carry_exec_decl(o.name, len(o.exec_func.args_pre) - 1),
+			fullname = carry_bind_name(o.name, len(o.exec_func.args_pre) - 1),
+			code     = o.exec_func.code)
+
+		return re
+	else:
+		return last_arg(
+			fullname = 'Bind_' + o.name,
+			decl     = get_exec_decl(o),
+			code     = o.exec_func.code)
 
 def write(objs, args):
 

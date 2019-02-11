@@ -9,6 +9,13 @@ TYPEID_TYPE = 'int'
 COUNT_TOTAL_EXEC_NAME = 'total_eval_count'
 COUNT_CACHE_NAME      = 'g_cache_hits_count'
 
+def line(code: str, indent: int = 1) -> str:
+	return ('\t' * indent) + code
+def lfold(lines: list) -> str:
+	return '\n'.join(lines) + '\n'
+def tufold(tuples: list) -> str:
+	return lfold(map( lambda p: line(code=p[1], indent=p[0]), tuples))
+
 class OutConfig:
 	def __init__(self,
 			filename: str,

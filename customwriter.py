@@ -5,6 +5,9 @@ import importlib.util
 import os, sys
 from collections import OrderedDict
 
+import writer
+from writer import line, lfold, tufold
+
 def instance(x):
 	''' Flag for classes that want to have their instance predefined '''
 	x._instance = True
@@ -155,33 +158,36 @@ def get_carry_init_decl(original_bind_name: str, argument_index: int) -> str:
 	return 'int Init_{name} (struct {name} *me)'.format(name=carry_bind_name(original_bind_name, argument_index))
 
 def get_init_func(o: lambda_obj) -> str:
-	def get_common_init(name: str) -> str:
-		re = get_init_decl(o) + ' {\n'
-		re += '	me->eval_now = Exec_Bind_{}; \n'.format(o.name)
+	def get_common_init(fullname: str, mems: dict, decl: str) -> str:
+		re = [
+			(0, decl + ' {'),
+			(1, 'me->eval_now = Exec_{};'.format(fullname))
+		]
 
-		for m in o.mems:
-			re += '	me->{} = {};\n'.format(m, o.mems[m][1])
+		re += list(map(
+			lambda m: (1, 'me->{} = {};'.format(m, mems[m][1])),
+			mems))
 
-		re += '''
-		#ifdef USE_TYPEID
-			me->typeuuid = Typeid_Bind_{};
-		#endif
-		'''.format(o.name)
+		re += [
+			(0, '#ifdef USE_TYPEID'),
+			(1, 'me->typeuuid = Typeid_{};'.format(fullname)),
+			(0, '#endif'),
+			(0, '#ifdef DO_CACHING'),
+			(1, 'me->cache = Cache_{};'.format(fullname)),
+			(1, 'me->cache_key = vector<int>{};'),
+			(1, 'me->mysize = sizeof(*me);'),
+			(0, '#endif'),
+			(1, 'return 0;'),
+			(0, '}')
+		]
 
-		re += '''
-		#ifdef DO_CACHING
-			me->cache = Cache_Bind_{};
-			me->cache_key = vector<int>{{}};
-			me->mysize = sizeof(*me);
-		#endif
-		'''.format(o.name)
-		re += '	return 0;\n'
-		re += '}'
+		return tufold(re)
 
+	re = get_common_init('Bind_' + o.name, o.mems, get_init_decl(o))
 
 	if len(o.exec_func.args) > 1:
 		for (i, arg) in enumerate(o.exec_func.args):
-			get_carry_init_decl
+			re += get_common_init(carry_bind_name(o.name, i), {}, get_carry_init_decl(o.name, i))
 
 	return re
 

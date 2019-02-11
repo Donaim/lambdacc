@@ -193,8 +193,36 @@ ff Exec_Bind_print_true (ff me_abs, ff __x) {
 
 #ifdef DO_CACHING
 
+bool Cache_BindPriv_add_0 (ff me_abs, mapkey_t * ret, recursion_set * set) {
+	struct BindPriv_add_0 * me = (struct BindPriv_add_0 *)me_abs;
+
+	if (set->count(me_abs) > 0) {
+		ret->push_back(-2);
+		return false;
+	} else {
+		set->insert(me_abs);
+	}
+
+	ret->push_back(-9);
+	ret->push_back(Typeid_BindPriv_add_0);
+
+	if (me->x) {
+		ret->push_back(me->x->cache(me->x, ret, set));
+	} else {
+		ret->push_back(-1);
+	}
+
+
+	
+	
+
+
+	return false;
+}
+
 bool Cache_Bind_add (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	struct Bind_add * me = (struct Bind_add *)me_abs;
+
 	if (set->count(me_abs) > 0) {
 		ret->push_back(-2);
 		return false;
@@ -223,6 +251,7 @@ bool Cache_Bind_add (ff me_abs, mapkey_t * ret, recursion_set * set) {
 
 bool Cache_Bind_ec (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	struct Bind_ec * me = (struct Bind_ec *)me_abs;
+
 	if (set->count(me_abs) > 0) {
 		ret->push_back(-2);
 		return false;
@@ -248,6 +277,7 @@ bool Cache_Bind_ec (ff me_abs, mapkey_t * ret, recursion_set * set) {
 }
 
 
+
 bool Cache_Bind_error (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	return true;
 }
@@ -256,6 +286,7 @@ bool Cache_Bind_error (ff me_abs, mapkey_t * ret, recursion_set * set) {
 
 bool Cache_Bind_facc (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	struct Bind_facc * me = (struct Bind_facc *)me_abs;
+
 	if (set->count(me_abs) > 0) {
 		ret->push_back(-2);
 		return false;
@@ -281,9 +312,11 @@ bool Cache_Bind_facc (ff me_abs, mapkey_t * ret, recursion_set * set) {
 }
 
 
+
 bool Cache_Bind_print_false (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	return true;
 }
+
 
 
 bool Cache_Bind_print_true (ff me_abs, mapkey_t * ret, recursion_set * set) {

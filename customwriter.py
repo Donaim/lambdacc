@@ -194,9 +194,9 @@ def get_init_func(o: lambda_obj) -> str:
 
 def get_cache_decl(o: lambda_obj) -> str:
 	return 'bool Cache_Bind_{} (ff me_abs, mapkey_t * ret, recursion_set * set)'.format(o.name)
+def get_carry_cache_decl(original_bind_name: str, argument_index: int) -> str:
+	return 'bool Cache_{} (ff me_abs, mapkey_t * ret, recursion_set * set)'.format(carry_bind_name(original_bind_name, argument_index))
 def get_cache_func(o: lambda_obj) -> str:
-	re = get_cache_decl(o) + ' {'
-
 	if o.pure:
 		def common(fullname: str, decl: str, rest: list, custom_code: str) -> list:
 			# use custom code from cache function doc
@@ -215,6 +215,7 @@ def get_cache_func(o: lambda_obj) -> str:
 			return tufold(block_norm('''
 				{declaration} {{
 					struct {name} * me = (struct {name} *)me_abs;
+
 					if (set->count(me_abs) > 0) {{
 						ret->push_back(-2);
 						return false;
@@ -242,9 +243,18 @@ def get_cache_func(o: lambda_obj) -> str:
 						custom_mems=custom_mems,
 						name=fullname)
 
-		return common('Bind_' + o.name, get_cache_decl(o), rest=o.cache_func.f(), custom_code=o.cache_func.code)
+		re = ''
+		if len(o.exec_func.args) > 1:
+			for (i, arg) in enumerate(o.exec_func.args_pre):
+				re += common(carry_bind_name(o.name, i), get_carry_cache_decl(o.name, i), rest=[], custom_code=[])
+		re += common('Bind_' + o.name, get_cache_decl(o), rest=o.cache_func.f(), custom_code=o.cache_func.code)
+		return re
 	else:
-		return tufold([(0, re), (1, 'return true;'), (0, '}')])
+		return tufold(block_norm('''
+			{declaration} {{
+				return true;
+			}}
+			'''.format(declaration=get_cache_decl(o)), 0))
 
 def get_exec_decl(o: lambda_obj) -> str:
 	return 'ff Exec_Bind_{} (ff me_abs, ff __x)'.format(o.name)

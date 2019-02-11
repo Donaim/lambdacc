@@ -258,6 +258,8 @@ def get_cache_func(o: lambda_obj) -> str:
 
 def get_exec_decl(o: lambda_obj) -> str:
 	return 'ff Exec_Bind_{} (ff me_abs, ff __x)'.format(o.name)
+def get_carry_exec_decl(original_bind_name: str, argument_index: int) -> str:
+	return 'ff Exec_{} (ff me_abs, ff __x)'.format(carry_bind_name(original_bind_name, argument_index))
 def get_exec_func(o: lambda_obj) -> str:
 	re = ''
 	if len(o.exec_func.args) <= 1:
@@ -273,23 +275,37 @@ def get_exec_func(o: lambda_obj) -> str:
 def write(objs, args):
 
 	with open(args.declarations, 'w') as declarations_f:
-		fs = [get_struct_decl,
-		      get_init_decl,
-		      get_exec_decl]
+		fs = [(get_struct_decl, get_carry_struct_decl),
+		      (get_init_decl, get_carry_init_decl),
+		      (get_exec_decl, get_carry_exec_decl)
+			  ]
 
 		for o in objs:
+			if len(o.exec_func.args) > 1:
+				for (i, arg) in enumerate(o.exec_func.args_pre):
+					declarations_f.write(get_carry_typeid_str(o.name, i))
+					declarations_f.write('\n')
 			declarations_f.write(get_typeid_str(o))
 			declarations_f.write('\n')
 		declarations_f.write('\n')
 
 		for f in fs:
+			(main, pre) = f
 			for o in objs:
-				declarations_f.write(f(o))
+				if len(o.exec_func.args) > 1:
+					for (i, arg) in enumerate(o.exec_func.args_pre):
+						declarations_f.write(pre(o.name, i))
+						declarations_f.write(';\n')
+				declarations_f.write(main(o))
 				declarations_f.write(';\n')
 			declarations_f.write('\n')
 
 		declarations_f.write('#ifdef DO_CACHING\n')
 		for o in objs:
+			if len(o.exec_func.args) > 1:
+				for (i, arg) in enumerate(o.exec_func.args_pre):
+					declarations_f.write(get_carry_cache_decl(o.name, i))
+					declarations_f.write(';\n')
 			declarations_f.write(get_cache_decl(o))
 			declarations_f.write(';\n')
 		declarations_f.write('#endif\n')

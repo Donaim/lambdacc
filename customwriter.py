@@ -258,8 +258,7 @@ def get_exec_decl(o: lambda_obj) -> str:
 def get_carry_exec_decl(original_bind_name: str, argument_index: int) -> str:
 	return 'ff Exec_{} (ff me_abs, ff __x)'.format(carry_bind_name(original_bind_name, argument_index))
 def get_exec_func(o: lambda_obj) -> str:
-	if len(o.exec_func.args) <= 1:
-		return tufold(block_norm('''
+	re = tufold(block_norm('''
 			{declaration} {{
 				struct Bind_{name} * me = (struct Bind_{name} *)me_abs;
 			{code}
@@ -268,9 +267,33 @@ def get_exec_func(o: lambda_obj) -> str:
 						declaration=get_exec_decl(o),
 						code=o.exec_func.code,
 						name=o.name)
-	else:
-		print("not supported")
-		return ''
+
+	if len(o.exec_func.args) > 1:
+		def carry_common(original_bind_name: str, argument_index: int, ret_t: str) -> str:
+			return tufold(block_norm('''
+				{declaration} {{
+					struct Bind_{name} * me = (struct Bind_{name} *)me_abs;
+
+					struct {ret_t} * ret = ALLOC({ret_t});
+					if (Init_{ret_t}(ret)) {{
+						fprintf(stderr, "%s", "Could not initialize type {ret_t} \\n");
+					}}
+					ret->parent = me_abs;
+					ret->x = nullptr;
+
+					return ret;
+				}}
+				''', 0)).format(
+							declaration = get_carry_exec_decl(original_bind_name, argument_index),
+							name = carry_bind_name(original_bind_name, argument_index),
+							ret_t = ret_t)
+
+		if len(o.exec_func.args) > 1:
+			for (i, arg) in enumerate(o.exec_func.args_pre):
+				ret_t = o.exec_func.args_pre[i] if i < len(o.exec_func.args_pre) - 1 else 'Bind_' + o.name
+				re += carry_common( o.name, i, ret_t )
+
+	return re
 
 def write(objs, args):
 

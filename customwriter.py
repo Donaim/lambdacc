@@ -155,33 +155,34 @@ def get_carry_init_decl(original_bind_name: str, argument_index: int) -> str:
 	return 'int Init_{name} (struct {name} *me)'.format(name=carry_bind_name(original_bind_name, argument_index))
 
 def get_init_func(o: lambda_obj) -> str:
-	re = ''
-	if len(o.exec_func.args) <= 1:
-		re += get_init_decl(o) + ' {\n'
+	def get_common_init(name: str) -> str:
+		re = get_init_decl(o) + ' {\n'
 		re += '	me->eval_now = Exec_Bind_{}; \n'.format(o.name)
 
 		for m in o.mems:
 			re += '	me->{} = {};\n'.format(m, o.mems[m][1])
 
 		re += '''
-#ifdef USE_TYPEID
-	me->typeuuid = Typeid_Bind_{};
-#endif
-'''.format(o.name)
+		#ifdef USE_TYPEID
+			me->typeuuid = Typeid_Bind_{};
+		#endif
+		'''.format(o.name)
 
 		re += '''
-#ifdef DO_CACHING
-	me->cache = Cache_Bind_{};
-	me->cache_key = vector<int>{{}};
-	me->mysize = sizeof(*me);
-#endif
-'''.format(o.name)
-	else:
-		pass
-		# raise Exception('not supported yet')
+		#ifdef DO_CACHING
+			me->cache = Cache_Bind_{};
+			me->cache_key = vector<int>{{}};
+			me->mysize = sizeof(*me);
+		#endif
+		'''.format(o.name)
+		re += '	return 0;\n'
+		re += '}'
 
-	re += '	return 0;\n'
-	re += '}'
+
+	if len(o.exec_func.args) > 1:
+		for (i, arg) in enumerate(o.exec_func.args):
+			get_carry_init_decl
+
 	return re
 
 def get_cache_decl(o: lambda_obj) -> str:

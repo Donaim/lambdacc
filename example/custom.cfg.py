@@ -64,12 +64,12 @@ class facc:
 	def cache():
 		return []
 
-# class add:
-# 	def exec(a: ec, b: ec) -> ec:
-# 		'''
-# 		ret->counter = a->counter + b->counter;
-# 		return ret;
-# 		'''
+class add:
+	def exec(a: ec, b: ec) -> ec:
+		'''
+		ret->counter = a->counter + b->counter;
+		return ret;
+		'''
 
-# 	def cache() -> list:
-# 		return []
+	def cache() -> list:
+		return []

@@ -133,26 +133,22 @@ ff Exec_Bind_add (ff me_abs, ff __x) {
 
 ff Exec_BindPriv_add_0 (ff me_abs, ff __x) {
 	struct BindPriv_add_0 * me = (struct BindPriv_add_0 *)me_abs;
-	
+
 	struct Bind_ec * a = (struct Bind_ec *) (me->parent->x->eval(&Instance_Bind_error));
-	
-	#ifdef USE_TYPEID
+#ifdef USE_TYPEID
 	if (a->typeuuid != Typeid_Bind_ec) {
 		puts("Type error");
 		return &Instance_Bind_error;
 	}
-	#endif
-	
-	
+#endif
+
 	struct Bind_ec * b = (struct Bind_ec *) (me->x->eval(&Instance_Bind_error));
-	
-	#ifdef USE_TYPEID
+#ifdef USE_TYPEID
 	if (b->typeuuid != Typeid_Bind_ec) {
 		puts("Type error");
 		return &Instance_Bind_error;
 	}
-	#endif
-	
+#endif
 	
 	struct Bind_ec * ret = ALLOC(Bind_ec);
 	if (Init_Bind_ec(ret)) {
@@ -199,16 +195,14 @@ ff Exec_Bind_error (ff me_abs, ff __x) {
 
 ff Exec_Bind_facc (ff me_abs, ff __x) {
 	struct Bind_facc * me = (struct Bind_facc *)me_abs;
-	
+
 	struct Bind_ec * arg = (struct Bind_ec *) (me->x->eval(&Instance_Bind_error));
-	
-	#ifdef USE_TYPEID
+#ifdef USE_TYPEID
 	if (arg->typeuuid != Typeid_Bind_ec) {
 		puts("Type error");
 		return &Instance_Bind_error;
 	}
-	#endif
-	
+#endif
 	
 	struct Bind_ec * ret = ALLOC(Bind_ec);
 	if (Init_Bind_ec(ret)) {

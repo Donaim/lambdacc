@@ -80,16 +80,14 @@ class lambda_obj:
 				else:
 					arg_t = self.args[arg].annotation.__name__
 					codepre += tufold(block_norm('''
-					struct Bind_{t} * {name} = (struct Bind_{t} *) (${name}->eval(&Instance_Bind_error));
-
+						struct Bind_{t} * {name} = (struct Bind_{t} *) (${name}->eval(&Instance_Bind_error));
 					#ifdef USE_TYPEID
-					if ({name}->typeuuid != Typeid_Bind_{t}) {{
-						puts("Type error");
-						return &Instance_Bind_error;
-					}}
+						if ({name}->typeuuid != Typeid_Bind_{t}) {{
+							puts("Type error");
+							return &Instance_Bind_error;
+						}}
 					#endif
-
-					''', 1)).format(t = arg_t, name = arg)
+					''', 0)).format(t = arg_t, name = arg)
 
 			if not self.sign.return_annotation is inspect._empty:
 				arg_t = self.sign.return_annotation.__name__

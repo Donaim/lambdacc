@@ -261,16 +261,19 @@ def get_exec_decl(o: lambda_obj) -> str:
 def get_carry_exec_decl(original_bind_name: str, argument_index: int) -> str:
 	return 'ff Exec_{} (ff me_abs, ff __x)'.format(carry_bind_name(original_bind_name, argument_index))
 def get_exec_func(o: lambda_obj) -> str:
-	re = ''
 	if len(o.exec_func.args) <= 1:
-		re += get_exec_decl(o) + ' {\n'
-		re += '	struct Bind_{} * me = (struct Bind_{} *)me_abs; \n'.format(o.name, o.name)
-		re += o.exec_func.code
-		re += '\n}'
+		return tufold(block_norm('''
+			{declaration} {{
+				struct Bind_{name} * me = (struct Bind_{name} *)me_abs;
+			{code}
+			}}
+			''', 0)).format(
+						declaration=get_exec_decl(o),
+						code=o.exec_func.code,
+						name=o.name)
 	else:
 		print("not supported")
-
-	return re
+		return ''
 
 def write(objs, args):
 

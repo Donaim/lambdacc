@@ -124,9 +124,6 @@ def parse_text(text: str) -> iter:
 		else:
 			yield ParsedLine(bind=None, all=t.all)
 
-	for b in binds:
-		print('bind {} is recursive: {}'.format(b.name, inliner.is_binding_recursive(b)))
-
 def get_arguments():
 	import argparse
 	parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)

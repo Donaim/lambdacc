@@ -3,28 +3,25 @@ import parser
 from parser import *
 
 def anyeqrec(target: Leaf, bind: Bind, mem: dict) -> bool:
+	if target is None:
+		return False
+
 	if target.unique_id in mem:
-		return True
+		return False
 	else:
 		mem[target.unique_id] = True
 
-	if target is None:
-		return False
 	if type(target) is Bind:
-		print('visiting {}; its target is {};'.format(target.name, type(target.target)))
-		if target == bind:
+		if target == bind or ((not (target.target is None)) and target.target == bind.target):
 			return True
-		return anyeqrec(target.target, bind, mem) or any ( [ anyeqrec(l, bind=bind, mem=mem) for l in target.leafs ] )
+		return anyeqrec(target.target, bind=bind, mem=mem) or any ( [ anyeqrec(l, bind=bind, mem=mem) for l in target.leafs ] )
 	else:
 		return any ( [ anyeqrec(l, bind=bind, mem=mem) for l in target.leafs ] )
 
 def is_binding_recursive(bind: Bind) -> bool:
 	if bind.target is None:
 		return False
-	if bind.target == bind:
-		return True
 	else:
-		print('has {} leafs: {}'.format(bind.name, len(bind.leafs) > 0))
 		return anyeqrec(target=bind.target, bind=bind, mem = {})
 
 def get_leaf_text(le: Leaf) -> str:

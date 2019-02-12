@@ -245,11 +245,19 @@ def get_cache_func(o: lambda_obj) -> str:
 		re += common('Bind_' + o.name, get_cache_decl(o), rest=o.cache_func.f(), custom_code=o.cache_func.code)
 		return re
 	else:
-		return tufold(block_norm('''
-			{declaration} {{
-				return true;
-			}}
-			'''.format(declaration=get_cache_decl(o)), 0))
+		def common(decl: str) -> str:
+			return tufold(block_norm('''
+				{declaration} {{
+					return true;
+				}}
+				'''.format(declaration=decl), 0))
+
+		re = ''
+		if len(o.exec_func.args) > 1:
+			for (i, arg) in enumerate(o.exec_func.args_pre):
+				re += common(get_carry_cache_decl(o.name, i))
+		re += common(get_cache_decl(o))
+		return re
 
 def get_exec_decl(o: lambda_obj) -> str:
 	return 'ff Exec_Bind_{} (ff me_abs, ff __x)'.format(o.name)

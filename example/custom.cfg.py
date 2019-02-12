@@ -73,3 +73,40 @@ class add:
 
 	def cache() -> list:
 		return []
+
+class booly:
+
+	value = ('bool', 'false')
+
+	def exec(x):
+		'''
+
+		if (x == fin) {
+			if (me->value) {
+				puts("true");
+			} else {
+				puts("false");
+			}
+		}
+
+		return me;
+		'''
+
+class bnot:
+
+	def exec(x: booly) -> booly:
+		'''
+		ret->value = ! x->value;
+		return ret;
+		'''
+
+class mif:
+	def exec(x: booly, a):
+		'''
+		if (x->value) {
+			return a;
+		} else {
+			return x;
+		}
+		'''
+

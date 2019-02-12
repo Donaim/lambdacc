@@ -2,6 +2,13 @@ der(BindPriv_add_0) { };
 der(Bind_add) {
 };
 
+der(Bind_bnot) {
+};
+
+der(Bind_booly) {
+	bool value;
+};
+
 der(Bind_ec) {
 	int counter;
 };
@@ -11,6 +18,10 @@ der(Bind_error) {
 } Instance_Bind_error;
 
 der(Bind_facc) {
+};
+
+der(BindPriv_mif_0) { };
+der(Bind_mif) {
 };
 
 der(Bind_print_false) {
@@ -38,6 +49,35 @@ int Init_BindPriv_add_0 (struct BindPriv_add_0 *me) {
 #endif
 #ifdef DO_CACHING
 	me->cache = Cache_BindPriv_add_0;
+	me->cache_key = vector<int>{};
+	me->mysize = sizeof(*me);
+#endif
+	return 0;
+}
+
+
+int Init_Bind_bnot (struct Bind_bnot *me) {
+	me->eval_now = Exec_Bind_bnot;
+#ifdef USE_TYPEID
+	me->typeuuid = Typeid_Bind_bnot;
+#endif
+#ifdef DO_CACHING
+	me->cache = Cache_Bind_bnot;
+	me->cache_key = vector<int>{};
+	me->mysize = sizeof(*me);
+#endif
+	return 0;
+}
+
+
+int Init_Bind_booly (struct Bind_booly *me) {
+	me->eval_now = Exec_Bind_booly;
+	me->value = false;
+#ifdef USE_TYPEID
+	me->typeuuid = Typeid_Bind_booly;
+#endif
+#ifdef DO_CACHING
+	me->cache = Cache_Bind_booly;
 	me->cache_key = vector<int>{};
 	me->mysize = sizeof(*me);
 #endif
@@ -81,6 +121,32 @@ int Init_Bind_facc (struct Bind_facc *me) {
 #endif
 #ifdef DO_CACHING
 	me->cache = Cache_Bind_facc;
+	me->cache_key = vector<int>{};
+	me->mysize = sizeof(*me);
+#endif
+	return 0;
+}
+
+
+int Init_Bind_mif (struct Bind_mif *me) {
+	me->eval_now = Exec_Bind_mif;
+#ifdef USE_TYPEID
+	me->typeuuid = Typeid_Bind_mif;
+#endif
+#ifdef DO_CACHING
+	me->cache = Cache_Bind_mif;
+	me->cache_key = vector<int>{};
+	me->mysize = sizeof(*me);
+#endif
+	return 0;
+}
+int Init_BindPriv_mif_0 (struct BindPriv_mif_0 *me) {
+	me->eval_now = Exec_BindPriv_mif_0;
+#ifdef USE_TYPEID
+	me->typeuuid = Typeid_BindPriv_mif_0;
+#endif
+#ifdef DO_CACHING
+	me->cache = Cache_BindPriv_mif_0;
 	me->cache_key = vector<int>{};
 	me->mysize = sizeof(*me);
 #endif
@@ -163,6 +229,49 @@ ff Exec_BindPriv_add_0 (ff me_abs, ff __x) {
 
 
 
+ff Exec_Bind_bnot (ff me_abs, ff __x) {
+	struct Bind_bnot * me = (struct Bind_bnot *)me_abs;
+
+	struct Bind_booly * x = (struct Bind_booly *) (me->x->eval(&Instance_Bind_error));
+#ifdef USE_TYPEID
+	if (x->typeuuid != Typeid_Bind_booly) {
+		puts("Type error");
+		return &Instance_Bind_error;
+	}
+#endif
+	
+	struct Bind_booly * ret = ALLOC(Bind_booly);
+	if (Init_Bind_booly(ret)) {
+		puts("Initialization failed");
+		return &Instance_Bind_error;
+	}
+	
+	ret->value = ! x->value;
+	return ret;
+
+}
+
+
+
+ff Exec_Bind_booly (ff me_abs, ff __x) {
+	struct Bind_booly * me = (struct Bind_booly *)me_abs;
+	ff x = me->x;
+	
+	
+	if (x == fin) {
+		if (me->value) {
+			puts("true");
+		} else {
+			puts("false");
+		}
+	}
+	
+	return me;
+
+}
+
+
+
 ff Exec_Bind_ec (ff me_abs, ff __x) {
 	struct Bind_ec * me = (struct Bind_ec *)me_abs;
 	ff arg = me->x;
@@ -217,6 +326,42 @@ ff Exec_Bind_facc (ff me_abs, ff __x) {
 	}
 	
 	return ret;
+
+}
+
+
+
+ff Exec_Bind_mif (ff me_abs, ff __x) {
+	struct Bind_mif * me = (struct Bind_mif *)me_abs;
+
+	struct BindPriv_mif_0 * ret = ALLOC(BindPriv_mif_0);
+	if (Init_BindPriv_mif_0(ret)) {
+		fprintf(stderr, "%s", "Could not initialize type BindPriv_mif_0 \n");
+	}
+	ret->parent = me_abs;
+	ret->x = nullptr;
+
+	return ret;
+}
+
+
+ff Exec_BindPriv_mif_0 (ff me_abs, ff __x) {
+	struct BindPriv_mif_0 * me = (struct BindPriv_mif_0 *)me_abs;
+
+	struct Bind_booly * x = (struct Bind_booly *) (me->parent->x->eval(&Instance_Bind_error));
+#ifdef USE_TYPEID
+	if (x->typeuuid != Typeid_Bind_booly) {
+		puts("Type error");
+		return &Instance_Bind_error;
+	}
+#endif
+	ff a = me->x;
+	
+	if (x->value) {
+		return a;
+	} else {
+		return x;
+	}
 
 }
 
@@ -301,6 +446,18 @@ bool Cache_Bind_add (ff me_abs, mapkey_t * ret, recursion_set * set) {
 
 
 
+bool Cache_Bind_bnot (ff me_abs, mapkey_t * ret, recursion_set * set) {
+	return true;
+}
+
+
+
+bool Cache_Bind_booly (ff me_abs, mapkey_t * ret, recursion_set * set) {
+	return true;
+}
+
+
+
 bool Cache_Bind_ec (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	struct Bind_ec * me = (struct Bind_ec *)me_abs;
 
@@ -361,6 +518,16 @@ bool Cache_Bind_facc (ff me_abs, mapkey_t * ret, recursion_set * set) {
 
 
 	return false;
+}
+
+
+
+bool Cache_BindPriv_mif_0 (ff me_abs, mapkey_t * ret, recursion_set * set) {
+	return true;
+}
+
+bool Cache_Bind_mif (ff me_abs, mapkey_t * ret, recursion_set * set) {
+	return true;
 }
 
 

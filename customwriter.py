@@ -303,7 +303,8 @@ def get_exec_func(o: lambda_obj) -> str:
 			ret_t    = carry_bind_name(o.name, 0)) + '\n'
 
 		for (i, arg) in enumerate(o.exec_func.args_pre[:-1]):
-			ret_t = o.exec_func.args_pre[i + 1]
+			# ret_t = o.exec_func.args_pre[i + 1]
+			ret_t = carry_bind_name(o.name, i + 1)
 			re += carry_common(
 				decl     = get_carry_exec_decl(o.name, i),
 				fullname = carry_bind_name(o.name, i),

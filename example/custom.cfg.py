@@ -101,12 +101,12 @@ class bnot:
 		'''
 
 class mif:
-	def exec(x: booly, a):
+	def exec(x: booly, a, b):
 		'''
 		if (x->value) {
 			return a;
 		} else {
-			return x;
+			return b;
 		}
 		'''
 

@@ -21,6 +21,7 @@ der(Bind_facc) {
 };
 
 der(BindPriv_mif_0) { };
+der(BindPriv_mif_1) { };
 der(Bind_mif) {
 };
 
@@ -147,6 +148,18 @@ int Init_BindPriv_mif_0 (struct BindPriv_mif_0 *me) {
 #endif
 #ifdef DO_CACHING
 	me->cache = Cache_BindPriv_mif_0;
+	me->cache_key = vector<int>{};
+	me->mysize = sizeof(*me);
+#endif
+	return 0;
+}
+int Init_BindPriv_mif_1 (struct BindPriv_mif_1 *me) {
+	me->eval_now = Exec_BindPriv_mif_1;
+#ifdef USE_TYPEID
+	me->typeuuid = Typeid_BindPriv_mif_1;
+#endif
+#ifdef DO_CACHING
+	me->cache = Cache_BindPriv_mif_1;
 	me->cache_key = vector<int>{};
 	me->mysize = sizeof(*me);
 #endif
@@ -348,19 +361,33 @@ ff Exec_Bind_mif (ff me_abs, ff __x) {
 ff Exec_BindPriv_mif_0 (ff me_abs, ff __x) {
 	struct BindPriv_mif_0 * me = (struct BindPriv_mif_0 *)me_abs;
 
-	struct Bind_booly * x = (struct Bind_booly *) (me->parent->x->eval(&Instance_Bind_error));
+	struct BindPriv_mif_1 * ret = ALLOC(BindPriv_mif_1);
+	if (Init_BindPriv_mif_1(ret)) {
+		fprintf(stderr, "%s", "Could not initialize type BindPriv_mif_1 \n");
+	}
+	ret->parent = me_abs;
+	ret->x = nullptr;
+
+	return ret;
+}
+
+ff Exec_BindPriv_mif_1 (ff me_abs, ff __x) {
+	struct BindPriv_mif_1 * me = (struct BindPriv_mif_1 *)me_abs;
+
+	struct Bind_booly * x = (struct Bind_booly *) (me->parent->parent->x->eval(&Instance_Bind_error));
 #ifdef USE_TYPEID
 	if (x->typeuuid != Typeid_Bind_booly) {
 		puts("Type error");
 		return &Instance_Bind_error;
 	}
 #endif
-	ff a = me->x;
+	ff a = me->parent->x;
+	ff b = me->x;
 	
 	if (x->value) {
 		return a;
 	} else {
-		return x;
+		return b;
 	}
 
 }
@@ -523,6 +550,10 @@ bool Cache_Bind_facc (ff me_abs, mapkey_t * ret, recursion_set * set) {
 
 
 bool Cache_BindPriv_mif_0 (ff me_abs, mapkey_t * ret, recursion_set * set) {
+	return true;
+}
+
+bool Cache_BindPriv_mif_1 (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	return true;
 }
 

@@ -841,6 +841,9 @@ ff Exec_BindPriv_pow_0 (ff me_abs, ff __x) {
 	}
 	
 	ret->value = 1;
+	
+	printf("pow %d ^ %d \n", a->value, b->value);
+	
 	for (int i = 0; i < a->value; i++) {
 		ret->value *= b->value;
 	}
@@ -873,6 +876,35 @@ ff Exec_Bind_print_true (ff me_abs, ff __x) {
 
 #ifdef DO_CACHING
 
+bool Cache_Bind_add (ff me_abs, mapkey_t * ret, recursion_set * set) {
+	struct Bind_add * me = (struct Bind_add *)me_abs;
+
+	if (set->count(me_abs) > 0) {
+		ret->push_back(-2);
+		return false;
+	} else {
+		set->insert(me_abs);
+	}
+
+	ret->push_back(-9);
+	ret->push_back(Typeid_Bind_add);
+
+	if (me->x) {
+		ret->push_back(me->x->cache(me->x, ret, set));
+	} else {
+		ret->push_back(-1);
+	}
+
+
+
+
+	
+	
+
+
+	return false;
+}
+
 bool Cache_BindPriv_add_0 (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	struct BindPriv_add_0 * me = (struct BindPriv_add_0 *)me_abs;
 
@@ -892,32 +924,7 @@ bool Cache_BindPriv_add_0 (ff me_abs, mapkey_t * ret, recursion_set * set) {
 		ret->push_back(-1);
 	}
 
-
-	
-	
-
-
-	return false;
-}
-
-bool Cache_Bind_add (ff me_abs, mapkey_t * ret, recursion_set * set) {
-	struct Bind_add * me = (struct Bind_add *)me_abs;
-
-	if (set->count(me_abs) > 0) {
-		ret->push_back(-2);
-		return false;
-	} else {
-		set->insert(me_abs);
-	}
-
-	ret->push_back(-9);
-	ret->push_back(Typeid_Bind_add);
-
-	if (me->x) {
-		ret->push_back(me->x->cache(me->x, ret, set));
-	} else {
-		ret->push_back(-1);
-	}
+	ret->push_back(me->parent->x->cache(me->parent->x, ret, set));
 
 
 	
@@ -949,6 +956,8 @@ bool Cache_Bind_bnot (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	}
 
 
+
+
 	
 	
 
@@ -978,6 +987,8 @@ bool Cache_Bind_booly (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	}
 
 
+
+
 	ret->push_back(me->value);
 	
 
@@ -1005,6 +1016,8 @@ bool Cache_Bind_ec (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	} else {
 		ret->push_back(-1);
 	}
+
+
 
 
 	ret->push_back(me->counter);
@@ -1042,6 +1055,8 @@ bool Cache_Bind_facc (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	}
 
 
+
+
 	
 	
 
@@ -1071,33 +1086,6 @@ bool Cache_Bind_mdec (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	}
 
 
-	
-	
-
-
-	return false;
-}
-
-
-
-bool Cache_BindPriv_meq_0 (ff me_abs, mapkey_t * ret, recursion_set * set) {
-	struct BindPriv_meq_0 * me = (struct BindPriv_meq_0 *)me_abs;
-
-	if (set->count(me_abs) > 0) {
-		ret->push_back(-2);
-		return false;
-	} else {
-		set->insert(me_abs);
-	}
-
-	ret->push_back(-9);
-	ret->push_back(Typeid_BindPriv_meq_0);
-
-	if (me->x) {
-		ret->push_back(me->x->cache(me->x, ret, set));
-	} else {
-		ret->push_back(-1);
-	}
 
 
 	
@@ -1106,6 +1094,8 @@ bool Cache_BindPriv_meq_0 (ff me_abs, mapkey_t * ret, recursion_set * set) {
 
 	return false;
 }
+
+
 
 bool Cache_Bind_meq (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	struct Bind_meq * me = (struct Bind_meq *)me_abs;
@@ -1127,6 +1117,37 @@ bool Cache_Bind_meq (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	}
 
 
+
+
+	
+	
+
+
+	return false;
+}
+
+bool Cache_BindPriv_meq_0 (ff me_abs, mapkey_t * ret, recursion_set * set) {
+	struct BindPriv_meq_0 * me = (struct BindPriv_meq_0 *)me_abs;
+
+	if (set->count(me_abs) > 0) {
+		ret->push_back(-2);
+		return false;
+	} else {
+		set->insert(me_abs);
+	}
+
+	ret->push_back(-9);
+	ret->push_back(Typeid_BindPriv_meq_0);
+
+	if (me->x) {
+		ret->push_back(me->x->cache(me->x, ret, set));
+	} else {
+		ret->push_back(-1);
+	}
+
+	ret->push_back(me->parent->x->cache(me->parent->x, ret, set));
+
+
 	
 	
 
@@ -1135,6 +1156,35 @@ bool Cache_Bind_meq (ff me_abs, mapkey_t * ret, recursion_set * set) {
 }
 
 
+
+bool Cache_Bind_mif (ff me_abs, mapkey_t * ret, recursion_set * set) {
+	struct Bind_mif * me = (struct Bind_mif *)me_abs;
+
+	if (set->count(me_abs) > 0) {
+		ret->push_back(-2);
+		return false;
+	} else {
+		set->insert(me_abs);
+	}
+
+	ret->push_back(-9);
+	ret->push_back(Typeid_Bind_mif);
+
+	if (me->x) {
+		ret->push_back(me->x->cache(me->x, ret, set));
+	} else {
+		ret->push_back(-1);
+	}
+
+
+
+
+	
+	
+
+
+	return false;
+}
 
 bool Cache_BindPriv_mif_0 (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	struct BindPriv_mif_0 * me = (struct BindPriv_mif_0 *)me_abs;
@@ -1154,6 +1204,8 @@ bool Cache_BindPriv_mif_0 (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	} else {
 		ret->push_back(-1);
 	}
+
+	ret->push_back(me->parent->x->cache(me->parent->x, ret, set));
 
 
 	
@@ -1182,32 +1234,7 @@ bool Cache_BindPriv_mif_1 (ff me_abs, mapkey_t * ret, recursion_set * set) {
 		ret->push_back(-1);
 	}
 
-
-	
-	
-
-
-	return false;
-}
-
-bool Cache_Bind_mif (ff me_abs, mapkey_t * ret, recursion_set * set) {
-	struct Bind_mif * me = (struct Bind_mif *)me_abs;
-
-	if (set->count(me_abs) > 0) {
-		ret->push_back(-2);
-		return false;
-	} else {
-		set->insert(me_abs);
-	}
-
-	ret->push_back(-9);
-	ret->push_back(Typeid_Bind_mif);
-
-	if (me->x) {
-		ret->push_back(me->x->cache(me->x, ret, set));
-	} else {
-		ret->push_back(-1);
-	}
+	ret->push_back(me->parent->x->cache(me->parent->x, ret, set));	ret->push_back(me->parent->parent->x->cache(me->parent->parent->x, ret, set));
 
 
 	
@@ -1239,6 +1266,8 @@ bool Cache_Bind_mint (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	}
 
 
+
+
 	ret->push_back(me->value);
 	
 
@@ -1266,6 +1295,8 @@ bool Cache_Bind_mis0 (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	} else {
 		ret->push_back(-1);
 	}
+
+
 
 
 	
@@ -1297,6 +1328,8 @@ bool Cache_Bind_msuc (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	}
 
 
+
+
 	
 	
 
@@ -1305,6 +1338,35 @@ bool Cache_Bind_msuc (ff me_abs, mapkey_t * ret, recursion_set * set) {
 }
 
 
+
+bool Cache_Bind_mult (ff me_abs, mapkey_t * ret, recursion_set * set) {
+	struct Bind_mult * me = (struct Bind_mult *)me_abs;
+
+	if (set->count(me_abs) > 0) {
+		ret->push_back(-2);
+		return false;
+	} else {
+		set->insert(me_abs);
+	}
+
+	ret->push_back(-9);
+	ret->push_back(Typeid_Bind_mult);
+
+	if (me->x) {
+		ret->push_back(me->x->cache(me->x, ret, set));
+	} else {
+		ret->push_back(-1);
+	}
+
+
+
+
+	
+	
+
+
+	return false;
+}
 
 bool Cache_BindPriv_mult_0 (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	struct BindPriv_mult_0 * me = (struct BindPriv_mult_0 *)me_abs;
@@ -1325,32 +1387,7 @@ bool Cache_BindPriv_mult_0 (ff me_abs, mapkey_t * ret, recursion_set * set) {
 		ret->push_back(-1);
 	}
 
-
-	
-	
-
-
-	return false;
-}
-
-bool Cache_Bind_mult (ff me_abs, mapkey_t * ret, recursion_set * set) {
-	struct Bind_mult * me = (struct Bind_mult *)me_abs;
-
-	if (set->count(me_abs) > 0) {
-		ret->push_back(-2);
-		return false;
-	} else {
-		set->insert(me_abs);
-	}
-
-	ret->push_back(-9);
-	ret->push_back(Typeid_Bind_mult);
-
-	if (me->x) {
-		ret->push_back(me->x->cache(me->x, ret, set));
-	} else {
-		ret->push_back(-1);
-	}
+	ret->push_back(me->parent->x->cache(me->parent->x, ret, set));
 
 
 	
@@ -1374,6 +1411,35 @@ bool Cache_Bind_pmint (ff me_abs, mapkey_t * ret, recursion_set * set) {
 
 
 
+bool Cache_Bind_pow (ff me_abs, mapkey_t * ret, recursion_set * set) {
+	struct Bind_pow * me = (struct Bind_pow *)me_abs;
+
+	if (set->count(me_abs) > 0) {
+		ret->push_back(-2);
+		return false;
+	} else {
+		set->insert(me_abs);
+	}
+
+	ret->push_back(-9);
+	ret->push_back(Typeid_Bind_pow);
+
+	if (me->x) {
+		ret->push_back(me->x->cache(me->x, ret, set));
+	} else {
+		ret->push_back(-1);
+	}
+
+
+
+
+	
+	
+
+
+	return false;
+}
+
 bool Cache_BindPriv_pow_0 (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	struct BindPriv_pow_0 * me = (struct BindPriv_pow_0 *)me_abs;
 
@@ -1393,32 +1459,7 @@ bool Cache_BindPriv_pow_0 (ff me_abs, mapkey_t * ret, recursion_set * set) {
 		ret->push_back(-1);
 	}
 
-
-	
-	
-
-
-	return false;
-}
-
-bool Cache_Bind_pow (ff me_abs, mapkey_t * ret, recursion_set * set) {
-	struct Bind_pow * me = (struct Bind_pow *)me_abs;
-
-	if (set->count(me_abs) > 0) {
-		ret->push_back(-2);
-		return false;
-	} else {
-		set->insert(me_abs);
-	}
-
-	ret->push_back(-9);
-	ret->push_back(Typeid_Bind_pow);
-
-	if (me->x) {
-		ret->push_back(me->x->cache(me->x, ret, set));
-	} else {
-		ret->push_back(-1);
-	}
+	ret->push_back(me->parent->x->cache(me->parent->x, ret, set));
 
 
 	

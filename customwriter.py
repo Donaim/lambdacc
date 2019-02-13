@@ -193,7 +193,7 @@ def get_carry_cache_decl(original_bind_name: str, argument_index: int) -> str:
 	return 'bool Cache_{} (ff me_abs, mapkey_t * ret, recursion_set * set)'.format(carry_bind_name(original_bind_name, argument_index))
 def get_cache_func(o: lambda_obj) -> str:
 	if o.pure:
-		def common(fullname: str, decl: str, rest: list, custom_code: str) -> list:
+		def common(fullname: str, decl: str, rest: list, custom_code: str, carry_index: int) -> list:
 			# use custom code from cache function doc
 			
 			# call cache function to get the rest
@@ -206,6 +206,12 @@ def get_cache_func(o: lambda_obj) -> str:
 			custom_block = ''
 			if custom_code:
 				custom_block = block_norm(custom_code, 1)
+
+			previus_xs = ''
+			current_parent = 'me->parent'
+			for i in range(carry_index):
+				previus_xs += line('ret->push_back({p}->x->cache({p}->x, ret, set));'.format(p=current_parent), 1)
+				current_parent += '->parent'
 
 			return tufold(block_norm('''
 				{declaration} {{
@@ -227,6 +233,8 @@ def get_cache_func(o: lambda_obj) -> str:
 						ret->push_back(-1);
 					}}
 
+				{previus_xs}
+
 				{custom_block}
 				{custom_mems}
 
@@ -236,13 +244,14 @@ def get_cache_func(o: lambda_obj) -> str:
 						declaration=decl,
 						custom_block=custom_block,
 						custom_mems=custom_mems,
+						previus_xs=previus_xs,
 						name=fullname)
 
 		re = ''
+		re += common('Bind_' + o.name, get_cache_decl(o), rest=o.cache_func.f(), custom_code=o.cache_func.code, carry_index=0)
 		if len(o.exec_func.args) > 1:
 			for (i, arg) in enumerate(o.exec_func.args_pre):
-				re += common(carry_bind_name(o.name, i), get_carry_cache_decl(o.name, i), rest=[], custom_code=[])
-		re += common('Bind_' + o.name, get_cache_decl(o), rest=o.cache_func.f(), custom_code=o.cache_func.code)
+				re += common(carry_bind_name(o.name, i), get_carry_cache_decl(o.name, i), rest=[], custom_code=[], carry_index=(i + 1))
 		return re
 	else:
 		def common(decl: str) -> str:

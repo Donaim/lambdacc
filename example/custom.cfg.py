@@ -205,10 +205,8 @@ class pow:
 		'''
 		ret->value = 1;
 
-		printf("pow %d ^ %d \\n", a->value, b->value);
-
-		for (int i = 0; i < a->value; i++) {
-			ret->value *= b->value;
+		for (int i = 0; i < b->value; i++) {
+			ret->value *= a->value;
 		}
 		return ret;
 		'''

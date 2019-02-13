@@ -14,6 +14,19 @@ class error:
 		return me;
 		'''
 
+class print_true:
+	def exec(x):
+		'''
+		puts("true");
+		return &Instance_Bind_error;
+		'''
+class print_false:
+	def exec(x):
+		'''
+		puts("false");
+		return &Instance_Bind_error;
+		'''
+
 class ec:
 
 	counter = ('int', '0')
@@ -32,47 +45,6 @@ class ec:
 	def cache() -> list:
 		return ['me->counter']
 
-class print_true:
-	def exec(x):
-		'''
-		puts("true");
-		return &Instance_Bind_error;
-		'''
-class print_false:
-	def exec(x):
-		'''
-		puts("false");
-		return &Instance_Bind_error;
-		'''
-
-class facc:
-	'''
-	fast factorial
-	'''
-
-	def exec(arg: ec) -> ec:
-		'''
-		ret->counter = 1;
-
-		for (int i = 2; i < arg->counter; i++) {
-			ret->counter *= i;
-		}
-
-		return ret;
-		'''
-
-	def cache():
-		return []
-
-class add:
-	def exec(a: ec, b: ec) -> ec:
-		'''
-		ret->counter = a->counter + b->counter;
-		return ret;
-		'''
-
-	def cache() -> list:
-		return []
 
 class booly:
 
@@ -92,6 +64,9 @@ class booly:
 		return me;
 		'''
 
+	def cache():
+		return ['me->value']
+
 class bnot:
 
 	def exec(x: booly) -> booly:
@@ -109,4 +84,63 @@ class mif:
 			return b;
 		}
 		'''
+
+class mint:
+	''' Machine integer '''
+
+	value = ('int', '0')
+
+	def exec(x):
+		'''
+		return me;
+		'''
+
+	def cache():
+		return ['me->value']
+
+class pmint:
+	''' Print machine integer '''
+	def exec(x: mint):
+		'''
+		printf("%d\\n", x->value);
+		return x;
+		'''
+
+class msuc:
+	def exec(x: mint) -> mint:
+		'''
+		ret->value = x->value + 1;
+		return ret;
+		'''
+	def cache():
+		return []
+
+class facc:
+	'''
+	fast factorial
+	'''
+
+	def exec(arg: mint) -> mint:
+		'''
+		ret->value = 1;
+
+		for (int i = 2; i <= arg->value; i++) {
+			ret->value *= i;
+		}
+
+		return ret;
+		'''
+
+	def cache():
+		return []
+
+class add:
+	def exec(a: mint, b: mint) -> mint:
+		'''
+		ret->value = a->value + b->value;
+		return ret;
+		'''
+
+	def cache() -> list:
+		return []
 

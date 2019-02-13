@@ -83,7 +83,7 @@ class lambda_obj:
 						struct Bind_{t} * {name} = (struct Bind_{t} *) (${name}->eval(&Instance_Bind_error));
 					#ifdef USE_TYPEID
 						if ({name}->typeuuid != Typeid_Bind_{t}) {{
-							puts("Type error");
+							fprintf(stderr, "%s", "Type error\\n");
 							return &Instance_Bind_error;
 						}}
 					#endif
@@ -94,7 +94,7 @@ class lambda_obj:
 				codepre += tufold(block_norm('''
 				struct Bind_{t} * ret = ALLOC(Bind_{t});
 				if (Init_Bind_{t}(ret)) {{
-					puts("Initialization failed");
+					fprintf(stderr, "%s", "Initialization failed\\n");
 					return &Instance_Bind_error;
 				}}
 				''', 1)).format(t = arg_t)

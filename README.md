@@ -26,7 +26,7 @@ This project is under active development
 - [x] fix Y combinator case
 - [x] inline bindings: do not introduce overhead from bindings
 - [x] allow order-independent bindings
-	- [ ] fix infinite recursion for inliner
+	- [x] fix infinite recursion for inliner
 - [ ] cache evalutations [hard]
 	- [x] use simple hash map and store whole environment as cache key
 	- [x] determine which lambda abstractions are actually used in evaluation (will get more cache hits)
@@ -38,9 +38,11 @@ This project is under active development
 	- [ ] never duplicate work (using Levy's definition) [hard]
 - [ ] efectful expression
 	- [x] create translator that is going to use configs as definitions for efectful expressions (customwriter)
-	- [ ] make possible to create custom expressions with more than 1 argument (ex. add, multiply)
+	- [x] make possible to create custom expressions with more than 1 argument (ex. add, multiply)
+	- [ ] create list
+	- [ ] create some advanced IO (maybe sound or windowing)
 - [ ] pass 'parent' as argument to exec
-- [ ] do ALLOC("X") and Init_Bind_"X" in its parent Init instead of its parent Exec
+	- [ ] do ALLOC("X") and Init_Bind_"X" in its parent Init instead of its parent Exec
 - [ ] representation: find a good way to print numbers, strings
 - [x] make more names legal
 - [ ] stackoverflow: use queue instead

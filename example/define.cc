@@ -20,6 +20,9 @@ der(Bind_error) {
 der(Bind_facc) {
 };
 
+der(Bind_mdec) {
+};
+
 der(BindPriv_mif_0) { };
 der(BindPriv_mif_1) { };
 der(Bind_mif) {
@@ -29,7 +32,13 @@ der(Bind_mint) {
 	int value;
 };
 
+der(Bind_mis0) {
+};
+
 der(Bind_msuc) {
+};
+
+der(Bind_pbooly) {
 };
 
 der(Bind_pmint) {
@@ -139,6 +148,20 @@ int Init_Bind_facc (struct Bind_facc *me) {
 }
 
 
+int Init_Bind_mdec (struct Bind_mdec *me) {
+	me->eval_now = Exec_Bind_mdec;
+#ifdef USE_TYPEID
+	me->typeuuid = Typeid_Bind_mdec;
+#endif
+#ifdef DO_CACHING
+	me->cache = Cache_Bind_mdec;
+	me->cache_key = vector<int>{};
+	me->mysize = sizeof(*me);
+#endif
+	return 0;
+}
+
+
 int Init_Bind_mif (struct Bind_mif *me) {
 	me->eval_now = Exec_Bind_mif;
 #ifdef USE_TYPEID
@@ -192,6 +215,20 @@ int Init_Bind_mint (struct Bind_mint *me) {
 }
 
 
+int Init_Bind_mis0 (struct Bind_mis0 *me) {
+	me->eval_now = Exec_Bind_mis0;
+#ifdef USE_TYPEID
+	me->typeuuid = Typeid_Bind_mis0;
+#endif
+#ifdef DO_CACHING
+	me->cache = Cache_Bind_mis0;
+	me->cache_key = vector<int>{};
+	me->mysize = sizeof(*me);
+#endif
+	return 0;
+}
+
+
 int Init_Bind_msuc (struct Bind_msuc *me) {
 	me->eval_now = Exec_Bind_msuc;
 #ifdef USE_TYPEID
@@ -199,6 +236,20 @@ int Init_Bind_msuc (struct Bind_msuc *me) {
 #endif
 #ifdef DO_CACHING
 	me->cache = Cache_Bind_msuc;
+	me->cache_key = vector<int>{};
+	me->mysize = sizeof(*me);
+#endif
+	return 0;
+}
+
+
+int Init_Bind_pbooly (struct Bind_pbooly *me) {
+	me->eval_now = Exec_Bind_pbooly;
+#ifdef USE_TYPEID
+	me->typeuuid = Typeid_Bind_pbooly;
+#endif
+#ifdef DO_CACHING
+	me->cache = Cache_Bind_pbooly;
 	me->cache_key = vector<int>{};
 	me->mysize = sizeof(*me);
 #endif
@@ -323,15 +374,6 @@ ff Exec_Bind_booly (ff me_abs, ff __x) {
 	struct Bind_booly * me = (struct Bind_booly *)me_abs;
 	ff x = me->x;
 	
-	
-	if (x == fin) {
-		if (me->value) {
-			puts("true");
-		} else {
-			puts("false");
-		}
-	}
-	
 	return me;
 
 }
@@ -391,6 +433,30 @@ ff Exec_Bind_facc (ff me_abs, ff __x) {
 		ret->value *= i;
 	}
 	
+	return ret;
+
+}
+
+
+
+ff Exec_Bind_mdec (ff me_abs, ff __x) {
+	struct Bind_mdec * me = (struct Bind_mdec *)me_abs;
+
+	struct Bind_mint * x = (struct Bind_mint *) (me->x->eval(&Instance_Bind_error));
+#ifdef USE_TYPEID
+	if (x->typeuuid != Typeid_Bind_mint) {
+		fprintf(stderr, "%s", "Type error\n");
+		return &Instance_Bind_error;
+	}
+#endif
+	
+	struct Bind_mint * ret = ALLOC(Bind_mint);
+	if (Init_Bind_mint(ret)) {
+		fprintf(stderr, "%s", "Initialization failed\n");
+		return &Instance_Bind_error;
+	}
+	
+	ret->value = x->value - 1;
 	return ret;
 
 }
@@ -457,6 +523,34 @@ ff Exec_Bind_mint (ff me_abs, ff __x) {
 
 
 
+ff Exec_Bind_mis0 (ff me_abs, ff __x) {
+	struct Bind_mis0 * me = (struct Bind_mis0 *)me_abs;
+
+	struct Bind_mint * x = (struct Bind_mint *) (me->x->eval(&Instance_Bind_error));
+#ifdef USE_TYPEID
+	if (x->typeuuid != Typeid_Bind_mint) {
+		fprintf(stderr, "%s", "Type error\n");
+		return &Instance_Bind_error;
+	}
+#endif
+	
+	struct Bind_booly * ret = ALLOC(Bind_booly);
+	if (Init_Bind_booly(ret)) {
+		fprintf(stderr, "%s", "Initialization failed\n");
+		return &Instance_Bind_error;
+	}
+	
+	if (x->value == 0) {
+		ret->value = true;
+	} else {
+		ret->value = false;
+	}
+	return ret;
+
+}
+
+
+
 ff Exec_Bind_msuc (ff me_abs, ff __x) {
 	struct Bind_msuc * me = (struct Bind_msuc *)me_abs;
 
@@ -476,6 +570,28 @@ ff Exec_Bind_msuc (ff me_abs, ff __x) {
 	
 	ret->value = x->value + 1;
 	return ret;
+
+}
+
+
+
+ff Exec_Bind_pbooly (ff me_abs, ff __x) {
+	struct Bind_pbooly * me = (struct Bind_pbooly *)me_abs;
+
+	struct Bind_booly * x = (struct Bind_booly *) (me->x->eval(&Instance_Bind_error));
+#ifdef USE_TYPEID
+	if (x->typeuuid != Typeid_Bind_booly) {
+		fprintf(stderr, "%s", "Type error\n");
+		return &Instance_Bind_error;
+	}
+#endif
+	
+	if (x->value) {
+		puts("true");
+	} else {
+		puts("false");
+	}
+	return x;
 
 }
 
@@ -677,6 +793,35 @@ bool Cache_Bind_facc (ff me_abs, mapkey_t * ret, recursion_set * set) {
 
 
 
+bool Cache_Bind_mdec (ff me_abs, mapkey_t * ret, recursion_set * set) {
+	struct Bind_mdec * me = (struct Bind_mdec *)me_abs;
+
+	if (set->count(me_abs) > 0) {
+		ret->push_back(-2);
+		return false;
+	} else {
+		set->insert(me_abs);
+	}
+
+	ret->push_back(-9);
+	ret->push_back(Typeid_Bind_mdec);
+
+	if (me->x) {
+		ret->push_back(me->x->cache(me->x, ret, set));
+	} else {
+		ret->push_back(-1);
+	}
+
+
+	
+	
+
+
+	return false;
+}
+
+
+
 bool Cache_BindPriv_mif_0 (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	return true;
 }
@@ -720,6 +865,12 @@ bool Cache_Bind_mint (ff me_abs, mapkey_t * ret, recursion_set * set) {
 
 
 
+bool Cache_Bind_mis0 (ff me_abs, mapkey_t * ret, recursion_set * set) {
+	return true;
+}
+
+
+
 bool Cache_Bind_msuc (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	struct Bind_msuc * me = (struct Bind_msuc *)me_abs;
 
@@ -745,6 +896,12 @@ bool Cache_Bind_msuc (ff me_abs, mapkey_t * ret, recursion_set * set) {
 
 
 	return false;
+}
+
+
+
+bool Cache_Bind_pbooly (ff me_abs, mapkey_t * ret, recursion_set * set) {
+	return true;
 }
 
 

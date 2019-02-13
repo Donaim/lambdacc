@@ -52,15 +52,6 @@ class booly:
 
 	def exec(x):
 		'''
-
-		if (x == fin) {
-			if (me->value) {
-				puts("true");
-			} else {
-				puts("false");
-			}
-		}
-
 		return me;
 		'''
 
@@ -73,6 +64,17 @@ class bnot:
 		'''
 		ret->value = ! x->value;
 		return ret;
+		'''
+
+class pbooly:
+	def exec(x: booly):
+		'''
+		if (x->value) {
+			puts("true");
+		} else {
+			puts("false");
+		}
+		return x;
 		'''
 
 class mif:
@@ -107,6 +109,7 @@ class pmint:
 		'''
 
 class msuc:
+	''' Increment machine integer '''
 	def exec(x: mint) -> mint:
 		'''
 		ret->value = x->value + 1;
@@ -114,6 +117,28 @@ class msuc:
 		'''
 	def cache():
 		return []
+
+class mdec:
+	''' Decrement machine integer '''
+	def exec(x: mint) -> mint:
+		'''
+		ret->value = x->value - 1;
+		return ret;
+		'''
+	def cache():
+		return []
+
+class mis0:
+	''' Tells if machine integer is 0 '''
+	def exec(x: mint) -> booly:
+		'''
+		if (x->value == 0) {
+			ret->value = true;
+		} else {
+			ret->value = false;
+		}
+		return ret;
+		'''
 
 class facc:
 	'''

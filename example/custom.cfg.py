@@ -65,6 +65,8 @@ class bnot:
 		ret->value = ! x->value;
 		return ret;
 		'''
+	def cache():
+		return []
 
 class pbooly:
 	def exec(x: booly):
@@ -86,6 +88,8 @@ class mif:
 			return b;
 		}
 		'''
+	def cache():
+		return []
 
 class mint:
 	''' Machine integer '''
@@ -185,3 +189,26 @@ class add:
 	def cache() -> list:
 		return []
 
+class mult:
+	def exec(a: mint, b: mint) -> mint:
+		'''
+		ret->value = a->value * b->value;
+		return ret;
+		'''
+
+	def cache() -> list:
+		return []
+
+class pow:
+	''' Positive power '''
+	def exec(a: mint, b: mint) -> mint:
+		'''
+		ret->value = 1;
+		for (int i = 0; i < a->value; i++) {
+			ret->value *= b->value;
+		}
+		return ret;
+		'''
+
+	def cache() -> list:
+		return []

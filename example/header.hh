@@ -103,7 +103,7 @@ struct fin_t : fun {
 	}
 #ifdef DO_CACHING
 	static bool fcache(ff me, mapkey_t * ret, recursion_set * set) {
-		return true;
+		return false;
 	}
 #endif
 	fin_t() {

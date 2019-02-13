@@ -139,6 +139,22 @@ class mis0:
 		}
 		return ret;
 		'''
+	def cache():
+		return []
+
+class meq:
+	''' Tells if two machine integers are equal '''
+	def exec(a: mint, b: mint) -> booly:
+		'''
+		if (a->value == b->value) {
+			ret->value = true;
+		} else {
+			ret->value = false;
+		}
+		return ret;
+		'''
+	def cache():
+		return []
 
 class facc:
 	'''

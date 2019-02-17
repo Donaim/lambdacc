@@ -42,7 +42,7 @@ class ec:
 		return me;
 		'''
 
-	def cache() -> list:
+	def cache():
 		return ['me->counter']
 
 
@@ -186,7 +186,7 @@ class add:
 		return ret;
 		'''
 
-	def cache() -> list:
+	def cache():
 		return []
 
 class mult:
@@ -196,7 +196,7 @@ class mult:
 		return ret;
 		'''
 
-	def cache() -> list:
+	def cache():
 		return []
 
 class pow:
@@ -211,5 +211,72 @@ class pow:
 		return ret;
 		'''
 
-	def cache() -> list:
+	def cache():
+		return []
+
+class mlist:
+	''' Empty list '''
+
+	listt = ('list *', 'new list')
+
+	def exec(x):
+		'''
+		return me;
+		'''
+
+	def cache():
+		'''
+		ret->push_back(-12);
+		for (list * cur = me->listt; cur != nullptr; cur = cur->next) {
+			if (cur->empty()) { break; }
+			if (cur->value->cache(cur->value, ret, set)) {
+				// return true;
+				// ... don't care
+			}
+		}
+		ret->push_back(-13);
+		'''
+		return []
+
+class cons:
+	''' Append to head of the list '''
+
+	def exec(val, l: mlist) -> mlist:
+		'''
+		ret->listt->init_cons(val, l->listt);
+		return ret;
+		'''
+
+	def cache():
+		return []
+
+class head:
+	''' Get head of the list '''
+
+	def exec(l: mlist):
+		'''
+		if (l->listt->value == nullptr) {
+			return &Instance_Bind_error;
+		} else {
+			return l->listt->value;
+		}
+		'''
+
+	def cache():
+		return []
+
+class tail:
+	''' Get the rest of the list '''
+
+	def exec(l: mlist) -> mlist:
+		'''
+		if (l->listt->value == nullptr) {
+			return &Instance_Bind_error;
+		} else {
+			ret->listt = l->listt->next;
+			return ret;
+		}
+		'''
+
+	def cache():
 		return []

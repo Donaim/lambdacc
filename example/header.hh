@@ -117,3 +117,6 @@ struct fin_t : fun {
 	}
 };
 fin_t * fin = new fin_t{};
+
+
+#include "list.hh"

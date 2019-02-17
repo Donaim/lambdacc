@@ -4,7 +4,7 @@ PROJ = example
 headers = $(PROJ)/header.hh $(PROJ)/declare.hh $(PROJ)/define.cc $(PROJ)/footer.cc
 additional-deps = Makefile  $(shell ls *.py)
 
-CFLAGS = -O3
+CFLAGS = # -O3
 TFLAGS =
 CPP = clang++
 

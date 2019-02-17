@@ -1635,18 +1635,18 @@ bool Cache_Bind_mlist (ff me_abs, mapkey_t * ret, recursion_set * set) {
 
 
 
-	return true;
-	/*
 	ret->push_back(-12);
-	for (list * cur = me->next; cur != nullptr; cur = cur->next) {
-		if (cur->empty()) { break; }
-		if (cur->value->cache(cur->value, ret, set)) {
-			// return true;
-			// ... don't care
+	if (me->value != nullptr) {
+		if (me->value->cache(me->value, ret, set)) {
+				return true;
+		}
+	}
+	if (me->next != nullptr) {
+		if (me->next->cache(me->next, ret, set)) {
+				return true;
 		}
 	}
 	ret->push_back(-13);
-	*/
 	
 
 	

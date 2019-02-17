@@ -50,6 +50,9 @@ der(Bind_mlist) {
 	list * listt;
 };
 
+der(Bind_mnil) {
+};
+
 der(Bind_msuc) {
 };
 
@@ -329,6 +332,20 @@ int Init_Bind_mlist (struct Bind_mlist *me) {
 #endif
 #ifdef DO_CACHING
 	me->cache = Cache_Bind_mlist;
+	me->cache_key = vector<int>{};
+	me->mysize = sizeof(*me);
+#endif
+	return 0;
+}
+
+
+int Init_Bind_mnil (struct Bind_mnil *me) {
+	me->eval_now = Exec_Bind_mnil;
+#ifdef USE_TYPEID
+	me->typeuuid = Typeid_Bind_mnil;
+#endif
+#ifdef DO_CACHING
+	me->cache = Cache_Bind_mnil;
 	me->cache_key = vector<int>{};
 	me->mysize = sizeof(*me);
 #endif
@@ -839,6 +856,30 @@ ff Exec_Bind_mlist (ff me_abs, ff __x) {
 	ff x = me->x;
 	
 	return me;
+
+}
+
+
+
+ff Exec_Bind_mnil (ff me_abs, ff __x) {
+	struct Bind_mnil * me = (struct Bind_mnil *)me_abs;
+
+	struct Bind_mlist * l = (struct Bind_mlist *) (me->x->eval(&Instance_Bind_error));
+#ifdef USE_TYPEID
+	if (l->typeuuid != Typeid_Bind_mlist) {
+		fprintf(stderr, "%s", "Type error\n");
+		return &Instance_Bind_error;
+	}
+#endif
+	
+	struct Bind_booly * ret = ALLOC(Bind_booly);
+	if (Init_Bind_booly(ret)) {
+		fprintf(stderr, "%s", "Initialization failed\n");
+		return &Instance_Bind_error;
+	}
+	
+	ret->value = l->listt->empty();
+	return ret;
 
 }
 
@@ -1615,6 +1656,12 @@ bool Cache_Bind_mlist (ff me_abs, mapkey_t * ret, recursion_set * set) {
 
 
 	return false;
+}
+
+
+
+bool Cache_Bind_mnil (ff me_abs, mapkey_t * ret, recursion_set * set) {
+	return true;
 }
 
 

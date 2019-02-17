@@ -280,3 +280,12 @@ class tail:
 
 	def cache():
 		return []
+
+class mnil:
+	''' Checks if list is nil '''
+
+	def exec(l: mlist) -> booly:
+		'''
+		ret->value = l->listt->empty();
+		return ret;
+		'''

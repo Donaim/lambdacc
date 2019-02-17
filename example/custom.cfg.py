@@ -291,6 +291,6 @@ class mnil:
 
 	def exec(l: mlist) -> booly:
 		'''
-		ret->value = l->next == nullptr;
+		ret->value = l->value == nullptr;
 		return ret;
 		'''

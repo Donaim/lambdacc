@@ -874,7 +874,7 @@ ff Exec_Bind_mnil (ff me_abs, ff __x) {
 		return &Instance_Bind_error;
 	}
 	
-	ret->value = l->next == nullptr;
+	ret->value = l->value == nullptr;
 	return ret;
 
 }

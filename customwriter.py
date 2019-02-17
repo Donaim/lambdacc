@@ -205,7 +205,7 @@ def get_cache_func(o: lambda_obj) -> str:
 
 			custom_block = ''
 			if custom_code:
-				custom_block = block_norm(custom_code, 1)
+				custom_block = tufold(block_norm(custom_code, 1))
 
 			previus_xs = ''
 			current_parent = 'me->parent'

@@ -678,7 +678,7 @@ ff Exec_Bind_head (ff me_abs, ff __x) {
 	if (l->value == nullptr) {
 		return &Instance_Bind_error;
 	} else {
-		return l->value->eval(fin);
+		return l->value;
 	}
 
 }

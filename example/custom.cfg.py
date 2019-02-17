@@ -264,7 +264,7 @@ class head:
 		if (l->value == nullptr) {
 			return &Instance_Bind_error;
 		} else {
-			return l->value->eval(fin);
+			return l->value;
 		}
 		'''
 

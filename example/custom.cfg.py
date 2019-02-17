@@ -217,7 +217,9 @@ class pow:
 class mlist:
 	''' Empty list '''
 
-	listt = ('list *', 'new list')
+	# listt = ('list *', 'new list')
+	value = ('ff', 'nullptr')
+	next  = ('ff', 'nullptr')
 
 	def exec(x):
 		'''
@@ -226,8 +228,10 @@ class mlist:
 
 	def cache():
 		'''
+		return true;
+		/*
 		ret->push_back(-12);
-		for (list * cur = me->listt; cur != nullptr; cur = cur->next) {
+		for (list * cur = me->next; cur != nullptr; cur = cur->next) {
 			if (cur->empty()) { break; }
 			if (cur->value->cache(cur->value, ret, set)) {
 				// return true;
@@ -235,15 +239,17 @@ class mlist:
 			}
 		}
 		ret->push_back(-13);
+		*/
 		'''
 		return []
 
 class cons:
 	''' Append to head of the list '''
 
-	def exec(val, l: mlist) -> mlist:
+	def exec(val, l) -> mlist:
 		'''
-		ret->listt->init_cons(val, l->listt);
+		ret->value = val;
+		ret->next = l;
 		return ret;
 		'''
 
@@ -255,10 +261,10 @@ class head:
 
 	def exec(l: mlist):
 		'''
-		if (l->listt->value == nullptr) {
+		if (l->value == nullptr) {
 			return &Instance_Bind_error;
 		} else {
-			return l->listt->value;
+			return l->value->eval(fin);
 		}
 		'''
 
@@ -270,11 +276,12 @@ class tail:
 
 	def exec(l: mlist) -> mlist:
 		'''
-		if (l->listt->value == nullptr) {
+		if (l->next == nullptr) {
 			return &Instance_Bind_error;
 		} else {
-			ret->listt = l->listt->next;
-			return ret;
+			return l->next;
+			// ret->listt = l->listt->next;
+			// return ret;
 		}
 		'''
 
@@ -286,6 +293,6 @@ class mnil:
 
 	def exec(l: mlist) -> booly:
 		'''
-		ret->value = l->listt->empty();
+		ret->value = l->next == nullptr;
 		return ret;
 		'''

@@ -47,7 +47,8 @@ der(Bind_mis0) {
 };
 
 der(Bind_mlist) {
-	list * listt;
+	ff value;
+	ff next;
 };
 
 der(Bind_mnil) {
@@ -326,7 +327,8 @@ int Init_Bind_mis0 (struct Bind_mis0 *me) {
 
 int Init_Bind_mlist (struct Bind_mlist *me) {
 	me->eval_now = Exec_Bind_mlist;
-	me->listt = new list;
+	me->value = nullptr;
+	me->next = nullptr;
 #ifdef USE_TYPEID
 	me->typeuuid = Typeid_Bind_mlist;
 #endif
@@ -587,14 +589,7 @@ ff Exec_Bind_cons (ff me_abs, ff __x) {
 ff Exec_BindPriv_cons_0 (ff me_abs, ff __x) {
 	struct BindPriv_cons_0 * me = (struct BindPriv_cons_0 *)me_abs;
 	ff val = me->parent->x;
-
-	struct Bind_mlist * l = (struct Bind_mlist *) (me->x->eval(&Instance_Bind_error));
-#ifdef USE_TYPEID
-	if (l->typeuuid != Typeid_Bind_mlist) {
-		fprintf(stderr, "%s", "Type error\n");
-		return &Instance_Bind_error;
-	}
-#endif
+	ff l = me->x;
 	
 	struct Bind_mlist * ret = ALLOC(Bind_mlist);
 	if (Init_Bind_mlist(ret)) {
@@ -602,7 +597,8 @@ ff Exec_BindPriv_cons_0 (ff me_abs, ff __x) {
 		return &Instance_Bind_error;
 	}
 	
-	ret->listt->init_cons(val, l->listt);
+	ret->value = val;
+	ret->next = l;
 	return ret;
 
 }
@@ -679,11 +675,10 @@ ff Exec_Bind_head (ff me_abs, ff __x) {
 	}
 #endif
 	
-	printf("getting head\n");
-	if (l->listt->value == nullptr) {
+	if (l->value == nullptr) {
 		return &Instance_Bind_error;
 	} else {
-		return l->listt->value;
+		return l->value->eval(fin);
 	}
 
 }
@@ -879,7 +874,7 @@ ff Exec_Bind_mnil (ff me_abs, ff __x) {
 		return &Instance_Bind_error;
 	}
 	
-	ret->value = l->listt->empty();
+	ret->value = l->next == nullptr;
 	return ret;
 
 }
@@ -1085,11 +1080,12 @@ ff Exec_Bind_tail (ff me_abs, ff __x) {
 		return &Instance_Bind_error;
 	}
 	
-	if (l->listt->value == nullptr) {
+	if (l->next == nullptr) {
 		return &Instance_Bind_error;
 	} else {
-		ret->listt = l->listt->next;
-		return ret;
+		return l->next;
+		// ret->listt = l->listt->next;
+		// return ret;
 	}
 
 }
@@ -1641,8 +1637,10 @@ bool Cache_Bind_mlist (ff me_abs, mapkey_t * ret, recursion_set * set) {
 
 
 
+	return true;
+	/*
 	ret->push_back(-12);
-	for (list * cur = me->listt; cur != nullptr; cur = cur->next) {
+	for (list * cur = me->next; cur != nullptr; cur = cur->next) {
 		if (cur->empty()) { break; }
 		if (cur->value->cache(cur->value, ret, set)) {
 			// return true;
@@ -1650,6 +1648,7 @@ bool Cache_Bind_mlist (ff me_abs, mapkey_t * ret, recursion_set * set) {
 		}
 	}
 	ret->push_back(-13);
+	*/
 	
 
 	

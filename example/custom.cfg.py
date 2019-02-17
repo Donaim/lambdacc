@@ -280,8 +280,6 @@ class tail:
 			return &Instance_Bind_error;
 		} else {
 			return l->next;
-			// ret->listt = l->listt->next;
-			// return ret;
 		}
 		'''
 

@@ -679,6 +679,7 @@ ff Exec_Bind_head (ff me_abs, ff __x) {
 	}
 #endif
 	
+	printf("getting head\n");
 	if (l->listt->value == nullptr) {
 		return &Instance_Bind_error;
 	} else {

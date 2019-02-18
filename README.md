@@ -33,9 +33,10 @@ This project is under active development
 	- [x] fix (or find reason for) cache drop when using inlining - expected to have more hits than without inlining
 	- [ ] make base class (fun) more consistant
 	- [x] add command line argument for caching
-	- [ ] use more efficient map than std::map and better keys than std::vector<int>
+	- [ ] use more efficient map than `std::map` and better keys than `std::vector<int>`
 	- [x] use definitional irrelevance for smarter equality [hard]
 	- [ ] never duplicate work (using Levy's definition) [hard]
+	- [ ] compress Leaf.encode_as_vector to just one integer using hashmap of previus Leaf vectors
 - [ ] efectful expression
 	- [x] create translator that is going to use configs as definitions for efectful expressions (customwriter)
 	- [x] make possible to create custom expressions with more than 1 argument (ex. add, multiply)
@@ -50,3 +51,5 @@ This project is under active development
 - [ ] use multithreading [hard]
 - [ ] maybe use C instead of C++ (faster compile-time, maybe better optimisations)
 - [ ] improve code quality (*.py -> *.hs)
+- [ ] incremental compilation
+- [ ] repl

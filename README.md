@@ -40,7 +40,8 @@ This project is under active development
 - [ ] efectful expression
 	- [x] create translator that is going to use configs as definitions for efectful expressions (customwriter)
 	- [x] make possible to create custom expressions with more than 1 argument (ex. add, multiply)
-	- [ ] create list
+	- [x] create list
+	- [ ] create hashmap (will work only if cache enabled?)
 	- [ ] create some advanced IO (maybe sound or windowing)
 - [ ] pass 'parent' as argument to exec
 	- [ ] do ALLOC("X") and Init_Bind_"X" in its parent Init instead of its parent Exec
@@ -53,3 +54,5 @@ This project is under active development
 - [ ] improve code quality (*.py -> *.hs)
 - [ ] incremental compilation
 - [ ] repl
+- [ ] improve dynamic typing
+- [ ] introduce static typing [hard]

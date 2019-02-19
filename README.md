@@ -51,6 +51,7 @@ This project is under active development
 - [ ] add garbage collector [hard]
 - [ ] use multithreading [hard]
 - [ ] maybe use C instead of C++ (faster compile-time, maybe better optimisations)
+- [ ] maybe use llvm instead (faster compile-time) [hard]
 - [ ] improve code quality (*.py -> *.hs)
 - [ ] incremental compilation
 - [ ] repl

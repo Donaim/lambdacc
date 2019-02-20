@@ -1,7 +1,16 @@
 
+#include "flags.h"
 #include "header.h"
 
 #include "memorypool.c"
+#include "fin.c"
+
+#ifdef COUNT_TOTAL_EXEC
+int total_eval_count = 0;
+#ifdef DO_CACHING
+int g_cache_hits_count = 0;
+#endif
+#endif
 
 ff eval(ff me, ff x) {
 

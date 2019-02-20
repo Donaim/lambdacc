@@ -17,9 +17,10 @@ map<mapkey_t,ff> * g_caching_map = new map<mapkey_t,ff>{};
 #endif
 
 #ifdef COUNT_TOTAL_EXEC
-int total_eval_count = 0;
+#include <stdio.h>
+extern int total_eval_count;
 #ifdef DO_CACHING
-int g_cache_hits_count = 0;
+extern int g_cache_hits_count;
 #endif
 #endif
 
@@ -43,6 +44,8 @@ struct fun {
 
 ff eval(ff me, ff x);
 
-#include "fin.c"
+#include "fin.h"
 
 #include "memorypool.h"
+
+#define NULL ((void*)0)

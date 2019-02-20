@@ -38,7 +38,7 @@ struct fun {
 	int typeuuid;
 #endif
 #ifdef DO_CACHING
-	int mysize; /* For copying */
+	int customsize; /* For copying */
 	bool (*cache)(ff me, mapkey_t * ret, recursion_set * set);
 	mapkey_t cache_key;
 #endif

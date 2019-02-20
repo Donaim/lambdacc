@@ -6,6 +6,7 @@ struct Custom_print_true {
 
 
 int Init_Bind_print_false (ff me_abs) {
+	me_abs->custom = ALLOC(struct Custom_print_false);
 	struct Custom_print_false * custom = (struct Custom_print_false *)me_abs->custom;
 	me_abs->eval_now = Exec_Bind_print_false;
 
@@ -27,6 +28,7 @@ int Init_Bind_print_false (ff me_abs) {
 
 
 int Init_Bind_print_true (ff me_abs) {
+	me_abs->custom = ALLOC(struct Custom_print_true);
 	struct Custom_print_true * custom = (struct Custom_print_true *)me_abs->custom;
 	me_abs->eval_now = Exec_Bind_print_true;
 

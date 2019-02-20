@@ -43,4 +43,6 @@ struct fun {
 
 ff eval(ff me, ff x);
 
+#include "fin.c"
+
 #include "memorypool.cc"

@@ -448,14 +448,14 @@ def write_some(config: OutConfig, binds: list):
 		name = get_leaf_name(e)
 		init_name = get_leaf_name(CFunction(name, 'init'))
 		varname = name + '_var';
-		footer += '	struct {} * {} = ALLOC({});\n'.format(name, varname, name)
+		footer += '	ff {} = ALLOC(fun);\n'.format(varname)
 		footer += '	{}({});\n'.format(init_name, varname)
 
 		if out.config.echo_expr:
 			footer += '	puts("{}");\n'.format(e.target.to_text().replace('\\', '\\\\'))
 			footer += '	printf("  = ");\n'
 
-		footer += '	{}->eval(fin);\n\n'.format(varname)
+		footer += '	eval({}, fin);\n\n'.format(varname)
 
 		if out.config.echo_expr:
 			footer += '	puts("");\n'

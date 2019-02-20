@@ -219,7 +219,7 @@ def init_children(le: Leaf, parent_lambda_name: str) -> str:
 
 			mem += block_to_text(1,
 				'''
-				ff leaf_{i} = ALLOC(fun);
+				ff leaf_{i} = ALLOC(struct fun);
 				leaf_{i}->parent = me;
 				me->leafs[{i}] = leaf_{i};
 				{init}(leaf_{i});
@@ -448,7 +448,7 @@ def write_some(config: OutConfig, binds: list):
 		name = get_leaf_name(e)
 		init_name = get_leaf_name(CFunction(name, 'init'))
 		varname = name + '_var';
-		footer += '	ff {} = ALLOC(fun);\n'.format(varname)
+		footer += '	ff {} = ALLOC(struct fun);\n'.format(varname)
 		footer += '	{}({});\n'.format(init_name, varname)
 
 		if out.config.echo_expr:

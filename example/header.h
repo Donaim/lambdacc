@@ -32,7 +32,7 @@ struct fun {
 	ff (*eval_now)(ff, ff);
 
 #ifdef USE_TYPEID
-	int typeuuid = -1;
+	int typeuuid;
 #endif
 #ifdef DO_CACHING
 	int mysize; /* For copying */
@@ -45,4 +45,4 @@ ff eval(ff me, ff x);
 
 #include "fin.c"
 
-#include "memorypool.cc"
+#include "memorypool.h"

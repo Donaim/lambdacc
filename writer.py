@@ -207,7 +207,7 @@ def init_children(le: Leaf, parent_lambda_name: str) -> str:
 		if t is Lambda or t is Bind or t is Leaf:
 			name = get_leaf_name(l)
 
-			mem += '	struct {name} leaf_{i} = ALLOC({name});\n'.format(i=field.index, name=name)
+			mem += '	ff leaf_{i} = ALLOC({name});\n'.format(i=field.index, name=name)
 			mem += '	leaf_{i}->parent = me;\n'.format(i=field.index)
 			mem += '	leaf_{i}->x = NULL;\n'.format(i=field.index)
 			mem += '	me->leafs[{i}] = leaf_{i};\n'.format(i=field.index)

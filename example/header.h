@@ -42,3 +42,5 @@ struct fun {
 };
 
 ff eval(ff me, ff x);
+
+#include <memorypool.cc>

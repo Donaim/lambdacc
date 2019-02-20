@@ -104,9 +104,9 @@ class CFunction:
 		self.t = t
 
 class StructField:
-	def __init__(self, leaf, name):
+	def __init__(self, leaf, index):
 		self.leaf = leaf
-		self.name = name
+		self.index = index
 		self.t = type(leaf)
 
 allowed_chars = string.ascii_letters + string.digits + '_'
@@ -151,16 +151,6 @@ def get_leaf_name(le) -> str:
 		else:
 			raise Exception("Unknown CFuntion type: {}".format(le.t))
 	raise Exception('Unknown type {}'.format(type(le)))
-def get_member_name(leaf_name: str) -> str:
-	return 'm_' + leaf_name
-def get_ovv_member_name(field: StructField):
-	t = field.t
-	if t is Bind or t is Lambda or t is Leaf:
-		return '(me->{})'.format(field.name)
-	elif t is Argument:
-		return '(me->x)'
-	else:
-		raise Exception('expected types {} and {} '.format(Bind, Argument, Lambda))
 
 def get_argument_by_parents(me: Lambda, arg: Argument):
 	re = 'me->'
@@ -175,34 +165,26 @@ def get_argument_by_parents(me: Lambda, arg: Argument):
 			re += 'parent->'
 	return re + 'x'
 
+def get_ovv_member_name(field: StructField):
+	t = field.t
+	if t is Bind or t is Lambda or t is Leaf:
+		return '(me->leafs[{}])'.format(field.index)
+	elif t is Argument:
+		return get_argument_by_parents(base_lambda, l)
+	else:
+		raise Exception('expected types {} and {} '.format(Bind, Argument, Lambda))
+
 def get_return_part(out: SplittedOut, le: Leaf, base_lambda: Lambda) -> str:
-	exec_line = ''
+	ret = ''
 	for field in get_fields(le=le):
 		l = field.leaf
-		t = field.t
-		name = get_ovv_member_name(field=field)
-		if t is Bind or t is Lambda:
-			if exec_line:
-				exec_line += '->eval({})'.format(name)
-			else:
-				exec_line += name
-		elif t is Argument:
-			name = get_argument_by_parents(base_lambda, l)
-			if exec_line:
-				exec_line += '->eval({})'.format(name)
-			else:
-				exec_line += name
-		elif t is Leaf:
-			write_lambda(out=out, le=l)
-			if exec_line:
-				exec_line += '->eval({})'.format(name)
-			else:
-				exec_line += name
-		else:
-			raise Exception('unexpected type {}'.format(t))
-	return '(' + exec_line + ')'
+		mem = get_ovv_member_name(field=field)
+		ret += '	ret = eval({mem}, ret);\n'
+	return ret
+
 def get_ovv(out: SplittedOut, le: Leaf) -> str:
 	exec_line = get_return_part(out=out, le=le, base_lambda=le)
+	decl = '	ff decl;\n'
 
 	lt = type(le)
 	if lt is Lambda:
@@ -215,20 +197,20 @@ def init_children(le: Leaf, parent_lambda_name: str) -> str:
 	members = get_fields(le=le)
 	st_members = ''
 	ret = '\n'
-	for field in members:
-		name_m = field.name
+	for field in enumerate(members):
 		l = field.leaf
 		mem = ''
 		t = field.t
 		if t is Lambda or t is Bind or t is Leaf:
 			name = get_leaf_name(l)
 
-			mem += '	me->{} = ALLOC({});\n'.format(name_m, name)
-			mem += '	me->{}->parent = me;\n'.format(name_m)
-			mem += '	me->{}->x = nullptr;\n'.format(name_m)
+			mem += '	struct {name} leaf_{i} = ALLOC({name});\n'.format(i=field.index, name=name)
+			mem += '	leaf_{i}->parent = me;\n'.format(i=field.index)
+			mem += '	leaf_{i}->x = NULL;\n'.format(i=field.index)
+			mem += '	me->leafs[{i}] = leaf_{i};\n'.format(i=field.index)
 
 			init_name = get_leaf_name(CFunction(name, 'init'))
-			mem += '	{}(me->{});\n'.format(init_name, name_m)
+			mem += '	{}(me->leafs[{}]);\n'.format(init_name, field.index)
 		elif t is Argument:
 			continue
 		else:
@@ -361,10 +343,14 @@ def get_lambda_members(le: Lambda) -> iter:
 
 def get_fields(le: Lambda) -> list:
 	re = []
-	for (i, leaf) in enumerate(le.leafs):
+	i = 0
+	for leaf in enumerate(le.leafs):
 		t = type(leaf)
-		name = leaf.name if t is Argument else 'm_' + str(i)
-		re.append(StructField(leaf=leaf, name=name))
+		if t is Argument:
+			re.append(StructField(leaf=leaf, index=-1))
+		else:
+			re.append(StructField(leaf=leaf, index=i))
+			i += 1
 	return re
 
 def get_structure_member(name, name_m):
@@ -382,16 +368,19 @@ def write_named_lambda(out: SplittedOut, le: Lambda, lambda_name: str):
 
 	members = get_fields(le=le)
 	st_members = ''
+
 	for field in members:
-		leaf = field.leaf
-		name_m = field.name
-		if field.t is Lambda or field.t is Bind or field.t is Leaf:
-			name = get_leaf_name(leaf)
-			st_members += get_structure_member(name, name_m)
-		elif field.t is Argument:
-			continue
-		else:
-			raise Exception('Unexpected member type {}'.format(type(leaf)))
+		if type(field) is Leaf:
+			write_lambda(out=out, le=field.leaf)
+	# 	leaf = field.leaf
+	# 	name_m = field.name
+	# 	if field.t is Lambda or field.t is Bind or field.t is Leaf:
+	# 		name = get_leaf_name(leaf)
+	# 		st_members += get_structure_member(name, name_m)
+	# 	elif field.t is Argument:
+	# 		continue
+	# 	else:
+	# 		raise Exception('Unexpected member type {}'.format(type(leaf)))
 
 	out.struct_definitions += stname
 	out.struct_definitions += st_members

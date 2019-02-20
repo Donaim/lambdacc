@@ -190,7 +190,7 @@ def get_return_part(out: SplittedOut, le: Leaf, base_lambda: Lambda) -> list:
 		if ret is None:
 			ret = ['ff ret = {mem};'.format(mem=mem)]
 		else:
-			ret.append('ret = eval({mem}, ret);'.format(mem=mem))
+			ret.append('ret = eval(ret, {mem});'.format(mem=mem))
 	return ret
 
 def get_ovv(out: SplittedOut, le: Leaf) -> str:
@@ -200,7 +200,7 @@ def get_ovv(out: SplittedOut, le: Leaf) -> str:
 	if lt is Lambda:
 		lines.append('return ret;')
 	elif lt is Leaf or lt is Argument or lt is Bind:
-		lines.append('return eval(ret, x);')
+		lines.append('return ret;')
 	else:
 		raise Exception('get_ovv expects {} or {} but got {}'.format(Bind, Lambda, lt))
 

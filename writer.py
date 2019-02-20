@@ -176,7 +176,7 @@ def get_ovv_member_name(field: StructField, base_lambda: Lambda):
 	else:
 		raise Exception('expected types {} and {} '.format(Bind, Argument, Lambda))
 
-def get_return_part(out: SplittedOut, le: Leaf, base_lambda: Lambda) -> str:
+def get_return_part(out: SplittedOut, le: Leaf, base_lambda: Lambda) -> list:
 	ret = None
 	for field in get_fields(le=le):
 		l = field.leaf

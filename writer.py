@@ -216,7 +216,7 @@ def init_children(le: Leaf, parent_lambda_name: str) -> str:
 			mem += '	me->leafs[{i}] = leaf_{i};\n'.format(i=field.index)
 
 			init_name = get_leaf_name(CFunction(name, 'init'))
-			mem += '	{}(me->leafs[{}]);\n'.format(init_name, field.index)
+			mem += '	{}(leaf_{});\n'.format(init_name, field.index)
 		elif t is Argument:
 			continue
 		else:

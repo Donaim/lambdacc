@@ -261,7 +261,7 @@ def get_init_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 	typeuuid = ''
 	if out.config.use_typeid:
 		typeid_name = get_leaf_name(CFunction(lambda_name, 'typeid'))
-		typeuuid = 'me->typeuuid = {};\n'.format(typeid_name)
+		typeuuid = line('me->typeuuid = {};\n'.format(typeid_name), 2)
 		out.typeuuids += 'const int {} = __COUNTER__ ; \n'.format(typeid_name)
 
 	caching = ''
@@ -283,8 +283,8 @@ def get_init_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 				me->leafs = ALLOC_GET(sizeof(ff) * {num_leafs});
 				me->eval_now = {exec_name};
 
-				{typeuuid}
-				{caching}
+		{typeuuid}
+		{caching}
 			}}
 
 			return 0;

@@ -235,11 +235,10 @@ def init_children(le: Leaf, parent_lambda_name: str) -> str:
 	return ret
 def get_exec_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 	exec_name = get_leaf_name(CFunction(lambda_name, 'exec'))
-	decl = 'ff {:<30} (ff me_abs, ff x)'.format(exec_name)
+	decl = 'ff {:<30} (ff me, ff x)'.format(exec_name)
 	out.exec_declarations += decl + ';\n'
 
 	defi  = decl + ' {\n'
-	defi += '	struct {} * me = (struct {} *)me_abs;\n'.format(lambda_name, lambda_name)
 
 	if out.config.show_debug:
 		defi += '	printf ("Lam [%s] got [%s]\\n", me->tostr(), x->tostr());\n'

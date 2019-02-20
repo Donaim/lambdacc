@@ -1,7 +1,8 @@
 
+#include "map.h"
 
 static int simple_hash(int n, long int k) {
-	long int pos = 0, ret = ­-1;
+	long int pos = 0, ret = -1;
 
 	while (pos < n)
 	{

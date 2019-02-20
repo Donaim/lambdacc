@@ -5,6 +5,9 @@
 #include "memorypool.c"
 #include "fin.c"
 
+#include "list.c"
+#include "map.c"
+
 #ifdef COUNT_TOTAL_EXEC
 int total_eval_count = 0;
 #ifdef DO_CACHING

@@ -837,24 +837,24 @@ ff Exec_Bind_facc (ff me_abs, ff __x) {
 	struct Custom_facc * custom = (struct Custom_facc *)me_abs->custom;
 
 	ff arg_base = (eval(me_abs->x, fin));
-	struct Custom_ec * arg = arg_base->custom;
+	struct Custom_mint * arg = arg_base->custom;
 #ifdef USE_TYPEID
-	if (arg_base->typeuuid != Typeid_Bind_ec) {
+	if (arg_base->typeuuid != Typeid_Bind_mint) {
 		fprintf(stderr, "%s", "Type error\n");
 		return fin;
 	}
 #endif
 	
 	ff ret = ALLOC(struct fun);
-	if (Init_Bind_ec(ret)) {
+	if (Init_Bind_mint(ret)) {
 		fprintf(stderr, "%s", "Initialization failed\n");
 		return fin;
 	}
-	struct Custom_ec * rc = ret->custom;
+	struct Custom_mint * rc = ret->custom;
 	
-	rc->counter = 1;
-	for (int i = 2; i < arg->counter; i++) {
-		rc->counter *= i;
+	rc->value = 1;
+	for (int i = 2; i <= arg->value; i++) {
+		rc->value *= i;
 	}
 	return ret;
 

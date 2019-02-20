@@ -148,11 +148,11 @@ class facc:
 	fast factorial
 	'''
 
-	def exec(arg: ec) -> ec:
+	def exec(arg: mint) -> mint:
 		'''
-		rc->counter = 1;
-		for (int i = 2; i < arg->counter; i++) {
-			rc->counter *= i;
+		rc->value = 1;
+		for (int i = 2; i <= arg->value; i++) {
+			rc->value *= i;
 		}
 		return ret;
 		'''

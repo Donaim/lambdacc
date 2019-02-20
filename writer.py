@@ -208,21 +208,24 @@ def get_ovv(out: SplittedOut, le: Leaf) -> str:
 def init_children(le: Leaf, parent_lambda_name: str) -> str:
 	members = get_fields(le=le)
 	st_members = ''
-	ret = '\n'
+	ret = ''
 	for field in members:
 		l = field.leaf
 		mem = ''
 		t = field.t
 		if t is Lambda or t is Bind or t is Leaf:
 			name = get_leaf_name(l)
-
-			mem += '	ff leaf_{i} = ALLOC({name});\n'.format(i=field.index, name=name)
-			mem += '	leaf_{i}->parent = me;\n'.format(i=field.index)
-			mem += '	leaf_{i}->x = NULL;\n'.format(i=field.index)
-			mem += '	me->leafs[{i}] = leaf_{i};\n'.format(i=field.index)
-
 			init_name = get_leaf_name(CFunction(name, 'init'))
-			mem += '	{}(leaf_{});\n'.format(init_name, field.index)
+
+			mem += block_to_text(
+				'''
+				ff leaf_{i} = ALLOC({name});
+				leaf_{i}->parent = me;
+				leaf_{i}->x = NULL;
+				me->leafs[{i}] = leaf_{i};
+				{init}(leaf_{i});
+				'''
+			).format(i=field.index, name=name, init = init_name)
 		elif t is Argument:
 			continue
 		else:

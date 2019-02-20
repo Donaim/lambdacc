@@ -1,1 +1,0 @@
-../example/declare.hh

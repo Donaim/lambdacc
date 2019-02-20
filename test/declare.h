@@ -1,0 +1,1 @@
+../example/declare.h

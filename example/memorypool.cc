@@ -1,8 +1,9 @@
 
 /* *** MEMORY POOL *** */
 
-#include <cstdlib>
-#include <cstdint>
+#include <stdlib.h>
+#include <stdint.h>
+#include <stdio.h>
 
 #define TRACK_ALLOCS false
 #define TRACK_POOL_ALLOCS true

@@ -253,7 +253,7 @@ def get_exec_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 def get_init_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 	init_name = get_leaf_name(CFunction(lambda_name, 'init'))
 	exec_name = get_leaf_name(CFunction(lambda_name, 'exec'))
-	decl = 'int {:<30} (ff * me)'.format(init_name)
+	decl = 'int {:<30} (ff me)'.format(init_name)
 	out.init_declarations += decl + ';\n'
 
 	num_leafs = 1 + max([f.index for f in get_fields(le=le)])

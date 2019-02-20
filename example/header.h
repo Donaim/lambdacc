@@ -26,7 +26,7 @@ int g_cache_hits_count = 0;
 struct fun {
 	ff parent;
 	ff x;
-	const ff * leafs;
+	ff * leafs;
 	// int leafs_count;
 
 	ff (*eval_now)(ff, ff);

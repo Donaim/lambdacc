@@ -186,9 +186,8 @@ class pow:
 	def exec(a: mint, b: mint) -> mint:
 		'''
 		rc->value = 1;
-		printf("pow %d ^ %d \\n", a->value, b->value);
-		for (int i = 0; i < a->value; i++) {
-			rc->value *= b->value;
+		for (int i = 0; i < b->value; i++) {
+			rc->value *= a->value;
 		}
 		return ret;
 		'''

@@ -1005,9 +1005,8 @@ ff Exec_BindPriv_pow_0 (ff me_abs, ff __x) {
 	struct Custom_mint * rc = ret->custom;
 	
 	rc->value = 1;
-	printf("pow %d ^ %d \n", a->value, b->value);
-	for (int i = 0; i < a->value; i++) {
-		rc->value *= b->value;
+	for (int i = 0; i < b->value; i++) {
+		rc->value *= a->value;
 	}
 	return ret;
 

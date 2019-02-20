@@ -1,7 +1,7 @@
 
 PROJ = example
 
-headers = $(PROJ)/header.h $(PROJ)/declare.hh $(PROJ)/define.c $(PROJ)/footer.c
+headers = $(PROJ)/header.h $(PROJ)/declare.h $(PROJ)/define.c $(PROJ)/footer.c
 additional-deps = Makefile  $(shell ls *.py)
 
 CFLAGS = # -O3
@@ -42,14 +42,14 @@ $(PROJ).c: $(PROJ)/script.ini $(headers) $(additional-deps)
 		--use-typeid \
 		--echo-expr \
 		--headerfile $(PROJ)/header.h \
-		--declare-file $(PROJ)/declare.hh \
+		--declare-file $(PROJ)/declare.h \
 		--define-file $(PROJ)/define.c \
 		--footerfile $(PROJ)/footer.c \
 		$(TFLAGS)
 
 	@echo translated
 
-$(PROJ)/declare.hh $(PROJ)/define.c: $(PROJ)/custom.cfg.py $(additional-deps)
-	./customwriter.py $(PROJ)/custom.cfg.py $(PROJ)/declare.hh $(PROJ)/define.c
+$(PROJ)/declare.h $(PROJ)/define.c: $(PROJ)/custom.cfg.py $(additional-deps)
+	./customwriter.py $(PROJ)/custom.cfg.py $(PROJ)/declare.h $(PROJ)/define.c
 
 .PHONY: test clean all run

@@ -61,6 +61,15 @@ class lambda_obj:
 		self.pure = not self.cache_func is None
 		self.insance = '_instance' in vars(target_class)
 
+	def custom_name(self) -> str:
+		return 'Custom_' + self.name
+	def bind_name(self) -> str:
+		return 'Bind_' + self.name
+	def carry_custom_name(self, argument_index: int) -> str:
+		return 'CustomPriv_{}_{}'.format(original_bind_name, argument_index)
+	def carry_bind_name(self, argument_index: int) -> str:
+		return 'BindPriv_{}_{}'.format(original_bind_name, argument_index)
+
 	class func:
 		def __init__(self, f):
 			self.f = f
@@ -114,16 +123,13 @@ def loadcfg(path: str) -> list:
 
 	return objs
 
-def carry_bind_name(original_bind_name: str, argument_index: int) -> str:
-	return 'BindPriv_{}_{}'.format(original_bind_name, argument_index)
-
 def get_struct_decl(o: lambda_obj) -> str:
-	return 'struct Bind_{}'.format(o.name)
-def get_carry_struct_decl(original_bind_name: str, argument_index: int) -> str:
-	return 'struct ' + carry_bind_name(original_bind_name, argument_index)
+	return 'struct ' + o.custom_name()
+def get_carry_struct_decl(o: lambda_obj, argument_index: int) -> str:
+	return 'struct ' + o.carry_custom_name(argument_index)
 
-def get_carry_definition(original_bind_name: str, argument_index: int) -> str:
-	return 'der(BindPriv_{}_{}) {{ }};'.format(original_bind_name, argument_index)
+def get_carry_definition(o: lambda_obj, argument_index: int) -> str:
+	return 'struct {} {{ }};'.format(o.carry_custom_name(argument_index))
 
 def get_definition(o: lambda_obj) -> str:
 	re = ''
@@ -131,7 +137,7 @@ def get_definition(o: lambda_obj) -> str:
 		for i, a in enumerate(o.exec_func.args_pre):
 			re += get_carry_definition(o.name, i) + '\n'
 
-	re += 'der(Bind_{}) {{\n'.format(o.name)
+	re += 'struct Custom_{} {{\n'.format(o.name)
 	for m in o.mems:
 		re += '	{} {};\n'.format(o.mems[m][0], m)
 
@@ -144,34 +150,35 @@ def get_definition(o: lambda_obj) -> str:
 	return re
 
 def get_typeid_str(o: lambda_obj) -> str:
-	return 'const int Typeid_Bind_{} = __COUNTER__ ;'.format(o.name)
-def get_carry_typeid_str(original_bind_name: str, argument_index: int):
-	return 'const int Typeid_{} = __COUNTER__;'.format(carry_bind_name(original_bind_name, argument_index))
+	return 'const int Typeid_{} = __COUNTER__ ;'.format(o.bind_name())
+def get_carry_typeid_str(o: lambda_obj, argument_index: int):
+	return 'const int Typeid_{} = __COUNTER__;'.format(o.carry_bind_name(argument_index))
 
 def get_init_decl(o: lambda_obj) -> str:
-	return 'int Init_Bind_{name} (struct Bind_{name} *me)'.format(name=o.name)
-def get_carry_init_decl(original_bind_name: str, argument_index: int) -> str:
-	return 'int Init_{name} (struct {name} *me)'.format(name=carry_bind_name(original_bind_name, argument_index))
+	return 'int Init_{name} (ff me_abs)'.format(name=o.bind_name())
+def get_carry_init_decl(o: lambda_obj, argument_index: int) -> str:
+	return 'int Init_{name} (ff me_abs)'.format(o.carry_bind_name(argument_index))
 
 def get_init_func(o: lambda_obj) -> str:
 	def get_common_init(fullname: str, mems: dict, decl: str) -> str:
 		re = [
 			(0, decl + ' {'),
-			(1, 'me->eval_now = Exec_{};'.format(fullname))
+			(1, 'struct {name} * custom = (struct {name} *)me_abs->custom;'.format(name = fullname)),
+			(1, 'me_abs->eval_now = Exec_{};'.format(fullname))
 		]
 
 		re += list(map(
-			lambda m: (1, 'me->{} = {};'.format(m, mems[m][1])),
+			lambda m: (1, 'custom->{} = {};'.format(m, mems[m][1])),
 			mems))
 
 		re += [
 			(0, '#ifdef USE_TYPEID'),
-			(1, 'me->typeuuid = Typeid_{};'.format(fullname)),
+			(1, 'me_abs->typeuuid = Typeid_{};'.format(fullname)),
 			(0, '#endif'),
 			(0, '#ifdef DO_CACHING'),
-			(1, 'me->cache = Cache_{};'.format(fullname)),
-			(1, 'me->cache_key = vector<int>{};'),
-			(1, 'me->mysize = sizeof(*me);'),
+			(1, 'me_abs->cache = Cache_{};'.format(fullname)),
+			(1, 'me_abs->cache_key = vector<int>{};'),
+			(1, 'me_abs->mysize = sizeof(struct {name});'.format(name=fullname)),
 			(0, '#endif'),
 			(1, 'return 0;'),
 			(0, '}')
@@ -179,18 +186,18 @@ def get_init_func(o: lambda_obj) -> str:
 
 		return tufold(re)
 
-	re = get_common_init('Bind_' + o.name, o.mems, get_init_decl(o))
+	re = get_common_init(o.custom_name(), o.mems, get_init_decl(o))
 
 	if len(o.exec_func.args) > 1:
 		for (i, arg) in enumerate(o.exec_func.args_pre):
-			re += get_common_init(carry_bind_name(o.name, i), {}, get_carry_init_decl(o.name, i))
+			re += get_common_init(o.carry_bind_name(i), {}, get_carry_init_decl(o, i))
 
 	return re
 
 def get_cache_decl(o: lambda_obj) -> str:
-	return 'bool Cache_Bind_{} (ff me_abs, mapkey_t * ret, recursion_set * set)'.format(o.name)
-def get_carry_cache_decl(original_bind_name: str, argument_index: int) -> str:
-	return 'bool Cache_{} (ff me_abs, mapkey_t * ret, recursion_set * set)'.format(carry_bind_name(original_bind_name, argument_index))
+	return 'bool Cache_{} (ff me_abs, mapkey_t * ret, recursion_set * set)'.format(o.bind_name())
+def get_carry_cache_decl(o: lambda_obj, argument_index: int) -> str:
+	return 'bool Cache_{} (ff me_abs, mapkey_t * ret, recursion_set * set)'.format(o.carry_bind_name(argument_index))
 def get_cache_func(o: lambda_obj) -> str:
 	if o.pure:
 		def common(fullname: str, decl: str, rest: list, custom_code: str, carry_index: int) -> list:
@@ -248,10 +255,10 @@ def get_cache_func(o: lambda_obj) -> str:
 						name=fullname)
 
 		re = ''
-		re += common('Bind_' + o.name, get_cache_decl(o), rest=o.cache_func.f(), custom_code=o.cache_func.code, carry_index=0)
+		re += common(o.custom_name(), get_cache_decl(o), rest=o.cache_func.f(), custom_code=o.cache_func.code, carry_index=0)
 		if len(o.exec_func.args) > 1:
 			for (i, arg) in enumerate(o.exec_func.args_pre):
-				re += common(carry_bind_name(o.name, i), get_carry_cache_decl(o.name, i), rest=[], custom_code=[], carry_index=(i + 1))
+				re += common(o.carry_bind_name(i), get_carry_cache_decl(o.name, i), rest=[], custom_code=[], carry_index=(i + 1))
 		return re
 	else:
 		def common(decl: str) -> str:
@@ -269,14 +276,14 @@ def get_cache_func(o: lambda_obj) -> str:
 		return re
 
 def get_exec_decl(o: lambda_obj) -> str:
-	return 'ff Exec_Bind_{} (ff me_abs, ff __x)'.format(o.name)
-def get_carry_exec_decl(original_bind_name: str, argument_index: int) -> str:
-	return 'ff Exec_{} (ff me_abs, ff __x)'.format(carry_bind_name(original_bind_name, argument_index))
+	return 'ff Exec_{} (ff me_abs, ff __x)'.format(o.bind_name())
+def get_carry_exec_decl(o: lambda_obj, argument_index: int) -> str:
+	return 'ff Exec_{} (ff me_abs, ff __x)'.format(o.carry_bind_name(argument_index))
 def get_exec_func(o: lambda_obj) -> str:
 	def last_arg(fullname: str, decl: str, code: str) -> str:
 		return tufold(block_norm('''
 			{declaration} {{
-				struct {name} * me = (struct {name} *)me_abs;
+				struct {name} * custom = (struct {name} *)me_abs->custom;
 			{code}
 			}}
 			''', 0)).format(
@@ -288,7 +295,7 @@ def get_exec_func(o: lambda_obj) -> str:
 		def carry_common(decl, fullname, ret_t: str) -> str:
 			return tufold(block_norm('''
 				{declaration} {{
-					struct {name} * me = (struct {name} *)me_abs;
+					struct {name} * custom = (struct {name} *)me_abs->custom;
 
 					struct {ret_t} * ret = ALLOC({ret_t});
 					if (Init_{ret_t}(ret)) {{
@@ -308,26 +315,26 @@ def get_exec_func(o: lambda_obj) -> str:
 
 		re += carry_common(
 			decl     = get_exec_decl(o),
-			fullname = 'Bind_' + o.name,
-			ret_t    = carry_bind_name(o.name, 0)) + '\n'
+			fullname = o.custom_name(),
+			ret_t    = o.carry_bind_name(0)) + '\n'
 
 		for (i, arg) in enumerate(o.exec_func.args_pre[:-1]):
 			# ret_t = o.exec_func.args_pre[i + 1]
 			ret_t = carry_bind_name(o.name, i + 1)
 			re += carry_common(
 				decl     = get_carry_exec_decl(o.name, i),
-				fullname = carry_bind_name(o.name, i),
+				fullname = o.carry_bind_name(i),
 				ret_t    = ret_t )
 
 		re += last_arg(
 			decl     = get_carry_exec_decl(o.name, len(o.exec_func.args_pre) - 1),
-			fullname = carry_bind_name(o.name, len(o.exec_func.args_pre) - 1),
+			fullname = o.carry_bind_name(len(o.exec_func.args_pre) - 1),
 			code     = o.exec_func.code)
 
 		return re
 	else:
 		return last_arg(
-			fullname = 'Bind_' + o.name,
+			fullname = o.custom_name(),
 			decl     = get_exec_decl(o),
 			code     = o.exec_func.code)
 

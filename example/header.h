@@ -32,6 +32,8 @@ struct fun {
 
 	ff (*eval_now)(ff, ff);
 
+	void * custom; /* For custom expressions */
+
 #ifdef USE_TYPEID
 	int typeuuid;
 #endif

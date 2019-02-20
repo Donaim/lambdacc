@@ -219,12 +219,12 @@ def init_children(le: Leaf, parent_lambda_name: str) -> str:
 
 			mem += block_to_text(1,
 				'''
-				ff leaf_{i} = ALLOC({name});
+				ff leaf_{i} = ALLOC(fun);
 				leaf_{i}->parent = me;
 				me->leafs[{i}] = leaf_{i};
 				{init}(leaf_{i});
 				'''
-			).format(i=field.index, name=name, init = init_name)
+			).format(i=field.index, init = init_name)
 		elif t is Argument:
 			continue
 		else:
@@ -398,33 +398,10 @@ def write_named_lambda(out: SplittedOut, le: Lambda, lambda_name: str):
 		if type(l) is Lambda:
 			write_lambda(out=out, le=l)
 
-	out.struct_declarations += 'struct {};\n'.format(lambda_name)
-
-	stname = 'der({}) {{\n'.format(lambda_name)
-
-	is_bind = type(le.parent) is Bind
-
 	members = get_fields(le=le)
-	st_members = ''
-
 	for field in members:
 		if type(field) is Leaf:
 			write_lambda(out=out, le=field.leaf)
-	# 	leaf = field.leaf
-	# 	name_m = field.name
-	# 	if field.t is Lambda or field.t is Bind or field.t is Leaf:
-	# 		name = get_leaf_name(leaf)
-	# 		st_members += get_structure_member(name, name_m)
-	# 	elif field.t is Argument:
-	# 		continue
-	# 	else:
-	# 		raise Exception('Unexpected member type {}'.format(type(leaf)))
-
-	out.struct_definitions += stname
-	out.struct_definitions += st_members
-	if out.config.show_debug:
-		out.struct_definitions += '\n	const char * tostr() override {{ return "{}"; }}\n'.format(lambda_name)
-	out.struct_definitions += ('};\n\n')
 
 	get_init_func(out, le, lambda_name)
 	get_exec_func(out, le, lambda_name)

@@ -36,11 +36,11 @@ def block_norm(block: str, indent: int = 1) -> list:
 	lines = [(indent, line) for line in lines]
 
 	return lines
-def block_to_lines(block: str, indent: int = 1) -> list:
+def block_to_lines(indent: int, block: str) -> list:
 	lines = block_norm(block=block, indent=indent)
 	lines = [('\t' * l[0]) + l[1] for l in lines]
 	return lines
-def block_to_text(block: str, indent: int = 1) -> str:
+def block_to_text(indent: int, block: str) -> str:
 	return tufold(block_norm(block=block, indent=indent))
 
 class OutConfig:
@@ -217,11 +217,10 @@ def init_children(le: Leaf, parent_lambda_name: str) -> str:
 			name = get_leaf_name(l)
 			init_name = get_leaf_name(CFunction(name, 'init'))
 
-			mem += block_to_text(
+			mem += block_to_text(1,
 				'''
 				ff leaf_{i} = ALLOC({name});
 				leaf_{i}->parent = me;
-				leaf_{i}->x = NULL;
 				me->leafs[{i}] = leaf_{i};
 				{init}(leaf_{i});
 				'''
@@ -254,24 +253,49 @@ def get_exec_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 def get_init_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 	init_name = get_leaf_name(CFunction(lambda_name, 'init'))
 	exec_name = get_leaf_name(CFunction(lambda_name, 'exec'))
-	decl = 'int {:<30} (struct {} *me)'.format(init_name, lambda_name)
+	decl = 'int {:<30} (ff * me)'.format(init_name)
 	out.init_declarations += decl + ';\n'
-	body  = '	if (me->eval_now == NULL) {\n'
-	body += '		me->eval_now = {};\n'.format(exec_name)
+
+	num_leafs = len(get_fields(le=le))
+
+	typeuuid = ''
 	if out.config.use_typeid:
 		typeid_name = get_leaf_name(CFunction(lambda_name, 'typeid'))
+		typeuuid = 'me->typeuuid = {};\n'.format(typeid_name)
 		out.typeuuids += 'const int {} = __COUNTER__ ; \n'.format(typeid_name)
-		body += '\n		me->typeuuid = {};\n'.format(typeid_name)
 
+	caching = ''
 	if out.config.do_caching:
 		cache_funcname = get_leaf_name(CFunction(lambda_name, 'cache'))
-		body += '\n		me->cache = {};\n'.format(cache_funcname)
-		body += '\n		me->cache_key = vector<int>{};\n'
-		body += '\n		me->mysize = sizeof(*me);\n'
+		caching = block_to_text(2,
+		'''
+		me->cache = {cache_funcname};
+		me->cache_key = vector<int>{{}};
+		me->mysize = sizeof(*me);
+		'''
+		).format(cache_funcname=cache_funcname)
 
-	body += '	}\n'
-	ret   = 'return 0;'
-	out.init_definitions += '{} {{\n{}\n\t{}\n}}\n\n'.format(decl, body, ret)
+	out.init_definitions += block_to_text(0,
+		'''
+		{decl} {{
+			if (me->eval_now == NULL) {{
+				me->x = NULL;
+				me->leafs = ALLOC_GET(sizeof(ff) * {num_leafs});
+				me->eval_now = {exec_name};
+
+				{typeuuid}
+				{caching}
+			}}
+
+			return 0;
+		}}
+		''').format(
+			decl=decl,
+			exec_name=exec_name,
+			num_leafs=num_leafs,
+			typeuuid=typeuuid,
+			caching=caching)
+
 def get_caching_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 	if not out.config.do_caching:
 		return

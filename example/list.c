@@ -6,14 +6,14 @@
 #define NULL (void*)0
 #endif
 
-list * list_alloc() {
-	list * re = ALLOC_GET(sizeof(list));
+struct list * list_alloc() {
+	struct list * re = ALLOC_GET(sizeof(struct list));
 	re->next = NULL;
 	return re;
 }
 
-void list_add(list * l, int value) {
-	list * new = ALLOC_GET(sizeof(list));
+void list_add(struct list * l, int value) {
+	struct list * new = ALLOC_GET(sizeof(struct list));
 
 	new->value = l->value;
 	new->next = l->next;
@@ -21,7 +21,7 @@ void list_add(list * l, int value) {
 	l->next = new;
 }
 
-int list_compare_two( list * a, list * b ) {
+int list_compare_two(struct list * a, struct list * b) {
 	while (a) {
 		if (b == NULL) {
 			return 0;

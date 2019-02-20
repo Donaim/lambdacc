@@ -400,7 +400,6 @@ def write_named_lambda(out: SplittedOut, le: Lambda, lambda_name: str):
 
 	members = get_fields(le=le)
 	for field in members:
-		print("type is: {}".format(field.t))
 		if field.t is Leaf:
 			write_lambda(out=out, le=field.leaf)
 

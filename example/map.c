@@ -2,7 +2,7 @@
 #include "map.h"
 #include "list.h"
 
-#include "mempool.h"
+#include "memorypool.h"
 
 struct node {
 	struct list * value;
@@ -18,12 +18,13 @@ struct map {
 	int size;
 };
 
-static void mcpy(char * dest, char * src, int len) {
+static void mcpy(void * _dest, void * _src, int len) {
+	char * dest = _dest, * src = _src;
 	for (int i = 0; i < len; i++) {
-		dest[i] = scr[i];
+		dest[i] = src[i];
 	}
 }
-static void * enlarge(struct map * m) {
+static void enlarge(struct map * m) {
 	int prevsize = m->size;
 	int newsize = (m->size + 10) * 2;
 
@@ -33,7 +34,7 @@ static void * enlarge(struct map * m) {
 	mcpy(m->nodes, prev_nodes, sizeof(struct node) * prevsize);
 
 	for (int i = prevsize; i < newsize; i++) {
-		init_node(&(m->nodes[i]));
+		init_node(m->nodes + i);
 	}
 }
 

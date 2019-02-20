@@ -256,7 +256,7 @@ def get_init_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 	decl = 'int {:<30} (ff * me)'.format(init_name)
 	out.init_declarations += decl + ';\n'
 
-	num_leafs = len(get_fields(le=le))
+	num_leafs = 1 + max([f.index for f in get_fields(le=le)])
 
 	typeuuid = ''
 	if out.config.use_typeid:

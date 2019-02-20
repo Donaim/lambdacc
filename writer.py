@@ -280,7 +280,7 @@ def get_init_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 		{decl} {{
 			if (me->eval_now == NULL) {{
 				me->x = NULL;
-				me->leafs = ALLOC_GET(sizeof(ff) * {num_leafs});
+				me->leafs = (ff*) ALLOC_GET(sizeof(ff) * {num_leafs});
 				me->eval_now = {exec_name};
 
 		{typeuuid}
@@ -400,7 +400,8 @@ def write_named_lambda(out: SplittedOut, le: Lambda, lambda_name: str):
 
 	members = get_fields(le=le)
 	for field in members:
-		if type(field) is Leaf:
+		print("type is: {}".format(field.t))
+		if field.t is Leaf:
 			write_lambda(out=out, le=field.leaf)
 
 	get_init_func(out, le, lambda_name)

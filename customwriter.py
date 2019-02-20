@@ -6,7 +6,7 @@ import os, sys
 from collections import OrderedDict
 
 import writer
-from writer import line, lfold, tufold, block_norm
+from writer import line, lfold, tufold, block_norm, block_to_text
 
 def instance(x):
 	''' Flag for classes that want to have their instance predefined '''
@@ -111,7 +111,7 @@ class lambda_obj:
 			self.code = tufold(block_norm(self.code, 1))
 			self.code = codepre + self.code
 
-			curr_str = 'me'
+			curr_str = 'me_abs'
 			for a in reversed(self.args):
 				self.code = self.code.replace('$' + a, curr_str + '->x')
 				curr_str += '->parent'
@@ -160,37 +160,40 @@ def get_carry_init_decl(o: lambda_obj, argument_index: int) -> str:
 	return 'int Init_{name} (ff me_abs)'.format(o.carry_bind_name(argument_index))
 
 def get_init_func(o: lambda_obj) -> str:
-	def get_common_init(fullname: str, mems: dict, decl: str) -> str:
-		re = [
-			(0, decl + ' {'),
-			(1, 'struct {name} * custom = (struct {name} *)me_abs->custom;'.format(name = fullname)),
-			(1, 'me_abs->eval_now = Exec_{};'.format(fullname))
-		]
+	def get_common_init(bindname: str, customname: str, mems: dict, decl: str) -> str:
+		members = tufold([(1, 'custom->{} = {};'.format(m, mems[m][1])) for m in mems])
 
-		re += list(map(
-			lambda m: (1, 'custom->{} = {};'.format(m, mems[m][1])),
-			mems))
+		return block_to_text(0,
+			'''
+			{decl} {{
+				struct {customname} * custom = (struct {customname} *)me_abs->custom;
+				me_abs->eval_now = Exec_{bindname};
 
-		re += [
-			(0, '#ifdef USE_TYPEID'),
-			(1, 'me_abs->typeuuid = Typeid_{};'.format(fullname)),
-			(0, '#endif'),
-			(0, '#ifdef DO_CACHING'),
-			(1, 'me_abs->cache = Cache_{};'.format(fullname)),
-			(1, 'me_abs->cache_key = vector<int>{};'),
-			(1, 'me_abs->mysize = sizeof(struct {name});'.format(name=fullname)),
-			(0, '#endif'),
-			(1, 'return 0;'),
-			(0, '}')
-		]
+			{members}
 
-		return tufold(re)
+			#ifdef USE_TYPEID
+				me_abs->typeuuid = Typeid_{bindname};
+			#endif
+			#ifdef DO_CACHING
+				me_abs->cache = Cache_{bindname};
+				me_abs->cache_key = vector<int>{{}};
+				me_abs->mysize = sizeof(struct {customname});
+			#endif
 
-	re = get_common_init(o.custom_name(), o.mems, get_init_decl(o))
+				return 0;
+			}}
+			'''
+		).format(
+			decl=decl,
+			members=members,
+			bindname=bindname,
+			customname=customname)
+
+	re = get_common_init(o.bind_name(), o.custom_name(), o.mems, get_init_decl(o))
 
 	if len(o.exec_func.args) > 1:
 		for (i, arg) in enumerate(o.exec_func.args_pre):
-			re += get_common_init(o.carry_bind_name(i), {}, get_carry_init_decl(o, i))
+			re += get_common_init(o.carry_bind_name(i), o.carry_custom_name(i), {}, get_carry_init_decl(o, i))
 
 	return re
 

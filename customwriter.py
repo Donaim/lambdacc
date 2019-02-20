@@ -166,10 +166,10 @@ def get_init_func(o: lambda_obj) -> str:
 		return block_to_text(0,
 			'''
 			{decl} {{
-				me_abs->custom = ALLOC(struct {customname});
-				struct {customname} * custom = (struct {customname} *)me_abs->custom;
 				me_abs->eval_now = Exec_{bindname};
 
+				me_abs->custom = ALLOC(struct {customname});
+				struct {customname} * custom = me_abs->custom;
 			{members}
 
 			#ifdef USE_TYPEID

@@ -36,6 +36,12 @@ def block_norm(block: str, indent: int = 1) -> list:
 	lines = [(indent, line) for line in lines]
 
 	return lines
+def block_to_lines(block: str, indent: int = 1) -> list:
+	lines = block_norm(block=block, indent=indent)
+	lines = [('\t' * l[0]) + l[1] for l in lines]
+	return lines
+def block_to_text(block: str, indent: int = 1) -> str:
+	return tufold(block_norm(block=block, indent=indent))
 
 class OutConfig:
 	def __init__(self,

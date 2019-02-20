@@ -9,11 +9,18 @@ struct Custom_booly {
 	bool value;
 };
 
+struct CustomPriv_cons_0 { };
+struct Custom_cons {
+};
+
 struct Custom_ec {
 	int counter;
 };
 
 struct Custom_facc {
+};
+
+struct Custom_head {
 };
 
 struct Custom_mdec {
@@ -33,6 +40,14 @@ struct Custom_mint {
 };
 
 struct Custom_mis0 {
+};
+
+struct Custom_mlist {
+	ff value;
+	ff next;
+};
+
+struct Custom_mnil {
 };
 
 struct Custom_msuc {
@@ -56,6 +71,9 @@ struct Custom_print_false {
 };
 
 struct Custom_print_true {
+};
+
+struct Custom_tail {
 };
 
 
@@ -145,6 +163,48 @@ int Init_Bind_booly (ff me_abs) {
 
 
 
+int Init_Bind_cons (ff me_abs) {
+	me_abs->eval_now = Exec_Bind_cons;
+
+	me_abs->custom = ALLOC(struct Custom_cons);
+	struct Custom_cons * custom = me_abs->custom;
+
+
+
+#ifdef USE_TYPEID
+	me_abs->typeuuid = Typeid_Bind_cons;
+#endif
+#ifdef DO_CACHING
+	me_abs->cache = Cache_Bind_cons;
+	me_abs->cache_key = vector<int>{};
+	me_abs->mysize = sizeof(struct Custom_cons);
+#endif
+
+	return 0;
+}
+
+int Init_BindPriv_cons_0 (ff me_abs) {
+	me_abs->eval_now = Exec_BindPriv_cons_0;
+
+	me_abs->custom = ALLOC(struct CustomPriv_cons_0);
+	struct CustomPriv_cons_0 * custom = me_abs->custom;
+
+
+
+#ifdef USE_TYPEID
+	me_abs->typeuuid = Typeid_BindPriv_cons_0;
+#endif
+#ifdef DO_CACHING
+	me_abs->cache = Cache_BindPriv_cons_0;
+	me_abs->cache_key = vector<int>{};
+	me_abs->mysize = sizeof(struct CustomPriv_cons_0);
+#endif
+
+	return 0;
+}
+
+
+
 int Init_Bind_ec (ff me_abs) {
 	me_abs->eval_now = Exec_Bind_ec;
 
@@ -182,6 +242,28 @@ int Init_Bind_facc (ff me_abs) {
 	me_abs->cache = Cache_Bind_facc;
 	me_abs->cache_key = vector<int>{};
 	me_abs->mysize = sizeof(struct Custom_facc);
+#endif
+
+	return 0;
+}
+
+
+
+int Init_Bind_head (ff me_abs) {
+	me_abs->eval_now = Exec_Bind_head;
+
+	me_abs->custom = ALLOC(struct Custom_head);
+	struct Custom_head * custom = me_abs->custom;
+
+
+
+#ifdef USE_TYPEID
+	me_abs->typeuuid = Typeid_Bind_head;
+#endif
+#ifdef DO_CACHING
+	me_abs->cache = Cache_Bind_head;
+	me_abs->cache_key = vector<int>{};
+	me_abs->mysize = sizeof(struct Custom_head);
 #endif
 
 	return 0;
@@ -352,6 +434,51 @@ int Init_Bind_mis0 (ff me_abs) {
 	me_abs->cache = Cache_Bind_mis0;
 	me_abs->cache_key = vector<int>{};
 	me_abs->mysize = sizeof(struct Custom_mis0);
+#endif
+
+	return 0;
+}
+
+
+
+int Init_Bind_mlist (ff me_abs) {
+	me_abs->eval_now = Exec_Bind_mlist;
+
+	me_abs->custom = ALLOC(struct Custom_mlist);
+	struct Custom_mlist * custom = me_abs->custom;
+	custom->value = NULL;
+	custom->next = NULL;
+
+
+#ifdef USE_TYPEID
+	me_abs->typeuuid = Typeid_Bind_mlist;
+#endif
+#ifdef DO_CACHING
+	me_abs->cache = Cache_Bind_mlist;
+	me_abs->cache_key = vector<int>{};
+	me_abs->mysize = sizeof(struct Custom_mlist);
+#endif
+
+	return 0;
+}
+
+
+
+int Init_Bind_mnil (ff me_abs) {
+	me_abs->eval_now = Exec_Bind_mnil;
+
+	me_abs->custom = ALLOC(struct Custom_mnil);
+	struct Custom_mnil * custom = me_abs->custom;
+
+
+
+#ifdef USE_TYPEID
+	me_abs->typeuuid = Typeid_Bind_mnil;
+#endif
+#ifdef DO_CACHING
+	me_abs->cache = Cache_Bind_mnil;
+	me_abs->cache_key = vector<int>{};
+	me_abs->mysize = sizeof(struct Custom_mnil);
 #endif
 
 	return 0;
@@ -553,6 +680,28 @@ int Init_Bind_print_true (ff me_abs) {
 
 
 
+int Init_Bind_tail (ff me_abs) {
+	me_abs->eval_now = Exec_Bind_tail;
+
+	me_abs->custom = ALLOC(struct Custom_tail);
+	struct Custom_tail * custom = me_abs->custom;
+
+
+
+#ifdef USE_TYPEID
+	me_abs->typeuuid = Typeid_Bind_tail;
+#endif
+#ifdef DO_CACHING
+	me_abs->cache = Cache_Bind_tail;
+	me_abs->cache_key = vector<int>{};
+	me_abs->mysize = sizeof(struct Custom_tail);
+#endif
+
+	return 0;
+}
+
+
+
 ff Exec_Bind_add (ff me_abs, ff __x) {
 	struct Custom_add * custom = (struct Custom_add *)me_abs->custom;
 
@@ -637,6 +786,39 @@ ff Exec_Bind_booly (ff me_abs, ff __x) {
 
 
 
+ff Exec_Bind_cons (ff me_abs, ff __x) {
+	struct Custom_cons * custom = (struct Custom_cons *)me_abs->custom;
+
+	ff ret = ALLOC(struct fun);
+	if (Init_BindPriv_cons_0(ret)) {
+		fprintf(stderr, "%s", "Could not initialize type BindPriv_cons_0 \n");
+	}
+	ret->parent = me_abs;
+
+	return ret;
+}
+
+
+ff Exec_BindPriv_cons_0 (ff me_abs, ff __x) {
+	struct CustomPriv_cons_0 * custom = (struct CustomPriv_cons_0 *)me_abs->custom;
+	ff val = me_abs->parent->x;
+	ff l = me_abs->x;
+	
+	ff ret = ALLOC(struct fun);
+	if (Init_Bind_mlist(ret)) {
+		fprintf(stderr, "%s", "Initialization failed\n");
+		return fin;
+	}
+	struct Custom_mlist * rc = ret->custom;
+	
+	rc->value = val;
+	rc->next = l;
+	return ret;
+
+}
+
+
+
 ff Exec_Bind_ec (ff me_abs, ff __x) {
 	struct Custom_ec * custom = (struct Custom_ec *)me_abs->custom;
 	ff arg = me_abs->x;
@@ -675,6 +857,28 @@ ff Exec_Bind_facc (ff me_abs, ff __x) {
 		rc->counter *= i;
 	}
 	return ret;
+
+}
+
+
+
+ff Exec_Bind_head (ff me_abs, ff __x) {
+	struct Custom_head * custom = (struct Custom_head *)me_abs->custom;
+
+	ff l_base = (eval(me_abs->x, fin));
+	struct Custom_mlist * l = l_base->custom;
+#ifdef USE_TYPEID
+	if (l_base->typeuuid != Typeid_Bind_mlist) {
+		fprintf(stderr, "%s", "Type error\n");
+		return fin;
+	}
+#endif
+	
+	if (l->value == NULL) {
+		return fin;
+	} else {
+		return l->value;
+	}
 
 }
 
@@ -841,6 +1045,42 @@ ff Exec_Bind_mis0 (ff me_abs, ff __x) {
 	} else {
 		rc->value = false;
 	}
+	return ret;
+
+}
+
+
+
+ff Exec_Bind_mlist (ff me_abs, ff __x) {
+	struct Custom_mlist * custom = (struct Custom_mlist *)me_abs->custom;
+	ff x = me_abs->x;
+	
+	return me_abs;
+
+}
+
+
+
+ff Exec_Bind_mnil (ff me_abs, ff __x) {
+	struct Custom_mnil * custom = (struct Custom_mnil *)me_abs->custom;
+
+	ff l_base = (eval(me_abs->x, fin));
+	struct Custom_mlist * l = l_base->custom;
+#ifdef USE_TYPEID
+	if (l_base->typeuuid != Typeid_Bind_mlist) {
+		fprintf(stderr, "%s", "Type error\n");
+		return fin;
+	}
+#endif
+	
+	ff ret = ALLOC(struct fun);
+	if (Init_Bind_booly(ret)) {
+		fprintf(stderr, "%s", "Initialization failed\n");
+		return fin;
+	}
+	struct Custom_booly * rc = ret->custom;
+	
+	rc->value = l->value == NULL;
 	return ret;
 
 }
@@ -1035,6 +1275,35 @@ ff Exec_Bind_print_true (ff me_abs, ff __x) {
 }
 
 
+
+ff Exec_Bind_tail (ff me_abs, ff __x) {
+	struct Custom_tail * custom = (struct Custom_tail *)me_abs->custom;
+
+	ff l_base = (eval(me_abs->x, fin));
+	struct Custom_mlist * l = l_base->custom;
+#ifdef USE_TYPEID
+	if (l_base->typeuuid != Typeid_Bind_mlist) {
+		fprintf(stderr, "%s", "Type error\n");
+		return fin;
+	}
+#endif
+	
+	ff ret = ALLOC(struct fun);
+	if (Init_Bind_mlist(ret)) {
+		fprintf(stderr, "%s", "Initialization failed\n");
+		return fin;
+	}
+	struct Custom_mlist * rc = ret->custom;
+	
+	if (l->next == NULL) {
+		return fin;
+	} else {
+		return l->next;
+	}
+
+}
+
+
 #ifdef DO_CACHING
 
 bool Cache_Bind_add (ff me_abs, mapkey_t * ret, recursion_set * set) {
@@ -1159,6 +1428,66 @@ bool Cache_Bind_booly (ff me_abs, mapkey_t * ret, recursion_set * set) {
 
 
 
+bool Cache_Bind_cons (ff me_abs, mapkey_t * ret, recursion_set * set) {
+	struct Custom_cons * me = (struct Custom_cons *)me_abs;
+
+	if (set->count(me_abs) > 0) {
+		ret->push_back(-2);
+		return false;
+	} else {
+		set->insert(me_abs);
+	}
+
+	ret->push_back(-9);
+	ret->push_back(Typeid_Custom_cons);
+
+	if (me->x) {
+		ret->push_back(me->x->cache(me->x, ret, set));
+	} else {
+		ret->push_back(-1);
+	}
+
+
+
+
+	
+	
+
+
+	return false;
+}
+
+bool Cache_BindPriv_cons_0 (ff me_abs, mapkey_t * ret, recursion_set * set) {
+	struct BindPriv_cons_0 * me = (struct BindPriv_cons_0 *)me_abs;
+
+	if (set->count(me_abs) > 0) {
+		ret->push_back(-2);
+		return false;
+	} else {
+		set->insert(me_abs);
+	}
+
+	ret->push_back(-9);
+	ret->push_back(Typeid_BindPriv_cons_0);
+
+	if (me->x) {
+		ret->push_back(me->x->cache(me->x, ret, set));
+	} else {
+		ret->push_back(-1);
+	}
+
+	ret->push_back(me->parent->x->cache(me->parent->x, ret, set));
+
+
+	
+	
+
+
+	return false;
+}
+
+
+
 bool Cache_Bind_ec (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	struct Custom_ec * me = (struct Custom_ec *)me_abs;
 
@@ -1202,6 +1531,37 @@ bool Cache_Bind_facc (ff me_abs, mapkey_t * ret, recursion_set * set) {
 
 	ret->push_back(-9);
 	ret->push_back(Typeid_Custom_facc);
+
+	if (me->x) {
+		ret->push_back(me->x->cache(me->x, ret, set));
+	} else {
+		ret->push_back(-1);
+	}
+
+
+
+
+	
+	
+
+
+	return false;
+}
+
+
+
+bool Cache_Bind_head (ff me_abs, mapkey_t * ret, recursion_set * set) {
+	struct Custom_head * me = (struct Custom_head *)me_abs;
+
+	if (set->count(me_abs) > 0) {
+		ret->push_back(-2);
+		return false;
+	} else {
+		set->insert(me_abs);
+	}
+
+	ret->push_back(-9);
+	ret->push_back(Typeid_Custom_head);
 
 	if (me->x) {
 		ret->push_back(me->x->cache(me->x, ret, set));
@@ -1463,6 +1823,56 @@ bool Cache_Bind_mis0 (ff me_abs, mapkey_t * ret, recursion_set * set) {
 
 
 
+bool Cache_Bind_mlist (ff me_abs, mapkey_t * ret, recursion_set * set) {
+	struct Custom_mlist * me = (struct Custom_mlist *)me_abs;
+
+	if (set->count(me_abs) > 0) {
+		ret->push_back(-2);
+		return false;
+	} else {
+		set->insert(me_abs);
+	}
+
+	ret->push_back(-9);
+	ret->push_back(Typeid_Custom_mlist);
+
+	if (me->x) {
+		ret->push_back(me->x->cache(me->x, ret, set));
+	} else {
+		ret->push_back(-1);
+	}
+
+
+
+	ret->push_back(-12);
+	if (me->value != NULL) {
+		if (me->value->cache(me->value, ret, set)) {
+				return true;
+		}
+	}
+	if (me->next != NULL) {
+		if (me->next->cache(me->next, ret, set)) {
+				return true;
+		}
+	}
+	ret->push_back(-13);
+	
+
+	
+	
+
+
+	return false;
+}
+
+
+
+bool Cache_Bind_mnil (ff me_abs, mapkey_t * ret, recursion_set * set) {
+	return true;
+}
+
+
+
 bool Cache_Bind_msuc (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	struct Custom_msuc * me = (struct Custom_msuc *)me_abs;
 
@@ -1634,6 +2044,37 @@ bool Cache_Bind_print_false (ff me_abs, mapkey_t * ret, recursion_set * set) {
 
 bool Cache_Bind_print_true (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	return true;
+}
+
+
+
+bool Cache_Bind_tail (ff me_abs, mapkey_t * ret, recursion_set * set) {
+	struct Custom_tail * me = (struct Custom_tail *)me_abs;
+
+	if (set->count(me_abs) > 0) {
+		ret->push_back(-2);
+		return false;
+	} else {
+		set->insert(me_abs);
+	}
+
+	ret->push_back(-9);
+	ret->push_back(Typeid_Custom_tail);
+
+	if (me->x) {
+		ret->push_back(me->x->cache(me->x, ret, set));
+	} else {
+		ret->push_back(-1);
+	}
+
+
+
+
+	
+	
+
+
+	return false;
 }
 
 

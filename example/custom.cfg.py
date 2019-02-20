@@ -194,3 +194,84 @@ class pow:
 
 	def cache() -> list:
 		return []
+
+class mlist:
+	''' Empty list '''
+
+	# listt = ('list *', 'new list')
+	value = ('ff', 'NULL')
+	next  = ('ff', 'NULL')
+
+	def exec(x):
+		'''
+		return me_abs;
+		'''
+
+	def cache():
+		'''
+		ret->push_back(-12);
+		if (me->value != NULL) {
+			if (me->value->cache(me->value, ret, set)) {
+					return true;
+			}
+		}
+		if (me->next != NULL) {
+			if (me->next->cache(me->next, ret, set)) {
+					return true;
+			}
+		}
+		ret->push_back(-13);
+		'''
+		return []
+
+class cons:
+	''' Append to head of the list '''
+
+	def exec(val, l) -> mlist:
+		'''
+		rc->value = val;
+		rc->next = l;
+		return ret;
+		'''
+
+	def cache():
+		return []
+
+class head:
+	''' Get head of the list '''
+
+	def exec(l: mlist):
+		'''
+		if (l->value == NULL) {
+			return fin;
+		} else {
+			return l->value;
+		}
+		'''
+
+	def cache():
+		return []
+
+class tail:
+	''' Get the rest of the list '''
+
+	def exec(l: mlist) -> mlist:
+		'''
+		if (l->next == NULL) {
+			return fin;
+		} else {
+			return l->next;
+		}
+		'''
+
+	def cache():
+		return []
+
+class mnil:
+	''' Checks if list is nil '''
+
+	def exec(l: mlist) -> booly:
+		'''
+		rc->value = l->value == NULL;
+		return ret;
+		'''

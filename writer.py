@@ -13,6 +13,8 @@ def line(code: str, indent: int = 1) -> str:
 	return ('\t' * indent) + code
 def lfold(lines: list) -> str:
 	return '\n'.join(lines) + '\n'
+def lfoldn(lines: list, indent: int) -> str:
+	return ('\t' * indent) + ('\n' + ('\t' * indent)).join(lines) + '\n'
 def tufold(tuples: list) -> str:
 	return lfold(map( lambda p: line(code=p[1], indent=p[0]), tuples))
 def block_norm(block: str, indent: int = 1) -> list:
@@ -165,39 +167,40 @@ def get_argument_by_parents(me: Lambda, arg: Argument):
 			re += 'parent->'
 	return re + 'x'
 
-def get_ovv_member_name(field: StructField):
+def get_ovv_member_name(field: StructField, base_lambda: Lambda):
 	t = field.t
 	if t is Bind or t is Lambda or t is Leaf:
 		return '(me->leafs[{}])'.format(field.index)
 	elif t is Argument:
-		return get_argument_by_parents(base_lambda, l)
+		return get_argument_by_parents(base_lambda, field.leaf)
 	else:
 		raise Exception('expected types {} and {} '.format(Bind, Argument, Lambda))
 
 def get_return_part(out: SplittedOut, le: Leaf, base_lambda: Lambda) -> str:
-	ret = ''
-	for field in get_fields(le=le):
+	ret = ['ff ret = me->leafs[0];']
+	for field in get_fields(le=le)[1:]:
 		l = field.leaf
-		mem = get_ovv_member_name(field=field)
-		ret += '	ret = eval({mem}, ret);\n'
+		mem = get_ovv_member_name(field=field, base_lambda=base_lambda)
+		ret.append('ret = eval({mem}, ret);'.format(mem=mem))
 	return ret
 
 def get_ovv(out: SplittedOut, le: Leaf) -> str:
-	exec_line = get_return_part(out=out, le=le, base_lambda=le)
-	decl = '	ff decl;\n'
+	lines = get_return_part(out=out, le=le, base_lambda=le)
 
 	lt = type(le)
 	if lt is Lambda:
-		return exec_line + ';'
+		lines.append('return ret;')
 	elif lt is Leaf or lt is Argument or lt is Bind:
-		return exec_line + '->eval(x)' + ';'
+		lines.append('return eval(ret, x);')
 	else:
 		raise Exception('get_ovv expects {} or {} but got {}'.format(Bind, Lambda, lt))
+
+	return lfoldn(lines, 1)
 def init_children(le: Leaf, parent_lambda_name: str) -> str:
 	members = get_fields(le=le)
 	st_members = ''
 	ret = '\n'
-	for field in enumerate(members):
+	for field in members:
 		l = field.leaf
 		mem = ''
 		t = field.t
@@ -233,7 +236,7 @@ def get_exec_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 
 	# Return statement (depends on caching)
 	return_statement = get_ovv(out=out, le=le)
-	defi += '	return ' + return_statement + '\n'
+	defi += return_statement + '\n'
 
 	defi += '\n}\n\n'
 	out.exec_definitions += defi
@@ -344,7 +347,7 @@ def get_lambda_members(le: Lambda) -> iter:
 def get_fields(le: Lambda) -> list:
 	re = []
 	i = 0
-	for leaf in enumerate(le.leafs):
+	for leaf in le.leafs:
 		t = type(leaf)
 		if t is Argument:
 			re.append(StructField(leaf=leaf, index=-1))

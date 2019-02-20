@@ -1,7 +1,7 @@
 
 PROJ = example
 
-headers = $(PROJ)/header.hh $(PROJ)/declare.hh $(PROJ)/define.cc $(PROJ)/footer.cc
+headers = $(PROJ)/header.h $(PROJ)/declare.hh $(PROJ)/define.cc $(PROJ)/footer.cc
 additional-deps = Makefile  $(shell ls *.py)
 
 CFLAGS = # -O3
@@ -41,7 +41,7 @@ $(PROJ).cc: $(PROJ)/script.ini $(headers) $(additional-deps)
 		--no-show-debug \
 		--use-typeid \
 		--echo-expr \
-		--headerfile $(PROJ)/header.hh \
+		--headerfile $(PROJ)/header.h \
 		--declare-file $(PROJ)/declare.hh \
 		--define-file $(PROJ)/define.cc \
 		--footerfile $(PROJ)/footer.cc \

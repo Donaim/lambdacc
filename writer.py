@@ -200,7 +200,7 @@ def get_ovv(out: SplittedOut, le: Leaf) -> str:
 	if lt is Lambda:
 		lines.append('return ret;')
 	elif lt is Leaf or lt is Argument or lt is Bind:
-		lines.append('return ret;')
+		lines.append('return eval(ret, x);')
 	else:
 		raise Exception('get_ovv expects {} or {} but got {}'.format(Bind, Lambda, lt))
 

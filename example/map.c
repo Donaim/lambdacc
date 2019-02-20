@@ -57,12 +57,12 @@ struct map * map_alloc(void) {
 	return m;
 }
 
-static int list_to_int(struct list * l, int max) {
+static long int list_to_int(struct list * l, int max) {
 	if (l->next == l) {
 		return 0;
 	}
 
-	int re = 0;
+	long int re = 0;
 	while (l) {
 		re = re + (l->value ^ re);
 		l = l->next;
@@ -72,7 +72,7 @@ static int list_to_int(struct list * l, int max) {
 }
 
 int map_add(struct map * m, struct list * l) {
-	int hash = list_to_int(l, m->size);
+	long int hash = list_to_int(l, m->size);
 
 	return 0;
 }

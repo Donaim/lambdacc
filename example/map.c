@@ -51,7 +51,7 @@ static long int list_to_int(struct list * l, int max) {
 
 	long int re = 0;
 	while (l) {
-		re = re + (l->value ^ re);
+		re = l->value + (re << 6) + (re << 16) - re;
 		l = l->next;
 	}
 

@@ -48,8 +48,31 @@ static int simple_hash(int n, long int k) {
 		pos = ((double)(1LL << 31) / (double)((k >> 33) + 1)) * (ret + 1);
 	}
 
-	return ret;
+	return ret % n;
 }
 
+struct map * map_alloc(void) {
+	struct map * m = ALLOC_GET(sizeof(struct map));
+	m->size = 0;
+	return m;
+}
 
+static int list_to_int(struct list * l, int max) {
+	if (l->next == l) {
+		return 0;
+	}
 
+	int re = 0;
+	while (l) {
+		re = re + (l->value ^ re);
+		l = l->next;
+	}
+
+	return re;
+}
+
+int map_add(struct map * m, struct list * l) {
+	int hash = list_to_int(l, m->size);
+
+	return 0;
+}

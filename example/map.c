@@ -6,6 +6,7 @@
 
 struct node {
 	struct list * value;
+	struct fun * key;
 	struct node * next;
 };
 
@@ -58,8 +59,14 @@ static long int list_to_int(struct list * l, int max) {
 	return re;
 }
 
-int map_add(struct map * m, struct list * l) {
-	long int hash = list_to_int(l, m->size);
+int map_add(struct map * m, struct list * key, struct fun * value) {
+	long int hash = list_to_int(key, m->size);
+
+	return 0;
+}
+
+struct fun * map_get(struct map * m, struct list * key) {
+	long int hash = list_to_int(key, m->size);
 
 	return 0;
 }

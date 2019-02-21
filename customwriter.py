@@ -228,7 +228,7 @@ def get_cache_func(o: lambda_obj) -> str:
 
 			return tufold(block_norm('''
 				{declaration} {{
-					struct {customname} * me = (struct {customname} *)me_abs;
+					struct {customname} * me = (struct {customname} *)me_abs->custom;
 
 					if (recset_check(set, me_abs)) {{
 						list_add(ret, -2);

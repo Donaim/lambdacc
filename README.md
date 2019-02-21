@@ -1,5 +1,5 @@
-This is a lambda-calculus to C++ translator  
-You can write code in lambda-calculus and let the script generate C++ translation  
+This is a lambda-calculus to C translator  
+You can write code in lambda-calculus and let the script generate C translation  
 
 # Usage
 
@@ -31,9 +31,9 @@ This project is under active development
 	- [x] use simple hash map and store whole environment as cache key
 	- [x] determine which lambda abstractions are actually used in evaluation (will get more cache hits)
 	- [x] fix (or find reason for) cache drop when using inlining - expected to have more hits than without inlining
-	- [ ] make base class (fun) more consistant
+	- [x] make base class (fun) more consistant
 	- [x] add command line argument for caching
-	- [ ] use more efficient map than `std::map` and better keys than `std::vector<int>`
+	- [x] use more efficient map than `std::map` and better keys than `std::vector<int>`
 	- [x] use definitional irrelevance for smarter equality [hard]
 	- [ ] never duplicate work (using Levy's definition) [hard]
 	- [ ] compress Leaf.encode_as_vector to just one integer using hashmap of previus Leaf vectors
@@ -50,7 +50,7 @@ This project is under active development
 - [ ] stackoverflow: use queue instead
 - [ ] add garbage collector [hard]
 - [ ] use multithreading [hard]
-- [ ] maybe use C instead of C++ (faster compile-time, maybe better optimisations)
+- [x] maybe use C instead of C++ (faster compile-time, maybe better optimisations)
 - [ ] maybe use llvm instead (faster compile-time) [hard]
 - [ ] improve code quality (*.py -> *.hs)
 - [ ] incremental compilation

@@ -43,3 +43,17 @@ int list_compare_two(struct list * a, struct list * b) {
 		return 1;
 	}
 }
+
+long unsigned int list_to_int(struct list * l) {
+	if (l->next == l) {
+		return 0;
+	}
+
+	long unsigned int re = 0;
+	while (l) {
+		re = l->value + (re << 6) + (re << 16) - re;
+		l = l->next;
+	}
+
+	return re;
+}

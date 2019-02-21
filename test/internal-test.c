@@ -162,6 +162,13 @@ void ass_map(struct map * m, double ex_avg, double ex_fill)
 	puts("");
 }
 
+int map_add_list(struct map * m, struct list * key, void * value) {
+	return map_add(m, key, value, list_to_int, list_compare_two);
+}
+void * map_get_list(struct map * m, struct list * key) {
+	return map_get(m, key, list_to_int, list_compare_two);
+}
+
 void test_map() {
 	{
 		struct map * m = map_alloc(9);
@@ -172,13 +179,13 @@ void test_map() {
 		list_add(al, 3);
 		list_add(al, 5);
 
-		map_add(m, al, val);
+		map_add_list(m, al, val);
 
 		ass_map(m, -1, -1);
 
-		map_add(m, al, val);
-		map_add(m, al, val);
-		map_add(m, al, val);
+		map_add_list(m, al, val);
+		map_add_list(m, al, val);
+		map_add_list(m, al, val);
 
 		ass_map(m, -1, -1);
 
@@ -186,13 +193,13 @@ void test_map() {
 		list_add(bl, 3);
 		list_add(bl, 5);
 
-		map_add(m, bl, val);
-		map_add(m, bl, val);
-		map_add(m, bl, val);
+		map_add_list(m, bl, val);
+		map_add_list(m, bl, val);
+		map_add_list(m, bl, val);
 
 		ass_map(m, -1, -1);
 
-		printf("get bl = %p \n", map_get(m, bl));
+		printf("get bl = %p \n", map_get_list(m, bl));
 
 		struct fun * val2 = (void*)7;
 
@@ -201,13 +208,13 @@ void test_map() {
 		list_add(cl, 5);
 		list_add(cl, 2);
 
-		map_add(m, cl, val2);
-		map_add(m, cl, val2);
-		map_add(m, cl, val2);
+		map_add_list(m, cl, val2);
+		map_add_list(m, cl, val2);
+		map_add_list(m, cl, val2);
 
 		ass_map(m, -1, -1);
 
-		printf("get cl = %p \n", map_get(m, cl));
+		printf("get cl = %p \n", map_get_list(m, cl));
 
 		for (int i = 0; i < 9999; i++) {
 			struct list * tmp = list_alloc();
@@ -216,11 +223,11 @@ void test_map() {
 			list_add(tmp, 7);
 			list_add(tmp, i);
 
-			struct fun * val = (void*)i;
-			map_add(m, tmp, val);
+			struct fun * val = (void*)(long int)i;
+			map_add_list(m, tmp, val);
 		}
 
-		printf("get cl = %p \n", map_get(m, cl));
+		printf("get cl = %p \n", map_get_list(m, cl));
 		ass_map(m, -1, -1);
 	}
 }

@@ -1,16 +1,14 @@
 
 #include "map.h"
-#include "list.h"
-
 #include "memorypool.h"
 
 struct node {
-	struct list * key;
-	struct fun * value;
+	void * key;
+	void * value;
 	struct node * next;
 };
 
-static void node_add(struct node * last, struct list * key, struct fun * value)
+static void node_add(struct node * last, void * key, void * value)
 {
 	last->next = ALLOC_GET(sizeof(struct node));
 	last->next->key = key;
@@ -53,22 +51,8 @@ struct map * map_alloc(const int size) {
 	return m;
 }
 
-static long unsigned int list_to_int(struct list * l, int max) {
-	if (l->next == l) {
-		return 0;
-	}
-
-	long unsigned int re = 0;
-	while (l) {
-		re = l->value + (re << 6) + (re << 16) - re;
-		l = l->next;
-	}
-
-	return re;
-}
-
-int map_add(struct map * m, struct list * key, struct fun * value) {
-	long int hash = simple_hash(m->size, list_to_int(key, m->size));
+int map_add(struct map * m, void * key, void * value, map_hash_void_f_t h, map_cmp_f_t cmp) {
+	long int hash = simple_hash(m->size, h(key));
 
 	struct node * place = m->nodes + hash;
 
@@ -80,7 +64,7 @@ int map_add(struct map * m, struct list * key, struct fun * value) {
 	}
 
 	while (place->next) {
-		if (list_compare_two(place->key, key)) {
+		if (cmp(place->key, key)) {
 			/* Same key already added */
 			return 1;
 		}
@@ -93,8 +77,8 @@ int map_add(struct map * m, struct list * key, struct fun * value) {
 	return 0;
 }
 
-struct fun * map_get(struct map * m, struct list * key) {
-	long int hash = simple_hash(m->size, list_to_int(key, m->size));
+void * map_get(struct map * m, void * key, map_hash_void_f_t h, map_cmp_f_t cmp) {
+	long int hash = simple_hash(m->size, h(key));
 
 	struct node * place = m->nodes + hash;
 
@@ -103,7 +87,7 @@ struct fun * map_get(struct map * m, struct list * key) {
 	}
 
 	do {
-		if (list_compare_two(place->key, key)) {
+		if (cmp(place->key, key)) {
 			return place->value;
 		}
 		place = place->next;

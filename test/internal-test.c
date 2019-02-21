@@ -159,13 +159,13 @@ void test_map() {
 
 		map_add(m, al, val);
 
-		ass_map(m, -1, -1);
+		ass_map(m, 1, -1);
 
 		map_add(m, al, val);
 		map_add(m, al, val);
 		map_add(m, al, val);
 
-		ass_map(m, -1, -1);
+		ass_map(m, 1, -1);
 
 		struct list * bl = list_alloc();
 		list_add(bl, 3);
@@ -190,7 +190,7 @@ void test_map() {
 		map_add(m, cl, val2);
 		map_add(m, cl, val2);
 
-		ass_map(m, -1, -1);
+		ass_map(m, 1, -1);
 
 		printf("get cl = %p \n", map_get(m, cl));
 	}
@@ -202,6 +202,6 @@ int main() {
 	test_list();
 	test_map();
 
-	puts("end");
+	puts("OK");
 	return 0;
 }

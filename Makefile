@@ -8,7 +8,7 @@ CFLAGS = # -O3
 TFLAGS =
 
 # clang is faster. TCC is the fastest that I know of
-CPP = gcc
+CC = gcc
 
 run: all
 	./$(PROJ).exe
@@ -17,25 +17,25 @@ all: $(PROJ).exe
 	@echo compiled
 
 test:
-	$(CPP) $@/internal-test.c -O0 -g -o $@.internal.exe
+	$(CC) $@/internal-test.c -O0 -g -o $@.internal.exe
 	./$@.internal.exe
 
-	$(MAKE) all PROJ=test   TFLAGS='--no-do-caching --no-use-typeid' CFLAGS='-O0 -g'
+	$(MAKE) all PROJ=test CFLAGS='-O0' CC=tcc TFLAGS='--no-do-caching --no-use-typeid'
 	test/checkout.sh
-	$(MAKE) all PROJ=test   TFLAGS='--no-do-caching' CFLAGS='-O0 -g'
+	$(MAKE) all PROJ=test CFLAGS='-O0' CC=tcc TFLAGS='--no-do-caching'
 	test/checkout.sh
-	$(MAKE) all PROJ=test   TFLAGS='--make-inline --no-do-caching --no-use-typeid' CFLAGS='-O0 -g'
+	$(MAKE) all PROJ=test CFLAGS='-O0' CC=tcc TFLAGS='--make-inline --no-do-caching --no-use-typeid'
 	test/checkout.sh
-	$(MAKE) all PROJ=test   TFLAGS='--make-inline --no-use-typeid'  CFLAGS='-O0 -g'
+	$(MAKE) all PROJ=test CFLAGS='-O0' CC=tcc TFLAGS='--make-inline --no-use-typeid'
 	test/checkout.sh
-	$(MAKE) all PROJ=test CFLAGS='-O0 -g'
+	$(MAKE) all PROJ=test CFLAGS='-O0' CC=tcc
 	test/checkout.sh
 
 clean:
 	- rm -f $(PROJ).c $(PROJ).exe $(PROJ)/script.inline.ini
 
 $(PROJ).exe: $(PROJ).c $(PROJ)/header.c
-	$(CPP) -o $@ $^ $(CFLAGS)
+	$(CC) -o $@ $^ $(CFLAGS)
 
 $(PROJ).c: $(PROJ)/script.ini $(headers) $(additional-deps)
 	./lambda-cpp.py --source $(PROJ)/script.ini --dest $(PROJ).c \

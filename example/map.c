@@ -67,7 +67,7 @@ static long int list_to_int(struct list * l, int max) {
 }
 
 int map_add(struct map * m, struct list * key, struct fun * value) {
-	long int hash = list_to_int(key, m->size);
+	long int hash = simple_hash(m->size, list_to_int(key, m->size));
 
 	struct node * place = m->nodes + hash;
 
@@ -93,7 +93,7 @@ int map_add(struct map * m, struct list * key, struct fun * value) {
 }
 
 struct fun * map_get(struct map * m, struct list * key) {
-	long int hash = list_to_int(key, m->size);
+	long int hash = simple_hash(m->size, list_to_int(key, m->size));
 
 	struct node * place = m->nodes + hash;
 

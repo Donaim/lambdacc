@@ -2,6 +2,9 @@ struct Custom_ec {
 	int counter;
 };
 
+struct Custom_facc {
+};
+
 struct Custom_print_false {
 };
 
@@ -24,6 +27,28 @@ int Init_Bind_ec (ff me_abs) {
 	me_abs->cache = Cache_Bind_ec;
 	me_abs->cache_key = vector<int>{};
 	me_abs->mysize = sizeof(struct Custom_ec);
+#endif
+
+	return 0;
+}
+
+
+
+int Init_Bind_facc (ff me_abs) {
+	me_abs->eval_now = Exec_Bind_facc;
+
+	me_abs->custom = ALLOC(struct Custom_facc);
+	struct Custom_facc * custom = me_abs->custom;
+
+
+
+#ifdef USE_TYPEID
+	me_abs->typeuuid = Typeid_Bind_facc;
+#endif
+#ifdef DO_CACHING
+	me_abs->cache = Cache_Bind_facc;
+	me_abs->cache_key = vector<int>{};
+	me_abs->mysize = sizeof(struct Custom_facc);
 #endif
 
 	return 0;
@@ -89,6 +114,38 @@ ff Exec_Bind_ec (ff me_abs, ff __x) {
 
 
 
+ff Exec_Bind_facc (ff me_abs, ff __x) {
+	struct Custom_facc * custom = (struct Custom_facc *)me_abs->custom;
+
+	ff arg_base = (eval(me_abs->x, fin));
+	struct Custom_ec * arg = arg_base->custom;
+#ifdef USE_TYPEID
+	if (arg_base->typeuuid != Typeid_Bind_ec) {
+		fprintf(stderr, "%s", "Type error\n");
+		return fin;
+	}
+#endif
+	
+	ff ret = ALLOC(struct fun);
+	if (Init_Bind_ec(ret)) {
+		fprintf(stderr, "%s", "Initialization failed\n");
+		return fin;
+	}
+	struct Custom_ec * rc = ret->custom;
+	
+	
+	printf("got arg->counter = %d ; \n", arg->counter);
+	
+	rc->counter = 1;
+	for (int i = 2; i <= arg->counter; i++) {
+		rc->counter *= i;
+	}
+	return ret;
+
+}
+
+
+
 ff Exec_Bind_print_false (ff me_abs, ff __x) {
 	struct Custom_print_false * custom = (struct Custom_print_false *)me_abs->custom;
 	ff x = me_abs->x;
@@ -135,6 +192,37 @@ bool Cache_Bind_ec (ff me_abs, mapkey_t * ret, recursion_set * set) {
 
 
 	ret->push_back(me->counter);
+	
+
+
+	return false;
+}
+
+
+
+bool Cache_Bind_facc (ff me_abs, mapkey_t * ret, recursion_set * set) {
+	struct Custom_facc * me = (struct Custom_facc *)me_abs;
+
+	if (set->count(me_abs) > 0) {
+		ret->push_back(-2);
+		return false;
+	} else {
+		set->insert(me_abs);
+	}
+
+	ret->push_back(-9);
+	ret->push_back(Typeid_Custom_facc);
+
+	if (me->x) {
+		ret->push_back(me->x->cache(me->x, ret, set));
+	} else {
+		ret->push_back(-1);
+	}
+
+
+
+
+	
 	
 
 

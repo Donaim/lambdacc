@@ -89,11 +89,12 @@ class lambda_obj:
 				else:
 					arg_t = self.args[arg].annotation.__name__
 					codepre += tufold(block_norm('''
-						struct Bind_{t} * {name} = (struct Bind_{t} *) (${name}->eval(&Instance_Bind_error));
+						ff {name}_base = (eval(${name}, fin));
+						struct Custom_{t} * {name} = {name}_base->custom;
 					#ifdef USE_TYPEID
-						if ({name}->typeuuid != Typeid_Bind_{t}) {{
+						if ({name}_base->typeuuid != Typeid_Bind_{t}) {{
 							fprintf(stderr, "%s", "Type error\\n");
-							return &Instance_Bind_error;
+							return fin;
 						}}
 					#endif
 					''', 0)).format(t = arg_t, name = arg)
@@ -101,11 +102,12 @@ class lambda_obj:
 			if not self.sign.return_annotation is inspect._empty:
 				arg_t = self.sign.return_annotation.__name__
 				codepre += tufold(block_norm('''
-				struct Bind_{t} * ret = ALLOC(Bind_{t});
+				ff ret = ALLOC(struct fun);
 				if (Init_Bind_{t}(ret)) {{
 					fprintf(stderr, "%s", "Initialization failed\\n");
-					return &Instance_Bind_error;
+					return fin;
 				}}
+				struct Custom_{t} * rc = ret->custom;
 				''', 1)).format(t = arg_t)
 
 			self.code = tufold(block_norm(self.code, 1))

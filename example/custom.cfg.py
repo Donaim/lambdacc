@@ -29,3 +29,22 @@ class ec:
 	def cache():
 		return ['me->counter']
 
+
+class facc:
+	'''
+	fast factorial
+	'''
+
+	def exec(arg: ec) -> ec:
+		'''
+
+		rc->counter = 1;
+		for (int i = 2; i <= arg->counter; i++) {
+			rc->counter *= i;
+		}
+		return ret;
+		'''
+
+	def cache():
+		return []
+

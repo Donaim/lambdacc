@@ -84,13 +84,22 @@ void test_list() {
 }
 
 void test_map() {
+	{
+		struct map * m = map_alloc(99347);
+		
+		struct list * al = list_alloc();
+		list_add(al, 3);
+		list_add(al, 5);
 
+		map_add(m, al, 0);
+	}
 }
 
 int main() {
 	ALLOC_INIT();
 
 	test_list();
+	test_map();
 
 	puts("end");
 	return 0;

@@ -27,7 +27,7 @@ struct map {
 	int size;
 };
 
-static int simple_hash(int n, long int k) {
+static int simple_hash(int n, long unsigned int k) {
 	long int pos = 0, ret = -1;
 
 	while (pos < n)
@@ -52,12 +52,12 @@ struct map * map_alloc(const int size) {
 	return m;
 }
 
-static long int list_to_int(struct list * l, int max) {
+static long unsigned int list_to_int(struct list * l, int max) {
 	if (l->next == l) {
 		return 0;
 	}
 
-	long int re = 0;
+	long unsigned int re = 0;
 	while (l) {
 		re = l->value + (re << 6) + (re << 16) - re;
 		l = l->next;

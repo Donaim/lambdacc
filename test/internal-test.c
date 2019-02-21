@@ -175,7 +175,7 @@ void test_map() {
 		map_add(m, bl, val);
 		map_add(m, bl, val);
 
-		ass_map(m, -1, -1);
+		ass_map(m, 1, -1);
 
 		printf("get bl = %p \n", map_get(m, bl));
 

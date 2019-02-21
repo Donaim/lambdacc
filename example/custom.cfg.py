@@ -29,6 +29,39 @@ class ec:
 	def cache():
 		return ['me->counter']
 
+class booly:
+
+	value = ('bool', 'false')
+
+	def exec(x):
+		'''
+		return me_abs;
+		'''
+
+	def cache():
+		return ['me->value']
+
+class bnot:
+
+	def exec(x: booly) -> booly:
+		'''
+		rc->value = ! x->value;
+		return ret;
+		'''
+	def cache():
+		return []
+
+class pbooly:
+	def exec(x: booly):
+		'''
+		if (x->value) {
+			puts("true");
+		} else {
+			puts("false");
+		}
+		return x_base;
+		'''
+
 class mint:
 	''' Machine integer '''
 
@@ -47,8 +80,7 @@ class pmint:
 	def exec(x: mint):
 		'''
 		printf("%d\\n", x->value);
-		return fin;
-		// # return &Instance_Bind_error;
+		return x_base;
 		'''
 
 class msuc:

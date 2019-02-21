@@ -2,6 +2,13 @@ struct CustomPriv_add_0 { };
 struct Custom_add {
 };
 
+struct Custom_bnot {
+};
+
+struct Custom_booly {
+	int value;
+};
+
 struct Custom_ec {
 	int counter;
 };
@@ -17,6 +24,9 @@ struct Custom_mint {
 };
 
 struct Custom_msuc {
+};
+
+struct Custom_pbooly {
 };
 
 struct Custom_pmint {
@@ -64,6 +74,50 @@ int Init_BindPriv_add_0 (ff me_abs) {
 	me_abs->cache = Cache_BindPriv_add_0;
 	me_abs->cache_key = vector<int>{};
 	me_abs->mysize = sizeof(struct CustomPriv_add_0);
+#endif
+
+	return 0;
+}
+
+
+
+int Init_Bind_bnot (ff me_abs) {
+	me_abs->eval_now = Exec_Bind_bnot;
+
+	me_abs->custom = ALLOC(struct Custom_bnot);
+	struct Custom_bnot * custom = me_abs->custom;
+
+
+
+#ifdef USE_TYPEID
+	me_abs->typeuuid = Typeid_Bind_bnot;
+#endif
+#ifdef DO_CACHING
+	me_abs->cache = Cache_Bind_bnot;
+	me_abs->cache_key = vector<int>{};
+	me_abs->mysize = sizeof(struct Custom_bnot);
+#endif
+
+	return 0;
+}
+
+
+
+int Init_Bind_booly (ff me_abs) {
+	me_abs->eval_now = Exec_Bind_booly;
+
+	me_abs->custom = ALLOC(struct Custom_booly);
+	struct Custom_booly * custom = me_abs->custom;
+	custom->value = 0;
+
+
+#ifdef USE_TYPEID
+	me_abs->typeuuid = Typeid_Bind_booly;
+#endif
+#ifdef DO_CACHING
+	me_abs->cache = Cache_Bind_booly;
+	me_abs->cache_key = vector<int>{};
+	me_abs->mysize = sizeof(struct Custom_booly);
 #endif
 
 	return 0;
@@ -174,6 +228,28 @@ int Init_Bind_msuc (ff me_abs) {
 	me_abs->cache = Cache_Bind_msuc;
 	me_abs->cache_key = vector<int>{};
 	me_abs->mysize = sizeof(struct Custom_msuc);
+#endif
+
+	return 0;
+}
+
+
+
+int Init_Bind_pbooly (ff me_abs) {
+	me_abs->eval_now = Exec_Bind_pbooly;
+
+	me_abs->custom = ALLOC(struct Custom_pbooly);
+	struct Custom_pbooly * custom = me_abs->custom;
+
+
+
+#ifdef USE_TYPEID
+	me_abs->typeuuid = Typeid_Bind_pbooly;
+#endif
+#ifdef DO_CACHING
+	me_abs->cache = Cache_Bind_pbooly;
+	me_abs->cache_key = vector<int>{};
+	me_abs->mysize = sizeof(struct Custom_pbooly);
 #endif
 
 	return 0;
@@ -295,6 +371,42 @@ ff Exec_BindPriv_add_0 (ff me_abs, ff __x) {
 
 
 
+ff Exec_Bind_bnot (ff me_abs, ff __x) {
+	struct Custom_bnot * custom = (struct Custom_bnot *)me_abs->custom;
+
+	ff x_base = (eval(me_abs->x, fin));
+	struct Custom_booly * x = x_base->custom;
+#ifdef USE_TYPEID
+	if (x_base->typeuuid != Typeid_Bind_booly) {
+		fprintf(stderr, "%s", "Type error\n");
+		return fin;
+	}
+#endif
+	
+	ff ret = ALLOC(struct fun);
+	if (Init_Bind_booly(ret)) {
+		fprintf(stderr, "%s", "Initialization failed\n");
+		return fin;
+	}
+	struct Custom_booly * rc = ret->custom;
+	
+	rc->value = ! x->value;
+	return ret;
+
+}
+
+
+
+ff Exec_Bind_booly (ff me_abs, ff __x) {
+	struct Custom_booly * custom = (struct Custom_booly *)me_abs->custom;
+	ff x = me_abs->x;
+	
+	return me_abs;
+
+}
+
+
+
 ff Exec_Bind_ec (ff me_abs, ff __x) {
 	struct Custom_ec * custom = (struct Custom_ec *)me_abs->custom;
 	ff arg = me_abs->x;
@@ -400,6 +512,29 @@ ff Exec_Bind_msuc (ff me_abs, ff __x) {
 
 
 
+ff Exec_Bind_pbooly (ff me_abs, ff __x) {
+	struct Custom_pbooly * custom = (struct Custom_pbooly *)me_abs->custom;
+
+	ff x_base = (eval(me_abs->x, fin));
+	struct Custom_booly * x = x_base->custom;
+#ifdef USE_TYPEID
+	if (x_base->typeuuid != Typeid_Bind_booly) {
+		fprintf(stderr, "%s", "Type error\n");
+		return fin;
+	}
+#endif
+	
+	if (x->value) {
+		puts("true");
+	} else {
+		puts("false");
+	}
+	return x_base;
+
+}
+
+
+
 ff Exec_Bind_pmint (ff me_abs, ff __x) {
 	struct Custom_pmint * custom = (struct Custom_pmint *)me_abs->custom;
 
@@ -413,8 +548,7 @@ ff Exec_Bind_pmint (ff me_abs, ff __x) {
 #endif
 	
 	printf("%d\n", x->value);
-	return fin;
-	// # return &Instance_Bind_error;
+	return x_base;
 
 }
 
@@ -495,6 +629,68 @@ bool Cache_BindPriv_add_0 (ff me_abs, mapkey_t * ret, recursion_set * set) {
 
 
 	
+	
+
+
+	return false;
+}
+
+
+
+bool Cache_Bind_bnot (ff me_abs, mapkey_t * ret, recursion_set * set) {
+	struct Custom_bnot * me = (struct Custom_bnot *)me_abs;
+
+	if (set->count(me_abs) > 0) {
+		ret->push_back(-2);
+		return false;
+	} else {
+		set->insert(me_abs);
+	}
+
+	ret->push_back(-9);
+	ret->push_back(Typeid_Custom_bnot);
+
+	if (me->x) {
+		ret->push_back(me->x->cache(me->x, ret, set));
+	} else {
+		ret->push_back(-1);
+	}
+
+
+
+
+	
+	
+
+
+	return false;
+}
+
+
+
+bool Cache_Bind_booly (ff me_abs, mapkey_t * ret, recursion_set * set) {
+	struct Custom_booly * me = (struct Custom_booly *)me_abs;
+
+	if (set->count(me_abs) > 0) {
+		ret->push_back(-2);
+		return false;
+	} else {
+		set->insert(me_abs);
+	}
+
+	ret->push_back(-9);
+	ret->push_back(Typeid_Custom_booly);
+
+	if (me->x) {
+		ret->push_back(me->x->cache(me->x, ret, set));
+	} else {
+		ret->push_back(-1);
+	}
+
+
+
+
+	ret->push_back(me->value);
 	
 
 
@@ -654,6 +850,12 @@ bool Cache_Bind_msuc (ff me_abs, mapkey_t * ret, recursion_set * set) {
 
 
 	return false;
+}
+
+
+
+bool Cache_Bind_pbooly (ff me_abs, mapkey_t * ret, recursion_set * set) {
+	return true;
 }
 
 

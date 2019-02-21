@@ -31,7 +31,7 @@ class ec:
 
 class booly:
 
-	value = ('bool', 'false')
+	value = ('int', '0')
 
 	def exec(x):
 		'''

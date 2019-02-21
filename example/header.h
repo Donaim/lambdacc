@@ -24,6 +24,10 @@ extern int g_cache_hits_count;
 #endif
 #endif
 
+typedef char bool;
+#define true  1
+#define false 0
+
 struct fun {
 	ff parent;
 	ff x;

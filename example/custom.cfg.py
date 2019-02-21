@@ -31,7 +31,7 @@ class ec:
 
 class booly:
 
-	value = ('int', '0')
+	value = ('bool', 'false')
 
 	def exec(x):
 		'''
@@ -61,6 +61,18 @@ class pbooly:
 		}
 		return x_base;
 		'''
+
+class mif:
+	def exec(x: booly, a, b):
+		'''
+		if (x->value) {
+			return a;
+		} else {
+			return b;
+		}
+		'''
+	def cache():
+		return []
 
 class mint:
 	''' Machine integer '''
@@ -103,6 +115,34 @@ class mdec:
 	def cache():
 		return []
 
+class mis0:
+	''' Tells if machine integer is 0 '''
+	def exec(x: mint) -> booly:
+		'''
+		if (x->value == 0) {
+			rc->value = true;
+		} else {
+			rc->value = false;
+		}
+		return ret;
+		'''
+	def cache():
+		return []
+
+class meq:
+	''' Tells if two machine integers are equal '''
+	def exec(a: mint, b: mint) -> booly:
+		'''
+		if (a->value == b->value) {
+			rc->value = true;
+		} else {
+			rc->value = false;
+		}
+		return ret;
+		'''
+	def cache():
+		return []
+
 class facc:
 	'''
 	fast factorial
@@ -125,6 +165,31 @@ class add:
 	def exec(a: mint, b: mint) -> mint:
 		'''
 		rc->value = a->value + b->value;
+		return ret;
+		'''
+
+	def cache() -> list:
+		return []
+
+class mult:
+	def exec(a: mint, b: mint) -> mint:
+		'''
+		rc->value = a->value * b->value;
+		return ret;
+		'''
+
+	def cache() -> list:
+		return []
+
+class pow:
+	''' Positive power '''
+	def exec(a: mint, b: mint) -> mint:
+		'''
+		rc->value = 1;
+		printf("pow %d ^ %d \\n", a->value, b->value);
+		for (int i = 0; i < a->value; i++) {
+			rc->value *= b->value;
+		}
 		return ret;
 		'''
 

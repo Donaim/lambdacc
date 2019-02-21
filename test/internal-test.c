@@ -1,5 +1,6 @@
 
 #include <stdio.h>
+#include <assert.h>
 
 #include "list.c"
 #include "map.c"
@@ -14,9 +15,10 @@ void printlist(struct list * l) {
 	printf("]\n");
 }
 
-void cmp(struct list * a, struct list * b, const char * mess) {
+int cmp(struct list * a, struct list * b, const char * mess) {
 	int eq = list_compare_two(a, b);
 	printf("%s equal %d \n", mess, eq);
+	return eq;
 }
 
 void test_list() {
@@ -27,7 +29,7 @@ void test_list() {
 		struct list * bl = list_alloc();
 		list_add(bl, 5);
 
-		cmp(al, bl, "1");
+		assert(cmp(al, bl, "1") == 1);
 	}
 	{
 		struct list * al = list_alloc();
@@ -38,7 +40,7 @@ void test_list() {
 		list_add(bl, 3);
 		list_add(bl, 5);
 
-		cmp(al, bl, "1");
+		assert(cmp(al, bl, "1") == 1);
 	}
 	{
 		struct list * al = list_alloc();
@@ -48,7 +50,7 @@ void test_list() {
 		list_add(bl, 5);
 		list_add(bl, 5);
 
-		cmp(al, bl, "0");
+		assert(cmp(al, bl, "0") == 0);
 	}
 	{
 		struct list * al = list_alloc();
@@ -58,7 +60,7 @@ void test_list() {
 		struct list * bl = list_alloc();
 		list_add(bl, 5);
 
-		cmp(al, bl, "0");
+		assert(cmp(al, bl, "0") == 0);
 	}
 	{
 		struct list * al = list_alloc();
@@ -67,7 +69,7 @@ void test_list() {
 		struct list * bl = list_alloc();
 		list_add(bl, 5);
 
-		cmp(al, bl, "0");
+		assert(cmp(al, bl, "0") == 0);
 	}
 	{
 		struct list * al = list_alloc();
@@ -77,8 +79,12 @@ void test_list() {
 		struct list * bl = list_alloc();
 		list_add(bl, 5);
 
-		cmp(al, bl, "0");
+		assert(cmp(al, bl, "0") == 0);
 	}
+}
+
+void test_map() {
+
 }
 
 int main() {

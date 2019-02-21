@@ -29,26 +29,6 @@ class ec:
 	def cache():
 		return ['me->counter']
 
-
-class facc:
-	'''
-	fast factorial
-	'''
-
-	def exec(arg: ec) -> ec:
-		'''
-
-		rc->counter = 1;
-		for (int i = 2; i <= arg->counter; i++) {
-			rc->counter *= i;
-		}
-		return ret;
-		'''
-
-	def cache():
-		return []
-
-
 class mint:
 	''' Machine integer '''
 
@@ -67,7 +47,7 @@ class pmint:
 	def exec(x: mint):
 		'''
 		printf("%d\\n", x->value);
-		return NULL;
+		return fin;
 		// # return &Instance_Bind_error;
 		'''
 
@@ -80,6 +60,34 @@ class msuc:
 		'''
 	def cache():
 		return []
+
+class mdec:
+	''' Decrement machine integer '''
+	def exec(x: mint) -> mint:
+		'''
+		rc->value = x->value - 1;
+		return ret;
+		'''
+	def cache():
+		return []
+
+class facc:
+	'''
+	fast factorial
+	'''
+
+	def exec(arg: ec) -> ec:
+		'''
+		rc->counter = 1;
+		for (int i = 2; i < arg->counter; i++) {
+			rc->counter *= i;
+		}
+		return ret;
+		'''
+
+	def cache():
+		return []
+
 
 class add:
 	def exec(a: mint, b: mint) -> mint:

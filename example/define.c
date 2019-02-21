@@ -9,6 +9,9 @@ struct Custom_ec {
 struct Custom_facc {
 };
 
+struct Custom_mdec {
+};
+
 struct Custom_mint {
 	int value;
 };
@@ -105,6 +108,28 @@ int Init_Bind_facc (ff me_abs) {
 	me_abs->cache = Cache_Bind_facc;
 	me_abs->cache_key = vector<int>{};
 	me_abs->mysize = sizeof(struct Custom_facc);
+#endif
+
+	return 0;
+}
+
+
+
+int Init_Bind_mdec (ff me_abs) {
+	me_abs->eval_now = Exec_Bind_mdec;
+
+	me_abs->custom = ALLOC(struct Custom_mdec);
+	struct Custom_mdec * custom = me_abs->custom;
+
+
+
+#ifdef USE_TYPEID
+	me_abs->typeuuid = Typeid_Bind_mdec;
+#endif
+#ifdef DO_CACHING
+	me_abs->cache = Cache_Bind_mdec;
+	me_abs->cache_key = vector<int>{};
+	me_abs->mysize = sizeof(struct Custom_mdec);
 #endif
 
 	return 0;
@@ -303,11 +328,36 @@ ff Exec_Bind_facc (ff me_abs, ff __x) {
 	}
 	struct Custom_ec * rc = ret->custom;
 	
-	
 	rc->counter = 1;
-	for (int i = 2; i <= arg->counter; i++) {
+	for (int i = 2; i < arg->counter; i++) {
 		rc->counter *= i;
 	}
+	return ret;
+
+}
+
+
+
+ff Exec_Bind_mdec (ff me_abs, ff __x) {
+	struct Custom_mdec * custom = (struct Custom_mdec *)me_abs->custom;
+
+	ff x_base = (eval(me_abs->x, fin));
+	struct Custom_mint * x = x_base->custom;
+#ifdef USE_TYPEID
+	if (x_base->typeuuid != Typeid_Bind_mint) {
+		fprintf(stderr, "%s", "Type error\n");
+		return fin;
+	}
+#endif
+	
+	ff ret = ALLOC(struct fun);
+	if (Init_Bind_mint(ret)) {
+		fprintf(stderr, "%s", "Initialization failed\n");
+		return fin;
+	}
+	struct Custom_mint * rc = ret->custom;
+	
+	rc->value = x->value - 1;
 	return ret;
 
 }
@@ -363,7 +413,7 @@ ff Exec_Bind_pmint (ff me_abs, ff __x) {
 #endif
 	
 	printf("%d\n", x->value);
-	return NULL;
+	return fin;
 	// # return &Instance_Bind_error;
 
 }
@@ -496,6 +546,37 @@ bool Cache_Bind_facc (ff me_abs, mapkey_t * ret, recursion_set * set) {
 
 	ret->push_back(-9);
 	ret->push_back(Typeid_Custom_facc);
+
+	if (me->x) {
+		ret->push_back(me->x->cache(me->x, ret, set));
+	} else {
+		ret->push_back(-1);
+	}
+
+
+
+
+	
+	
+
+
+	return false;
+}
+
+
+
+bool Cache_Bind_mdec (ff me_abs, mapkey_t * ret, recursion_set * set) {
+	struct Custom_mdec * me = (struct Custom_mdec *)me_abs;
+
+	if (set->count(me_abs) > 0) {
+		ret->push_back(-2);
+		return false;
+	} else {
+		set->insert(me_abs);
+	}
+
+	ret->push_back(-9);
+	ret->push_back(Typeid_Custom_mdec);
 
 	if (me->x) {
 		ret->push_back(me->x->cache(me->x, ret, set));

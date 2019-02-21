@@ -7,8 +7,6 @@
 #include "list.c"
 #include "map.c"
 
-#include <stdbool.h>
-
 #ifdef COUNT_TOTAL_EXEC
 int total_eval_count = 0;
 #ifdef DO_CACHING
@@ -53,7 +51,7 @@ ff eval(ff me, ff x) {
 
 	mapkey_t * cache_key = list_alloc();
 	recursion_set * set = map_alloc(177);
-	bool efectful = my_copy->cache(my_copy, cache_key, set);
+	int efectful = my_copy->cache(my_copy, cache_key, set);
 
 	if (efectful) {
 		return my_copy->eval_now(my_copy, x);

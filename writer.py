@@ -307,7 +307,7 @@ def get_caching_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 
 	funcname = get_leaf_name(CFunction(lambda_name, 'cache'))
 
-	decl = 'bool {:<30} (ff me_abs, {} * ret, recursion_set * set)'.format(funcname, MAPKEY_T)
+	decl = 'int {:<30} (ff me_abs, {} * ret, recursion_set * set)'.format(funcname, MAPKEY_T)
 	out.caching_declarations += decl + ';\n'
 
 	lines = []

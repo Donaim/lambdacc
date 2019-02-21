@@ -201,9 +201,9 @@ def get_init_func(o: lambda_obj) -> str:
 	return re
 
 def get_cache_decl(o: lambda_obj) -> str:
-	return 'bool Cache_{} (ff me_abs, mapkey_t * ret, recursion_set * set)'.format(o.bind_name())
+	return 'int Cache_{} (ff me_abs, mapkey_t * ret, recursion_set * set)'.format(o.bind_name())
 def get_carry_cache_decl(o: lambda_obj, argument_index: int) -> str:
-	return 'bool Cache_{} (ff me_abs, mapkey_t * ret, recursion_set * set)'.format(o.carry_bind_name(argument_index))
+	return 'int Cache_{} (ff me_abs, mapkey_t * ret, recursion_set * set)'.format(o.carry_bind_name(argument_index))
 def get_cache_func(o: lambda_obj) -> str:
 	if o.pure:
 		def common(bindname: str, customname: str, decl: str, rest: list, custom_code: str, carry_index: int) -> list:

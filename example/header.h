@@ -47,7 +47,7 @@ struct fun {
 #ifdef DO_CACHING
 	int customsize;  /* For copying */
 	int leafs_count; /* For copying */
-	bool (*cache)(ff me, mapkey_t * ret, recursion_set * set);
+	int (*cache)(ff me, mapkey_t * ret, recursion_set * set);
 #endif
 };
 

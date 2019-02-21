@@ -1306,7 +1306,7 @@ ff Exec_Bind_tail (ff me_abs, ff __x) {
 
 #ifdef DO_CACHING
 
-bool Cache_Bind_add (ff me_abs, mapkey_t * ret, recursion_set * set) {
+int Cache_Bind_add (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	struct Custom_add * me = (struct Custom_add *)me_abs;
 
 	if (recset_check(set, me_abs)) {
@@ -1335,7 +1335,7 @@ bool Cache_Bind_add (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	return false;
 }
 
-bool Cache_BindPriv_add_0 (ff me_abs, mapkey_t * ret, recursion_set * set) {
+int Cache_BindPriv_add_0 (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	struct CustomPriv_add_0 * me = (struct CustomPriv_add_0 *)me_abs;
 
 	if (recset_check(set, me_abs)) {
@@ -1366,7 +1366,7 @@ bool Cache_BindPriv_add_0 (ff me_abs, mapkey_t * ret, recursion_set * set) {
 
 
 
-bool Cache_Bind_bnot (ff me_abs, mapkey_t * ret, recursion_set * set) {
+int Cache_Bind_bnot (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	struct Custom_bnot * me = (struct Custom_bnot *)me_abs;
 
 	if (recset_check(set, me_abs)) {
@@ -1397,7 +1397,7 @@ bool Cache_Bind_bnot (ff me_abs, mapkey_t * ret, recursion_set * set) {
 
 
 
-bool Cache_Bind_booly (ff me_abs, mapkey_t * ret, recursion_set * set) {
+int Cache_Bind_booly (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	struct Custom_booly * me = (struct Custom_booly *)me_abs;
 
 	if (recset_check(set, me_abs)) {
@@ -1428,7 +1428,7 @@ bool Cache_Bind_booly (ff me_abs, mapkey_t * ret, recursion_set * set) {
 
 
 
-bool Cache_Bind_cons (ff me_abs, mapkey_t * ret, recursion_set * set) {
+int Cache_Bind_cons (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	struct Custom_cons * me = (struct Custom_cons *)me_abs;
 
 	if (recset_check(set, me_abs)) {
@@ -1457,7 +1457,7 @@ bool Cache_Bind_cons (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	return false;
 }
 
-bool Cache_BindPriv_cons_0 (ff me_abs, mapkey_t * ret, recursion_set * set) {
+int Cache_BindPriv_cons_0 (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	struct CustomPriv_cons_0 * me = (struct CustomPriv_cons_0 *)me_abs;
 
 	if (recset_check(set, me_abs)) {
@@ -1488,7 +1488,7 @@ bool Cache_BindPriv_cons_0 (ff me_abs, mapkey_t * ret, recursion_set * set) {
 
 
 
-bool Cache_Bind_ec (ff me_abs, mapkey_t * ret, recursion_set * set) {
+int Cache_Bind_ec (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	struct Custom_ec * me = (struct Custom_ec *)me_abs;
 
 	if (recset_check(set, me_abs)) {
@@ -1519,7 +1519,7 @@ bool Cache_Bind_ec (ff me_abs, mapkey_t * ret, recursion_set * set) {
 
 
 
-bool Cache_Bind_facc (ff me_abs, mapkey_t * ret, recursion_set * set) {
+int Cache_Bind_facc (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	struct Custom_facc * me = (struct Custom_facc *)me_abs;
 
 	if (recset_check(set, me_abs)) {
@@ -1550,7 +1550,7 @@ bool Cache_Bind_facc (ff me_abs, mapkey_t * ret, recursion_set * set) {
 
 
 
-bool Cache_Bind_head (ff me_abs, mapkey_t * ret, recursion_set * set) {
+int Cache_Bind_head (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	struct Custom_head * me = (struct Custom_head *)me_abs;
 
 	if (recset_check(set, me_abs)) {
@@ -1581,7 +1581,7 @@ bool Cache_Bind_head (ff me_abs, mapkey_t * ret, recursion_set * set) {
 
 
 
-bool Cache_Bind_mdec (ff me_abs, mapkey_t * ret, recursion_set * set) {
+int Cache_Bind_mdec (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	struct Custom_mdec * me = (struct Custom_mdec *)me_abs;
 
 	if (recset_check(set, me_abs)) {
@@ -1612,7 +1612,7 @@ bool Cache_Bind_mdec (ff me_abs, mapkey_t * ret, recursion_set * set) {
 
 
 
-bool Cache_Bind_meq (ff me_abs, mapkey_t * ret, recursion_set * set) {
+int Cache_Bind_meq (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	struct Custom_meq * me = (struct Custom_meq *)me_abs;
 
 	if (recset_check(set, me_abs)) {
@@ -1641,7 +1641,7 @@ bool Cache_Bind_meq (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	return false;
 }
 
-bool Cache_BindPriv_meq_0 (ff me_abs, mapkey_t * ret, recursion_set * set) {
+int Cache_BindPriv_meq_0 (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	struct CustomPriv_meq_0 * me = (struct CustomPriv_meq_0 *)me_abs;
 
 	if (recset_check(set, me_abs)) {
@@ -1672,7 +1672,7 @@ bool Cache_BindPriv_meq_0 (ff me_abs, mapkey_t * ret, recursion_set * set) {
 
 
 
-bool Cache_Bind_mif (ff me_abs, mapkey_t * ret, recursion_set * set) {
+int Cache_Bind_mif (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	struct Custom_mif * me = (struct Custom_mif *)me_abs;
 
 	if (recset_check(set, me_abs)) {
@@ -1701,7 +1701,7 @@ bool Cache_Bind_mif (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	return false;
 }
 
-bool Cache_BindPriv_mif_0 (ff me_abs, mapkey_t * ret, recursion_set * set) {
+int Cache_BindPriv_mif_0 (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	struct CustomPriv_mif_0 * me = (struct CustomPriv_mif_0 *)me_abs;
 
 	if (recset_check(set, me_abs)) {
@@ -1730,7 +1730,7 @@ bool Cache_BindPriv_mif_0 (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	return false;
 }
 
-bool Cache_BindPriv_mif_1 (ff me_abs, mapkey_t * ret, recursion_set * set) {
+int Cache_BindPriv_mif_1 (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	struct CustomPriv_mif_1 * me = (struct CustomPriv_mif_1 *)me_abs;
 
 	if (recset_check(set, me_abs)) {
@@ -1761,7 +1761,7 @@ bool Cache_BindPriv_mif_1 (ff me_abs, mapkey_t * ret, recursion_set * set) {
 
 
 
-bool Cache_Bind_mint (ff me_abs, mapkey_t * ret, recursion_set * set) {
+int Cache_Bind_mint (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	struct Custom_mint * me = (struct Custom_mint *)me_abs;
 
 	if (recset_check(set, me_abs)) {
@@ -1792,7 +1792,7 @@ bool Cache_Bind_mint (ff me_abs, mapkey_t * ret, recursion_set * set) {
 
 
 
-bool Cache_Bind_mis0 (ff me_abs, mapkey_t * ret, recursion_set * set) {
+int Cache_Bind_mis0 (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	struct Custom_mis0 * me = (struct Custom_mis0 *)me_abs;
 
 	if (recset_check(set, me_abs)) {
@@ -1823,7 +1823,7 @@ bool Cache_Bind_mis0 (ff me_abs, mapkey_t * ret, recursion_set * set) {
 
 
 
-bool Cache_Bind_mlist (ff me_abs, mapkey_t * ret, recursion_set * set) {
+int Cache_Bind_mlist (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	struct Custom_mlist * me = (struct Custom_mlist *)me_abs;
 
 	if (recset_check(set, me_abs)) {
@@ -1867,13 +1867,13 @@ bool Cache_Bind_mlist (ff me_abs, mapkey_t * ret, recursion_set * set) {
 
 
 
-bool Cache_Bind_mnil (ff me_abs, mapkey_t * ret, recursion_set * set) {
+int Cache_Bind_mnil (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	return true;
 }
 
 
 
-bool Cache_Bind_msuc (ff me_abs, mapkey_t * ret, recursion_set * set) {
+int Cache_Bind_msuc (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	struct Custom_msuc * me = (struct Custom_msuc *)me_abs;
 
 	if (recset_check(set, me_abs)) {
@@ -1904,7 +1904,7 @@ bool Cache_Bind_msuc (ff me_abs, mapkey_t * ret, recursion_set * set) {
 
 
 
-bool Cache_Bind_mult (ff me_abs, mapkey_t * ret, recursion_set * set) {
+int Cache_Bind_mult (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	struct Custom_mult * me = (struct Custom_mult *)me_abs;
 
 	if (recset_check(set, me_abs)) {
@@ -1933,7 +1933,7 @@ bool Cache_Bind_mult (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	return false;
 }
 
-bool Cache_BindPriv_mult_0 (ff me_abs, mapkey_t * ret, recursion_set * set) {
+int Cache_BindPriv_mult_0 (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	struct CustomPriv_mult_0 * me = (struct CustomPriv_mult_0 *)me_abs;
 
 	if (recset_check(set, me_abs)) {
@@ -1964,19 +1964,19 @@ bool Cache_BindPriv_mult_0 (ff me_abs, mapkey_t * ret, recursion_set * set) {
 
 
 
-bool Cache_Bind_pbooly (ff me_abs, mapkey_t * ret, recursion_set * set) {
+int Cache_Bind_pbooly (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	return true;
 }
 
 
 
-bool Cache_Bind_pmint (ff me_abs, mapkey_t * ret, recursion_set * set) {
+int Cache_Bind_pmint (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	return true;
 }
 
 
 
-bool Cache_Bind_pow (ff me_abs, mapkey_t * ret, recursion_set * set) {
+int Cache_Bind_pow (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	struct Custom_pow * me = (struct Custom_pow *)me_abs;
 
 	if (recset_check(set, me_abs)) {
@@ -2005,7 +2005,7 @@ bool Cache_Bind_pow (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	return false;
 }
 
-bool Cache_BindPriv_pow_0 (ff me_abs, mapkey_t * ret, recursion_set * set) {
+int Cache_BindPriv_pow_0 (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	struct CustomPriv_pow_0 * me = (struct CustomPriv_pow_0 *)me_abs;
 
 	if (recset_check(set, me_abs)) {
@@ -2036,19 +2036,19 @@ bool Cache_BindPriv_pow_0 (ff me_abs, mapkey_t * ret, recursion_set * set) {
 
 
 
-bool Cache_Bind_print_false (ff me_abs, mapkey_t * ret, recursion_set * set) {
+int Cache_Bind_print_false (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	return true;
 }
 
 
 
-bool Cache_Bind_print_true (ff me_abs, mapkey_t * ret, recursion_set * set) {
+int Cache_Bind_print_true (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	return true;
 }
 
 
 
-bool Cache_Bind_tail (ff me_abs, mapkey_t * ret, recursion_set * set) {
+int Cache_Bind_tail (ff me_abs, mapkey_t * ret, recursion_set * set) {
 	struct Custom_tail * me = (struct Custom_tail *)me_abs;
 
 	if (recset_check(set, me_abs)) {

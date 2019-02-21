@@ -66,9 +66,9 @@ class lambda_obj:
 	def bind_name(self) -> str:
 		return 'Bind_' + self.name
 	def carry_custom_name(self, argument_index: int) -> str:
-		return 'CustomPriv_{}_{}'.format(original_bind_name, argument_index)
+		return 'CustomPriv_{}_{}'.format(self.name, argument_index)
 	def carry_bind_name(self, argument_index: int) -> str:
-		return 'BindPriv_{}_{}'.format(original_bind_name, argument_index)
+		return 'BindPriv_{}_{}'.format(self.name, argument_index)
 
 	class func:
 		def __init__(self, f):
@@ -137,7 +137,7 @@ def get_definition(o: lambda_obj) -> str:
 	re = ''
 	if len(o.exec_func.args) > 1:
 		for i, a in enumerate(o.exec_func.args_pre):
-			re += get_carry_definition(o.name, i) + '\n'
+			re += get_carry_definition(o, i) + '\n'
 
 	re += 'struct Custom_{} {{\n'.format(o.name)
 	for m in o.mems:
@@ -159,7 +159,7 @@ def get_carry_typeid_str(o: lambda_obj, argument_index: int):
 def get_init_decl(o: lambda_obj) -> str:
 	return 'int Init_{name} (ff me_abs)'.format(name=o.bind_name())
 def get_carry_init_decl(o: lambda_obj, argument_index: int) -> str:
-	return 'int Init_{name} (ff me_abs)'.format(o.carry_bind_name(argument_index))
+	return 'int Init_{name} (ff me_abs)'.format(name=o.carry_bind_name(argument_index))
 
 def get_init_func(o: lambda_obj) -> str:
 	def get_common_init(bindname: str, customname: str, mems: dict, decl: str) -> str:
@@ -264,7 +264,7 @@ def get_cache_func(o: lambda_obj) -> str:
 		re += common(o.custom_name(), get_cache_decl(o), rest=o.cache_func.f(), custom_code=o.cache_func.code, carry_index=0)
 		if len(o.exec_func.args) > 1:
 			for (i, arg) in enumerate(o.exec_func.args_pre):
-				re += common(o.carry_bind_name(i), get_carry_cache_decl(o.name, i), rest=[], custom_code=[], carry_index=(i + 1))
+				re += common(o.carry_bind_name(i), get_carry_cache_decl(o, i), rest=[], custom_code=[], carry_index=(i + 1))
 		return re
 	else:
 		def common(decl: str) -> str:
@@ -277,7 +277,7 @@ def get_cache_func(o: lambda_obj) -> str:
 		re = ''
 		if len(o.exec_func.args) > 1:
 			for (i, arg) in enumerate(o.exec_func.args_pre):
-				re += common(get_carry_cache_decl(o.name, i))
+				re += common(get_carry_cache_decl(o, i))
 		re += common(get_cache_decl(o))
 		return re
 
@@ -303,12 +303,11 @@ def get_exec_func(o: lambda_obj) -> str:
 				{declaration} {{
 					struct {name} * custom = (struct {name} *)me_abs->custom;
 
-					struct {ret_t} * ret = ALLOC({ret_t});
+					ff ret = ALLOC(struct fun);
 					if (Init_{ret_t}(ret)) {{
 						fprintf(stderr, "%s", "Could not initialize type {ret_t} \\n");
 					}}
 					ret->parent = me_abs;
-					ret->x = nullptr;
 
 					return ret;
 				}}
@@ -326,15 +325,15 @@ def get_exec_func(o: lambda_obj) -> str:
 
 		for (i, arg) in enumerate(o.exec_func.args_pre[:-1]):
 			# ret_t = o.exec_func.args_pre[i + 1]
-			ret_t = carry_bind_name(o.name, i + 1)
+			ret_t = o.carry_bind_name(i + 1)
 			re += carry_common(
-				decl     = get_carry_exec_decl(o.name, i),
-				fullname = o.carry_bind_name(i),
+				decl     = get_carry_exec_decl(o, i),
+				fullname = o.carry_custom_name(i),
 				ret_t    = ret_t )
 
 		re += last_arg(
-			decl     = get_carry_exec_decl(o.name, len(o.exec_func.args_pre) - 1),
-			fullname = o.carry_bind_name(len(o.exec_func.args_pre) - 1),
+			decl     = get_carry_exec_decl(o, len(o.exec_func.args_pre) - 1),
+			fullname = o.carry_custom_name(len(o.exec_func.args_pre) - 1),
 			code     = o.exec_func.code)
 
 		return re
@@ -355,7 +354,7 @@ def write(objs, args):
 		for o in objs:
 			if len(o.exec_func.args) > 1:
 				for (i, arg) in enumerate(o.exec_func.args_pre):
-					declarations_f.write(get_carry_typeid_str(o.name, i))
+					declarations_f.write(get_carry_typeid_str(o, i))
 					declarations_f.write('\n')
 			declarations_f.write(get_typeid_str(o))
 			declarations_f.write('\n')
@@ -366,7 +365,7 @@ def write(objs, args):
 			for o in objs:
 				if len(o.exec_func.args) > 1:
 					for (i, arg) in enumerate(o.exec_func.args_pre):
-						declarations_f.write(pre(o.name, i))
+						declarations_f.write(pre(o, i))
 						declarations_f.write(';\n')
 				declarations_f.write(main(o))
 				declarations_f.write(';\n')
@@ -376,7 +375,7 @@ def write(objs, args):
 		for o in objs:
 			if len(o.exec_func.args) > 1:
 				for (i, arg) in enumerate(o.exec_func.args_pre):
-					declarations_f.write(get_carry_cache_decl(o.name, i))
+					declarations_f.write(get_carry_cache_decl(o, i))
 					declarations_f.write(';\n')
 			declarations_f.write(get_cache_decl(o))
 			declarations_f.write(';\n')

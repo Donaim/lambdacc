@@ -48,3 +48,45 @@ class facc:
 	def cache():
 		return []
 
+
+class mint:
+	''' Machine integer '''
+
+	value = ('int', '0')
+
+	def exec(x):
+		'''
+		return me_abs;
+		'''
+
+	def cache():
+		return ['me->value']
+
+class pmint:
+	''' Print machine integer '''
+	def exec(x: mint):
+		'''
+		printf("%d\\n", x->value);
+		return NULL;
+		// # return &Instance_Bind_error;
+		'''
+
+class msuc:
+	''' Increment machine integer '''
+	def exec(x: mint) -> mint:
+		'''
+		rc->value = x->value + 1;
+		return ret;
+		'''
+	def cache():
+		return []
+
+class add:
+	def exec(a: mint, b: mint) -> mint:
+		'''
+		rc->value = a->value + b->value;
+		return ret;
+		'''
+
+	def cache() -> list:
+		return []

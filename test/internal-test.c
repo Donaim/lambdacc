@@ -83,6 +83,37 @@ void test_list() {
 	}
 }
 
+int node_get_length(struct node * n) {
+	if (n->key == NULL) {
+		return 0;
+	}
+
+	int re = 0;
+
+	do {
+		n = n->next;
+		re++;
+	} while (n);
+
+	return re;
+}
+
+double get_avg_map_nodes_size(struct map * m) {
+	double re = 0;
+	int count = 0;
+
+	for (int i = 0; i < m->size; i++) {
+		struct node * n = m->nodes + i;
+		if (n->key) {
+			int len = node_get_length(n);
+			re = (re * count + len) / ((double)(count + 1));
+			count++;
+		}
+	}
+
+	return re;
+}
+
 void test_map() {
 	{
 		struct map * m = map_alloc(99347);
@@ -92,6 +123,8 @@ void test_map() {
 		list_add(al, 5);
 
 		map_add(m, al, 0);
+
+		printf("avg = %lf; \n", get_avg_map_nodes_size(m));
 	}
 }
 

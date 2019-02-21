@@ -1,7 +1,7 @@
 
 PROJ = example
 
-headers = $(PROJ)/header.h $(PROJ)/declare.h $(PROJ)/define.c $(PROJ)/footer.c $(PROJ)/flags.h
+headers = $(PROJ)/header.h $(PROJ)/declare.h $(PROJ)/define.c $(PROJ)/footer.c
 additional-deps = Makefile  $(shell ls *.py)
 
 CFLAGS = # -O3

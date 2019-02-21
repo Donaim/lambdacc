@@ -44,8 +44,9 @@ ff eval(ff me, ff x) {
 	 * to ensure immutability */
 	struct fun * my_copy = ALLOC(struct fun);
 	memcpy(my_copy, me, sizeof(struct fun));
-	memcpy(my_copy->leafs, me->leafs, me->leafs_count * sizeof(*(me->leafs)));
+	my_copy->leafs = ALLOC_GET(me->leafs_count * sizeof(*(me->leafs)));
 	if (me->customsize) {
+		my_copy->custom = ALLOC_GET(me->customsize);
 		memcpy(my_copy->custom, me->custom, me->customsize);
 	}
 	my_copy->x = x;

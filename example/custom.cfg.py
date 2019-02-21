@@ -39,21 +39,31 @@ class booly:
 		'''
 
 	def cache():
-		return ['me->value']
+		'''
+		if (me->value != 0) {
+			printf("caching bool with %d \\n", me->value);
+			// assert(false);
+		}
+		'''
+		return ['me->value + 9999']
 
 class bnot:
 
 	def exec(x: booly) -> booly:
 		'''
-		rc->value = ! x->value;
+		if (x->value) {
+			rc->value = 0;
+		} else {
+			rc->value = 1;
+		}
 		return ret;
 		'''
-	def cache():
-		return []
 
 class pbooly:
 	def exec(x: booly):
 		'''
+		printf("booly value = %d \\n", x->value);
+
 		if (x->value) {
 			puts("true");
 		} else {
@@ -71,8 +81,6 @@ class mif:
 			return b;
 		}
 		'''
-	def cache():
-		return []
 
 class mint:
 	''' Machine integer '''
@@ -83,9 +91,6 @@ class mint:
 		'''
 		return me_abs;
 		'''
-
-	def cache():
-		return ['me->value']
 
 class pmint:
 	''' Print machine integer '''

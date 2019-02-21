@@ -2,6 +2,8 @@
 
 #include "flags.h"
 
+#include <assert.h>
+
 typedef char bool;
 #define true  1
 #define false 0

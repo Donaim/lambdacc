@@ -33,6 +33,10 @@ int  recset_check(recursion_set * set, ff me) {
 }
 #endif
 
+void kek(ff me, ff my_copy) {
+
+}
+
 ff eval(ff me, ff x) {
 
 #ifdef COUNT_TOTAL_EXEC
@@ -44,11 +48,19 @@ ff eval(ff me, ff x) {
 	 * to ensure immutability */
 	struct fun * my_copy = ALLOC(struct fun);
 	memcpy(my_copy, me, sizeof(struct fun));
-	memcpy(my_copy->leafs, me->leafs, me->leafs_count * sizeof(*(me->leafs)));
+	if (my_copy->leafs_count) {
+		my_copy->leafs = ALLOC_GET(me->leafs_count * sizeof(*(me->leafs)) + 100);
+		memcpy(my_copy->leafs, me->leafs, me->leafs_count * sizeof(*(me->leafs)));
+	}
 	if (me->customsize) {
+		my_copy->custom = ALLOC_GET(me->customsize + 100);
 		memcpy(my_copy->custom, me->custom, me->customsize);
 	}
 	my_copy->x = x;
+
+	// if (me->typeuuid == 3) {
+	// 	return my_copy;
+	// }
 
 	mapkey_t * cache_key = list_alloc();
 	recursion_set * set = map_alloc(177);

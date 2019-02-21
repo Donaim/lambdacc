@@ -1,18 +1,17 @@
+#include "flags.h"
 
 struct fun;
 typedef struct fun * ff;
 
 #ifdef DO_CACHING
 
-#include <map>
-using std::map;
-#include <vector>
-using std::vector;
-typedef vector<int> mapkey_t;
-#include <unordered_set>
-typedef std::unordered_set<void*> recursion_set;
+#include "map.h"
+#include "list.h"
 
-map<mapkey_t,ff> * g_caching_map = new map<mapkey_t,ff>{};
+typedef struct list mapkey_t;
+typedef struct map recursion_set;
+
+struct map * g_caching_map;
 
 #endif
 
@@ -32,7 +31,6 @@ struct fun {
 	ff parent;
 	ff x;
 	ff * leafs;
-	// int leafs_count;
 
 	ff (*eval_now)(ff, ff);
 
@@ -42,9 +40,9 @@ struct fun {
 	int typeuuid;
 #endif
 #ifdef DO_CACHING
-	int customsize; /* For copying */
+	int customsize;  /* For copying */
+	int leafs_count; /* For copying */
 	bool (*cache)(ff me, mapkey_t * ret, recursion_set * set);
-	mapkey_t cache_key;
 #endif
 };
 

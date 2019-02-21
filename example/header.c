@@ -1,5 +1,4 @@
 
-#include "flags.h"
 #include "header.h"
 
 #include "memorypool.c"
@@ -7,6 +6,8 @@
 
 #include "list.c"
 #include "map.c"
+
+#include <stdbool.h>
 
 #ifdef COUNT_TOTAL_EXEC
 int total_eval_count = 0;
@@ -24,28 +25,32 @@ ff eval(ff me, ff x) {
 #ifdef DO_CACHING
 	/* If we do caching, it is important to make copies of expressions,
 	 * to ensure immutability */
-	fun * my_copy = (fun*)ALLOC_GET(me->mysize);
-	memcpy(my_copy, me, me->mysize);
+	struct fun * my_copy = ALLOC(fun);
+	memcpy(my_copy, me, sizeof(struct fun));
+	memcpy(my_copy->leafs, me->leafs, me->leaf_count * sizeof(*(me->leafs)))
+	if (me->customsize) {
+		memcpy(my_copy->custom, me->custom, me->customsize);
+	}
 	my_copy->x = x;
 
-	my_copy->cache_key.clear();
-	recursion_set set;
-	bool efectful = my_copy->cache(my_copy, &(my_copy->cache_key), &set);
+	mapkey_t * cache_key = list_alloc();
+	recursion_set * set = map_alloc(177);
+	bool efectful = my_copy->cache(my_copy, cache_key, set);
 
 	if (efectful) {
 		return my_copy->eval_now(my_copy, x);
 	}
 
-	auto find = g_caching_map->find(my_copy->cache_key);
-	if (find != g_caching_map->end()) {
+	void * find = map_get(g_caching_map, cache_key, list_to_int, list_compare_two);
+	if (find) {
 #ifdef COUNT_TOTAL_EXEC
 		g_cache_hits_count++;
 #endif
 		// return my_copy->eval_now(my_copy, x);
-		return find->second;
+		return find;
 	} else {
 		ff ret = my_copy->eval_now(my_copy, x);
-		g_caching_map->insert( std::pair<mapkey_t, ff> { my_copy->cache_key, ret });
+		map_add(g_caching_map, cache_key, ret, list_to_int, list_compare_two);
 		return ret;
 	}
 #else

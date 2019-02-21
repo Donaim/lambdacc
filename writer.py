@@ -313,12 +313,12 @@ def get_caching_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 	lines = []
 
 	lines += block_to_lines(0, '''
-		if (recset_check(set, me_abs)) {{
+		if (recset_check(set, me_abs)) {
 			list_add(ret, -2);
 			return false;
-		}} else {{
+		} else {
 			recset_add(set, me_abs);
-		}}''')
+		}''')
 
 	encoded_me = le.encode_as_vector()
 	for i in encoded_me:
@@ -446,10 +446,17 @@ def write_some(config: OutConfig, binds: list):
 			proper_binds.append(b)
 		write(out=out, le=b)
 
+	cache_init = ''
+	if out.config.do_caching:
+		cache_init = line('g_caching_map = map_alloc(97123);', 1)
+
 	footer = ''
-	footer += 'int main() {\n'
-	footer += '\tALLOC_INIT();\n'
-	footer += '\n'
+	footer += block_to_text(0, '''
+		int main() {{
+			ALLOC_INIT();
+		{cache_init}
+		'''.format(cache_init=cache_init))
+		
 	for e in exec_expr:
 		name = get_leaf_name(e)
 		init_name = get_leaf_name(CFunction(name, 'init'))

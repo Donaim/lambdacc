@@ -8,7 +8,8 @@ then
 	fi
 else
 	status=$?
-	echo 'Error exit code: $status'
+	cat output.txt
+	echo "Error exit code: $status"
 	exit $status
 fi
 

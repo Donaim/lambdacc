@@ -6,6 +6,11 @@
 #define NULL (void*)0
 #endif
 
+struct list {
+	int value;
+	struct list * next;
+};
+
 struct list * list_alloc() {
 	struct list * re = ALLOC_GET(sizeof(struct list));
 	re->next = NULL;

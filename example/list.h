@@ -1,10 +1,7 @@
 
 #pragma once
 
-struct list {
-	int value;
-	struct list * next;
-};
+struct list;
 
 /* Alloc empty list */
 struct list * list_alloc(void);

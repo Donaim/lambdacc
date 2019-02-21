@@ -209,7 +209,7 @@ class mlist:
 
 	def cache():
 		'''
-		ret->push_back(-12);
+		list_add(ret, -12);
 		if (me->value != NULL) {
 			if (me->value->cache(me->value, ret, set)) {
 					return true;
@@ -220,7 +220,7 @@ class mlist:
 					return true;
 			}
 		}
-		ret->push_back(-13);
+		list_add(ret, -13);
 		'''
 		return []
 

@@ -179,8 +179,8 @@ def get_init_func(o: lambda_obj) -> str:
 			#endif
 			#ifdef DO_CACHING
 				me_abs->cache = Cache_{bindname};
-				me_abs->cache_key = vector<int>{{}};
-				me_abs->mysize = sizeof(struct {customname});
+				me_abs->customsize = sizeof(struct {customname});
+				me_abs->leafs_count = 0;
 			#endif
 
 				return 0;
@@ -206,13 +206,13 @@ def get_carry_cache_decl(o: lambda_obj, argument_index: int) -> str:
 	return 'bool Cache_{} (ff me_abs, mapkey_t * ret, recursion_set * set)'.format(o.carry_bind_name(argument_index))
 def get_cache_func(o: lambda_obj) -> str:
 	if o.pure:
-		def common(fullname: str, decl: str, rest: list, custom_code: str, carry_index: int) -> list:
+		def common(bindname: str, customname: str, decl: str, rest: list, custom_code: str, carry_index: int) -> list:
 			# use custom code from cache function doc
 			
 			# call cache function to get the rest
 			custom_mems = []
 			for r in rest:
-				custom_mems.append('ret->push_back({});'.format(r))
+				custom_mems.append('list_add(ret, {});'.format(r))
 			custom_mems = lfold(custom_mems)
 			custom_mems = tufold(block_norm(custom_mems, 1))
 
@@ -221,29 +221,29 @@ def get_cache_func(o: lambda_obj) -> str:
 				custom_block = tufold(block_norm(custom_code, 1))
 
 			previus_xs = ''
-			current_parent = 'me->parent'
+			current_parent = 'me_abs->parent'
 			for i in range(carry_index):
-				previus_xs += line('ret->push_back({p}->x->cache({p}->x, ret, set));'.format(p=current_parent), 1)
+				previus_xs += line('list_add(ret, {p}->x->cache({p}->x, ret, set));'.format(p=current_parent), 1)
 				current_parent += '->parent'
 
 			return tufold(block_norm('''
 				{declaration} {{
-					struct {name} * me = (struct {name} *)me_abs;
+					struct {customname} * me = (struct {customname} *)me_abs;
 
-					if (set->count(me_abs) > 0) {{
-						ret->push_back(-2);
+					if (recset_check(set, me_abs)) {{
+						list_add(ret, -2);
 						return false;
 					}} else {{
-						set->insert(me_abs);
+						recset_add(set, me_abs);
 					}}
 
-					ret->push_back(-9);
-					ret->push_back(Typeid_{name});
+					list_add(ret, -9);
+					list_add(ret, Typeid_{bindname});
 
-					if (me->x) {{
-						ret->push_back(me->x->cache(me->x, ret, set));
+					if (me_abs->x) {{
+						list_add(ret, me_abs->x->cache(me_abs->x, ret, set));
 					}} else {{
-						ret->push_back(-1);
+						list_add(ret, -1);
 					}}
 
 				{previus_xs}
@@ -258,13 +258,14 @@ def get_cache_func(o: lambda_obj) -> str:
 						custom_block=custom_block,
 						custom_mems=custom_mems,
 						previus_xs=previus_xs,
-						name=fullname)
+						bindname=bindname,
+						customname=customname)
 
 		re = ''
-		re += common(o.custom_name(), get_cache_decl(o), rest=o.cache_func.f(), custom_code=o.cache_func.code, carry_index=0)
+		re += common(o.bind_name(), o.custom_name(), get_cache_decl(o), rest=o.cache_func.f(), custom_code=o.cache_func.code, carry_index=0)
 		if len(o.exec_func.args) > 1:
 			for (i, arg) in enumerate(o.exec_func.args_pre):
-				re += common(o.carry_bind_name(i), get_carry_cache_decl(o, i), rest=[], custom_code=[], carry_index=(i + 1))
+				re += common(o.carry_bind_name(i), o.carry_custom_name(i), get_carry_cache_decl(o, i), rest=[], custom_code=[], carry_index=(i + 1))
 		return re
 	else:
 		def common(decl: str) -> str:

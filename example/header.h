@@ -1,5 +1,9 @@
 #include "flags.h"
 
+typedef char bool;
+#define true  1
+#define false 0
+
 struct fun;
 typedef struct fun * ff;
 
@@ -10,6 +14,9 @@ typedef struct fun * ff;
 
 typedef struct list mapkey_t;
 typedef struct map recursion_set;
+
+void recset_add(recursion_set * set, ff me);
+int  recset_check(recursion_set * set, ff me);
 
 struct map * g_caching_map;
 
@@ -22,10 +29,6 @@ extern int total_eval_count;
 extern int g_cache_hits_count;
 #endif
 #endif
-
-typedef char bool;
-#define true  1
-#define false 0
 
 struct fun {
 	ff parent;

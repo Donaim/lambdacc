@@ -16,6 +16,21 @@ int g_cache_hits_count = 0;
 #endif
 #endif
 
+#ifdef DO_CACHING
+int __recset_eq(void * a, void * b) {
+	return a == b;
+}
+long unsigned int __recset_hash(void * a) {
+	return a;
+}
+void recset_add(recursion_set * set, ff me) {
+	map_add(set, ff, (void*)1, __recset_hash, __recset_eq);
+}
+int  recset_check(recursion_set * set, ff me) {
+	return 0 != map_get(set, me, __recset_hash, __recset_eq);
+}
+#endif
+
 ff eval(ff me, ff x) {
 
 #ifdef COUNT_TOTAL_EXEC

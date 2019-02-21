@@ -95,5 +95,18 @@ int map_add(struct map * m, struct list * key, struct fun * value) {
 struct fun * map_get(struct map * m, struct list * key) {
 	long int hash = list_to_int(key, m->size);
 
+	struct node * place = m->nodes + hash;
+
+	if (place->key == NULL) {
+		return 0;
+	}
+
+	do {
+		if (list_compare_two(place->key, key)) {
+			return place->value;
+		}
+		place = place->next;
+	} while (place);
+
 	return 0;
 }

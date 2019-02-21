@@ -6,5 +6,5 @@ if cat output.txt | grep '  = false' -q; then
 	exit 1
 fi
 
-rm test.exe test.cc || exit 1
+rm test.exe test.c || exit 1
 echo OK

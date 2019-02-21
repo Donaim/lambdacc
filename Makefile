@@ -18,15 +18,15 @@ test:
 	$(CPP) $@/internal-test.c -O0 -g -o $@.exe
 	./$@.exe
 
-	$(MAKE) all PROJ=test CFLAGS=''
+	$(MAKE) all PROJ=test   TFLAGS='--no-do-caching --no-use-typeid' CFLAGS=''
 	test/checkout.sh
 	$(MAKE) all PROJ=test   TFLAGS='--no-do-caching' CFLAGS=''
-	test/checkout.sh
-	$(MAKE) all PROJ=test   TFLAGS='--no-do-caching --no-use-typeid' CFLAGS=''
 	test/checkout.sh
 	$(MAKE) all PROJ=test   TFLAGS='--make-inline --no-do-caching --no-use-typeid' CFLAGS=''
 	test/checkout.sh
 	$(MAKE) all PROJ=test   TFLAGS='--make-inline --no-use-typeid'  CFLAGS=''
+	test/checkout.sh
+	$(MAKE) all PROJ=test CFLAGS=''
 	test/checkout.sh
 
 clean:

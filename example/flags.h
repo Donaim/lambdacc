@@ -1,2 +1,0 @@
-#define DO_CACHING
-#define COUNT_TOTAL_EXEC

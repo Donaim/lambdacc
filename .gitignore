@@ -11,3 +11,6 @@ rawc/
 *.c++
 *.inline.ini
 *.txt
+
+*/flags.h
+*/declare.h

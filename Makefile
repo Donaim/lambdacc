@@ -6,7 +6,9 @@ additional-deps = Makefile  $(shell ls *.py)
 
 CFLAGS = # -O3
 TFLAGS =
-CPP = clang
+
+# clang is faster. TCC is the fastest that I know of
+CPP = gcc
 
 run: all
 	./$(PROJ).exe

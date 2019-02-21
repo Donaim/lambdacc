@@ -79,13 +79,13 @@ int map_add(struct map * m, struct list * key, struct fun * value) {
 		return 0;
 	}
 
-	do {
+	while (place->next) {
 		if (list_compare_two(place->key, key)) {
 			/* Same key already added */
 			return 1;
 		}
 		place = place->next;
-	} while (place);
+	}
 
 	/* If not found, append to tail */
 	node_add(place, key, value);

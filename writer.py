@@ -455,6 +455,8 @@ def write_some(config: OutConfig, binds: list):
 		int main() {{
 			ALLOC_INIT();
 		{cache_init}
+
+
 		'''.format(cache_init=cache_init))
 		
 	for e in exec_expr:

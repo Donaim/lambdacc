@@ -26,7 +26,10 @@ void list_add(struct list * l, int value) {
 	l->next = new;
 }
 
-int list_compare_two(struct list * a, struct list * b) {
+int list_compare_two(void * opaque_a, void * opaque_b) {
+	struct list * a = opaque_a;
+	struct list * b = opaque_b;
+
 	while (a) {
 		if (b == NULL) {
 			return 0;
@@ -44,7 +47,9 @@ int list_compare_two(struct list * a, struct list * b) {
 	}
 }
 
-long unsigned int list_to_int(struct list * l) {
+long unsigned int list_to_int(void * opaque) {
+	struct list * l = opaque;
+
 	if (l->next == l) {
 		return 0;
 	}

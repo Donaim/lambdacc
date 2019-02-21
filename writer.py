@@ -48,6 +48,7 @@ class OutConfig:
 			filename: str,
 			show_debug: bool,
 			use_typeid: bool,
+			flagsfile: str,
 			headerfile: str,
 			declare_file: str,
 			define_file: str,
@@ -58,6 +59,7 @@ class OutConfig:
 		self.filename = filename
 		self.show_debug = show_debug
 		self.use_typeid = use_typeid
+		self.flagsfile = flagsfile
 		self.headerfile = headerfile
 		self.declare_file = declare_file
 		self.define_file = define_file
@@ -70,6 +72,7 @@ class SplittedOut:
 	def __init__(self, config: OutConfig):
 		self.config = config
 
+		self.flags = ''
 		self.header = ''
 		self.typeuuids = ''
 		self.struct_declarations = ''
@@ -105,6 +108,9 @@ class SplittedOut:
 		writeone(self.footer)
 
 		w.close()
+
+		with open(self.config.flagsfile, 'w') as flagsf:
+			flagsf.write(self.flags)
 
 class CFunction:
 	def __init__(self, leaf_name: str, t: str):
@@ -429,13 +435,13 @@ def write_some(config: OutConfig, binds: list):
 	out = SplittedOut(config)
 
 	if out.config.show_debug:
-		out.header += '#define SHOW_DEBUG\n'
+		out.flags += '#define SHOW_DEBUG\n'
 	if out.config.use_typeid:
-		out.header += '#define USE_TYPEID\n'
+		out.flags += '#define USE_TYPEID\n'
 	if out.config.do_caching:
-		out.header += '#define DO_CACHING\n'
+		out.flags += '#define DO_CACHING\n'
 	if out.config.count_total_exec:
-		out.header += '#define COUNT_TOTAL_EXEC\n'
+		out.flags += '#define COUNT_TOTAL_EXEC\n'
 
 	proper_binds = []
 	exec_expr = []

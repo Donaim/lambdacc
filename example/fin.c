@@ -21,12 +21,12 @@ struct fun Instance_fin = {
 	.parent = 0,
 	.x = 0,
 	.leafs = 0,
-	.customsize = 0,
 	.eval_now = fin_eval_now,
 
 #ifdef DO_CACHING
 	.cache = Cache_fin,
 	.leafs_count = 0,
+	.customsize = 0,
 #endif
 };
 

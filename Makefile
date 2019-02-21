@@ -1,7 +1,7 @@
 
 PROJ = example
 
-headers = $(PROJ)/header.h $(PROJ)/declare.h $(PROJ)/define.c $(PROJ)/footer.c
+headers = $(PROJ)/header.h $(PROJ)/declare.h $(PROJ)/define.c $(PROJ)/footer.c $(PROJ)/flags.h
 additional-deps = Makefile  $(shell ls *.py)
 
 CFLAGS = # -O3
@@ -44,6 +44,7 @@ $(PROJ).c: $(PROJ)/script.ini $(headers) $(additional-deps)
 		--no-show-debug \
 		--use-typeid \
 		--echo-expr \
+		--flagsfile $(PROJ)/flags.h \
 		--headerfile $(PROJ)/header.h \
 		--declare-file $(PROJ)/declare.h \
 		--define-file $(PROJ)/define.c \

@@ -160,6 +160,7 @@ def get_arguments():
 	parser.set_defaults(echo_expr=True)
 
 	def includehelp(name): return 'File to be included after generated file "{}" section'.format(name)
+	parser.add_argument('--flagsfile', help=includehelp('flags'))
 	parser.add_argument('--headerfile', help=includehelp('header'))
 	parser.add_argument('--declare-file', help=includehelp('declare'))
 	parser.add_argument('--define-file', help=includehelp('define'))
@@ -208,6 +209,7 @@ def processone(args):
 		filename=args.dest,
 		show_debug=args.show_debug,
 		use_typeid=args.use_typeid,
+		flagsfile=args.flagsfile,
 		headerfile=args.headerfile,
 		declare_file=args.declare_file,
 		define_file=args.define_file,

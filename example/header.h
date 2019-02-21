@@ -1,3 +1,5 @@
+#pragma once
+
 #include "flags.h"
 
 typedef char bool;

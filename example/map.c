@@ -18,7 +18,8 @@ static void node_add(struct node * last, struct list * key, struct fun * value)
 }
 
 static void init_node(struct node * o) {
-	o->next = o;
+	o->next = NULL;
+	o->key = NULL;
 	o->value = NULL;
 }
 

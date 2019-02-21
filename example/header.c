@@ -17,14 +17,16 @@ int g_cache_hits_count = 0;
 #endif
 
 #ifdef DO_CACHING
+#include <string.h> /* memcpy */
+
 int __recset_eq(void * a, void * b) {
 	return a == b;
 }
 long unsigned int __recset_hash(void * a) {
-	return a;
+	return (long unsigned int)a;
 }
 void recset_add(recursion_set * set, ff me) {
-	map_add(set, ff, (void*)1, __recset_hash, __recset_eq);
+	map_add(set, me, (void*)1, __recset_hash, __recset_eq);
 }
 int  recset_check(recursion_set * set, ff me) {
 	return 0 != map_get(set, me, __recset_hash, __recset_eq);
@@ -40,9 +42,9 @@ ff eval(ff me, ff x) {
 #ifdef DO_CACHING
 	/* If we do caching, it is important to make copies of expressions,
 	 * to ensure immutability */
-	struct fun * my_copy = ALLOC(fun);
+	struct fun * my_copy = ALLOC(struct fun);
 	memcpy(my_copy, me, sizeof(struct fun));
-	memcpy(my_copy->leafs, me->leafs, me->leaf_count * sizeof(*(me->leafs)))
+	memcpy(my_copy->leafs, me->leafs, me->leafs_count * sizeof(*(me->leafs)));
 	if (me->customsize) {
 		memcpy(my_copy->custom, me->custom, me->customsize);
 	}

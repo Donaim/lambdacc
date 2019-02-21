@@ -2,6 +2,10 @@
 #include "map.h"
 #include "memorypool.h"
 
+#ifndef NULL
+#define NULL (void*)0
+#endif
+
 struct node {
 	void * key;
 	void * value;

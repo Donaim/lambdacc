@@ -37,7 +37,9 @@ int list_compare_two(struct list * a, struct list * b) {
 		a = a->next;
 		b = b->next;
 	}
-	return 1;
+	if (b != NULL) {
+		return 0;
+	} else {
+		return 1;
+	}
 }
-
-

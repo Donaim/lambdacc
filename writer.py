@@ -275,10 +275,10 @@ def get_init_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 		caching = block_to_text(2,
 		'''
 		me->cache = {cache_funcname};
-		me->cache_key = vector<int>{{}};
-		me->mysize = sizeof(*me);
+		me->customsize = 0;
+		me->leafs_count = {num_leafs};
 		'''
-		).format(cache_funcname=cache_funcname)
+		).format(cache_funcname=cache_funcname, num_leafs=num_leafs)
 
 	out.init_definitions += block_to_text(0,
 		'''
@@ -307,45 +307,46 @@ def get_caching_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 
 	funcname = get_leaf_name(CFunction(lambda_name, 'cache'))
 
-	decl = 'bool {:<30} (ff me, {} * ret, recursion_set * set)'.format(funcname, MAPKEY_T)
+	decl = 'bool {:<30} (ff me_abs, {} * ret, recursion_set * set)'.format(funcname, MAPKEY_T)
 	out.caching_declarations += decl + ';\n'
 
 	lines = []
 
-	lines.append('if (set->count(me) > 0) {')
-	lines.append('	ret->push_back(-2);')
-	lines.append('	return false;')
-	lines.append('} else {')
-	lines.append('	set->insert(me);')
-	lines.append('}')
+	lines += block_to_lines(0, '''
+		if (recset_check(set, me_abs)) {{
+			list_add(ret, -2);
+			return false;
+		}} else {{
+			recset_add(set, me_abs);
+		}}''')
 
 	encoded_me = le.encode_as_vector()
 	for i in encoded_me:
-		lines.append('ret->push_back({});'.format(i))
+		lines.append('list_add(ret, {});'.format(i))
 
 	# Get cache key of our x value if exists and if x is used
 	if type(le) is Lambda:
 		if any( map( lambda leaf: le.arg.count_usages(leaf) > 0, le.leafs ) ):
-			lines.append('if (me->x) {')
-			lines.append('	if(me->x->cache(me->x, ret, set)) { return true; }')
+			lines.append('if (me_abs->x) {')
+			lines.append('	if(me_abs->x->cache(me_abs->x, ret, set)) { return true; }')
 			lines.append('} else {')
-			lines.append('	ret->push_back(-1);')
+			lines.append('	list_add(ret, -1);')
 			lines.append('}')
 		else:
 			# print('{} does not use its arg {}: \n{}\n'.format(lambda_name, le.arg.name, le.print(0)))
 			pass
 	else:
-		lines.append('if (me->x) {')
-		lines.append('	if(me->x->cache(me->x, ret, set)) { return true; }')
+		lines.append('if (me_abs->x) {')
+		lines.append('	if(me_abs->x->cache(me_abs->x, ret, set)) { return true; }')
 		lines.append('} else {')
-		lines.append('	ret->push_back(-1);')
+		lines.append('	list_add(ret, -1);')
 		lines.append('}')
 
 	# Get cache keys of parent abstractions arguments
 	def app(s: str):
 		lines.append('if({}->x->cache({}->x, ret, set)) {{ return true; }}'.format(current_str, current_str))
 
-	current_str = 'me->parent'
+	current_str = 'me_abs->parent'
 	current_parent = le.parent
 	names = {}
 	if type(le) is Lambda:

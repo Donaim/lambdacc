@@ -113,18 +113,86 @@ double get_avg_map_nodes_size(struct map * m) {
 
 	return re;
 }
+double get_fill_ratio(struct map * m) {
+	int count = 0;
+
+	for (int i = 0; i < m->size; i++) {
+		struct node * n = m->nodes + i;
+		if (n->key) {
+			count++;
+		}
+	}
+
+	return count / ((double) m->size);
+}
+void ass_map(struct map * m, double ex_avg, double ex_fill)
+{
+	double avg  = get_avg_map_nodes_size(m);
+	double fill = get_fill_ratio(m);
+
+	puts("");
+	printf("avg  = %lf; ", avg);
+	if (ex_avg >= 0) {
+		printf("expected = %lf; ", ex_avg);
+		assert(avg == ex_avg);
+	}
+
+	puts("");
+	printf("fill = %lf; ", fill);
+	if (ex_fill >= 0) {
+		printf("expected = %lf; ", ex_fill);
+		assert(fill == ex_fill);
+	}
+
+	puts("");
+}
 
 void test_map() {
 	{
 		struct map * m = map_alloc(99347);
+
+		struct fun * val = (void*)5;
 		
 		struct list * al = list_alloc();
 		list_add(al, 3);
 		list_add(al, 5);
 
-		map_add(m, al, 0);
+		map_add(m, al, val);
 
-		printf("avg = %lf; \n", get_avg_map_nodes_size(m));
+		ass_map(m, -1, -1);
+
+		map_add(m, al, val);
+		map_add(m, al, val);
+		map_add(m, al, val);
+
+		ass_map(m, -1, -1);
+
+		struct list * bl = list_alloc();
+		list_add(bl, 3);
+		list_add(bl, 5);
+
+		map_add(m, bl, val);
+		map_add(m, bl, val);
+		map_add(m, bl, val);
+
+		ass_map(m, -1, -1);
+
+		printf("get bl = %p \n", map_get(m, bl));
+
+		struct fun * val2 = (void*)7;
+
+		struct list * cl = list_alloc();
+		list_add(cl, 3);
+		list_add(cl, 5);
+		list_add(cl, 2);
+
+		map_add(m, cl, val2);
+		map_add(m, cl, val2);
+		map_add(m, cl, val2);
+
+		ass_map(m, -1, -1);
+
+		printf("get cl = %p \n", map_get(m, cl));
 	}
 }
 

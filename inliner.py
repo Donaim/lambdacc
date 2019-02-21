@@ -40,7 +40,7 @@ def get_leaf_text(le: Leaf) -> str:
 			else:
 				raise Exception ("Cannot inline binding: {}".format(le.name))
 		elif is_binding_recursive(bind=le):
-			print ("Biding is recursive: {}".format(le))
+			# print ("Biding is recursive: {}".format(le))
 			return le.name
 		else:
 			# return le.name

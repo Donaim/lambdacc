@@ -15,6 +15,9 @@ all: $(PROJ).exe
 	@echo compiled
 
 test:
+	$(CPP) $@/internal-test.c -O0 -g -o $@.exe
+	./$@.exe
+
 	$(MAKE) all PROJ=test CFLAGS=''
 	test/checkout.sh
 	$(MAKE) all PROJ=test   TFLAGS='--no-do-caching' CFLAGS=''

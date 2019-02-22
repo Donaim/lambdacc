@@ -228,7 +228,7 @@ def get_cache_func(o: lambda_obj) -> str:
 
 			return tufold(block_norm('''
 				{declaration} {{
-					struct {customname} * me = (struct {customname} *)me_abs->custom;
+					struct {customname} * me = me_abs->custom;
 
 					if (recset_check(set, me_abs)) {{
 						list_add(ret, -2);
@@ -290,7 +290,7 @@ def get_exec_func(o: lambda_obj) -> str:
 	def last_arg(fullname: str, decl: str, code: str) -> str:
 		return tufold(block_norm('''
 			{declaration} {{
-				struct {name} * custom = (struct {name} *)me_abs->custom;
+				struct {name} * custom = me_abs->custom;
 			{code}
 			}}
 			''', 0)).format(
@@ -302,7 +302,7 @@ def get_exec_func(o: lambda_obj) -> str:
 		def carry_common(decl, fullname, ret_t: str) -> str:
 			return tufold(block_norm('''
 				{declaration} {{
-					struct {name} * custom = (struct {name} *)me_abs->custom;
+					struct {name} * custom = me_abs->custom;
 
 					ff ret = ALLOC(struct fun);
 					if (Init_{ret_t}(ret)) {{

@@ -38,7 +38,8 @@ TFLAGS = [s.format(PROJ=PROJ) for s in TFLAGS]
 
 def kcompile():
 	subprocess.check_call(['./lambda-cpp.py'] + TFLAGS)
-	subprocess.check_call([CC, '-O0', DEST, PROJ + '/header.c'])
+	subprocess.check_call([CC, '-o', 'repl.exe', '-O0', DEST, PROJ + '/header.c'])
+	subprocess.check_call(['./repl.exe'])
 
 def loop(file):
 	while True:

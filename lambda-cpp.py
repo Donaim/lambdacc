@@ -159,6 +159,14 @@ def get_arguments():
 	parser.add_argument('--no-echo-expr', dest='echo_expr', action='store_false', help=None)
 	parser.set_defaults(echo_expr=True)
 
+	parser.add_argument('--track-allocs', dest='track_allocs', action='store_true', help='Print memory allocation info')
+	parser.add_argument('--no-track-allocs', dest='track_allocs', action='store_false', help=None)
+	parser.set_defaults(track_allocs=False)
+
+	parser.add_argument('--track-pool-allocs', dest='track_pool_allocs', action='store_true', help='Print memory pools allocation info')
+	parser.add_argument('--no-track-pool-allocs', dest='track_pool_allocs', action='store_false', help=None)
+	parser.set_defaults(track_allocs=False)
+
 	def includehelp(name): return 'File to be included after generated file "{}" section'.format(name)
 	parser.add_argument('--flagsfile', help=includehelp('flags'))
 	parser.add_argument('--headerfile', help=includehelp('header'))
@@ -216,7 +224,9 @@ def processone(args):
 		footerfile=args.footerfile,
 		do_caching=args.do_caching,
 		count_total_exec=args.count_total_exec,
-		echo_expr=args.echo_expr)
+		echo_expr=args.echo_expr,
+		track_allocs=args.track_allocs,
+		track_pool_allocs=args.track_pool_allocs)
 	writer.write_some(config=config, binds=binds)
 
 def main():

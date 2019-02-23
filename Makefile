@@ -46,6 +46,8 @@ $(PROJ).c: $(PROJ)/script.ini $(headers) $(additional-deps)
 		--no-show-debug \
 		--use-typeid \
 		--echo-expr \
+		--no-track-allocs \
+		--no-track-pool-allocs \
 		--flagsfile $(PROJ)/flags.h \
 		--headerfile $(PROJ)/header.h \
 		--declare-file $(PROJ)/declare.h \

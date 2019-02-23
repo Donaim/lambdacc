@@ -1,7 +1,4 @@
 
-#define TRACK_ALLOCS false
-#define TRACK_POOL_ALLOCS true
-
 #if TRACK_ALLOCS
 void * ALLOC_GET(int size, const char * name);
 #else

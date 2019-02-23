@@ -55,7 +55,9 @@ class OutConfig:
 			footerfile: str,
 			do_caching: bool,
 			count_total_exec: bool,
-			echo_expr: bool):
+			echo_expr: bool,
+			track_allocs: bool,
+			track_pool_allocs: bool):
 		self.filename = filename
 		self.show_debug = show_debug
 		self.use_typeid = use_typeid
@@ -67,6 +69,8 @@ class OutConfig:
 		self.do_caching = do_caching
 		self.count_total_exec = count_total_exec
 		self.echo_expr = echo_expr
+		self.track_allocs = track_allocs
+		self.track_pool_allocs = track_pool_allocs
 
 class SplittedOut:
 	def __init__(self, config: OutConfig):
@@ -442,6 +446,10 @@ def write_some(config: OutConfig, binds: list):
 		out.flags += '#define DO_CACHING\n'
 	if out.config.count_total_exec:
 		out.flags += '#define COUNT_TOTAL_EXEC\n'
+	if out.config.track_allocs:
+		out.flags += '#define TRACK_ALLOCS'
+	if out.config.track_pool_allocs:
+		out.flags += '#define TRACK_POOL_ALLOCS'
 
 	proper_binds = []
 	exec_expr = []

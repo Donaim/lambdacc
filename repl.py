@@ -48,20 +48,22 @@ def kcompile():
 	subprocess.check_call([CC, '-o', 'repl.exe', '-O0', DEST, PROJ + '/header.c'])
 	subprocess.check_call(['./repl.exe'])
 
-def loop(file):
-	buffor = []
+def dump_buffor(file, buffor):
+	file.seek(0, 0)
+	file.truncate(0)
+	file.writelines(buffor)
+	file.flush()
+
+def loop(file, buffor):
 	while True:
 		inp = input('> ')
 		inp = (inp.replace('\n', ' ')).strip()
 		if inp == '#exit':
+			dump_buffor(file, buffor)
 			break
 
 		buffor.append(inp + '\n')
-
-		file.seek(0, 0)
-		file.truncate(0)
-		file.writelines(buffor)
-		file.flush()
+		dump_buffor(file, buffor)
 
 		if not is_binding(inp):
 			try:
@@ -72,10 +74,14 @@ def loop(file):
 			buffor.pop()
 
 def setup(args, callback):
-	mode = 'w' if args.refresh else 'a'
-	file = open(SRC, mode)
+	buffor = []
+	if not args.refresh:
+		with open(SRC) as r:
+			buffor = r.readlines()
 
-	callback(file)
+	file = open(SRC, 'w')
+
+	callback(file, buffor=buffor)
 
 def main():
 	args = get_arguments()

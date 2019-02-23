@@ -28,6 +28,8 @@ TFLAGS = [
 	'--no-show-debug',
 	'--use-typeid',
 	'--no-echo-expr',
+	'--no-track-allocs',
+	'--no-track-pool-allocs',
 	'--flagsfile', '{PROJ}/flags.h',
 	'--headerfile', '{PROJ}/header.h',
 	'--declare-file', '{PROJ}/declare.h',

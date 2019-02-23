@@ -3,6 +3,7 @@
 #include "flags.h"
 
 #include <assert.h>
+#include <stdio.h>
 
 typedef char bool;
 #define true  1
@@ -31,7 +32,6 @@ struct map * g_caching_map;
 #endif
 
 #ifdef COUNT_TOTAL_EXEC
-#include <stdio.h>
 extern int total_eval_count;
 #ifdef DO_CACHING
 extern int g_cache_hits_count;

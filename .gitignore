@@ -15,3 +15,6 @@ devel/
 
 */flags.h
 */declare.h
+
+repl/repl.ini
+repl/repl.inline.ini

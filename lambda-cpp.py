@@ -89,13 +89,13 @@ def filter_lines(lines: iter) -> iter:
 
 def get_splitted_lines(text: str) -> iter:
 	linesR = text.split('\n')
-	linesR = list(filter_lines(linesR))
-	lines = list(join_lines(linesR))
-	tuples = map(split_binding_and_def, lines)
-	return map(SplittedLine.get_name_and_token, tuples)
+	linesR = filter_lines(linesR)
+	lines = join_lines(linesR)
+	return map(split_binding_and_def, lines)
 
 def parse_text(text: str) -> iter:
-	toks = get_splitted_lines(text)
+	tuples = get_splitted_lines(text)
+	toks = map(SplittedLine.get_name_and_token, tuples)
 
 	def get_tagged_tok(acc, tok):
 		(tid, arr) = acc

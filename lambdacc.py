@@ -43,13 +43,13 @@ def split_binding_and_def(cline: ClassifiedLine) -> SplittedLine:
 	post = post.strip()
 	if len(p2) <= 0:
 		if not post:
-			raise SyntaxError('Binding at line "{}" cannot have empty definition'.format(line))
+			raise RuntimeError('Binding at line "{}" cannot have empty definition'.format(line))
 
 		pre = pre.strip()
 		if not pre:
-			raise SyntaxError('Binding at line "{}" cannot have empty name'.format(line))
+			raise RuntimeError('Binding at line "{}" cannot have empty name'.format(line))
 		if parser.LAMBDA_SYMBOL in pre or '\\' in pre:
-			raise SyntaxError('Binding "{}" has invalid symbols in its name'.format(pre))
+			raise RuntimeError('Binding "{}" has invalid symbols in its name'.format(pre))
 	else:
 		post = line.strip()
 		pre = None
@@ -242,6 +242,10 @@ def main():
 	processone(args)
 	
 if __name__ == '__main__':
-	main()
-
+	try:
+		main()
+	except RuntimeError as e:
+		import sys
+		print('RuntimeError: {}'.format(e), file=sys.stderr)
+		exit(1)
 

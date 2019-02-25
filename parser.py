@@ -46,7 +46,7 @@ class Branch:
 		if is_lambda:
 			stop = find_first_sub(expr, [' ', LAMBDA_SYMBOL], start=1)
 			if stop < 0:
-				raise Exception('Lambda expression "{}" has no body!'.format(expr))
+				raise RuntimeError('Lambda expression "{}" has no body!'.format(expr))
 			argname = expr[1:stop]
 			re.branches.append( Branch(argname, [], is_lambda=False, is_token=True, is_arg=True) )
 			expr = expr[stop:]
@@ -72,7 +72,7 @@ class Branch:
 			elif expr[0] == '(':    # another branch
 				stop = find_next_bracket(expr)
 				if stop < 0:
-					raise Exception('Wrong number of brackets: need {} more ")"!'.format(stop))
+					raise RuntimeError('Wrong number of brackets: need {} more ")"!'.format(stop))
 				body = expr[1:stop]
 				sub = Branch.from_text(body)
 				size = len(sub.branches)
@@ -124,7 +124,7 @@ class Leaf:
 			le = le.parent
 			re += 1
 
-		raise Exception('Argument {} not found when traversing parents of: \n{}\n'.format(arg.name, le.print(0)))
+		raise RuntimeError('Argument {} not found when traversing parents of: \n{}\n'.format(arg.name, le.print(0)))
 
 	def encode_as_vector(self) -> list:
 		''' Returns structural representation of this Leaf tree as vector of integers '''
@@ -145,7 +145,7 @@ class Leaf:
 				buf.append(-8)
 				buf.append(leaf.unique_id)
 			else:
-				raise Exception('Unexpected type "{}"'.format(t))
+				raise RuntimeError('Unexpected type "{}"'.format(t))
 		return buf
 
 	def to_text(self) -> str:
@@ -164,7 +164,7 @@ class Leaf:
 			ret = ' '.join(leafs)
 			return '(' + ret + ')'
 		else:
-			raise Exception("Unexpected leaf type: {}".format(t))
+			raise RuntimeError("Unexpected leaf type: {}".format(t))
 
 class Argument(Leaf):
 	def __init__(self, name: str, parent: Leaf):
@@ -265,7 +265,7 @@ def parse_token(token: Branch, scope: list, binds: list) -> Leaf:
 	for b in binds:
 		if b.name == token.text:
 			return b
-	raise Exception('not defined binding "{}" in scope = {} and bindings = {}'.format(token.text, scope, list(map(lambda b: b.name, binds))))
+	raise RuntimeError('not defined binding "{}" in scope = {} and bindings = {}'.format(token.text, scope, list(map(lambda b: b.name, binds))))
 
 def add_scope_argument(current_scope: list, new_arg: Branch, parent: Leaf) -> list:
 	return current_scope + [Argument(new_arg.text, parent=parent)]

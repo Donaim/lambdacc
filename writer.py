@@ -75,6 +75,7 @@ class OutConfig:
 class SplittedOut:
 	def __init__(self, config: OutConfig):
 		self.config = config
+		self.written = {}
 
 		self.flags = ''
 		self.header = ''
@@ -410,6 +411,11 @@ def get_fields(le: Lambda) -> list:
 def get_structure_member(name, name_m):
 	return '\t{:<30} * {};\n'.format(name, name_m)
 def write_named_lambda(out: SplittedOut, le: Lambda, lambda_name: str):
+	if lambda_name in out.written:
+		return
+	else:
+		out.written[lambda_name] = True
+
 	for l in le.leafs:
 		if type(l) is Lambda:
 			write_lambda(out=out, le=l)

@@ -102,7 +102,7 @@ class SplittedOut:
 		def writearr(arr: list) -> None:
 			for t in arr:
 				writeone(t)
-		
+
 		writeone(self.header)
 		include(self.config.headerfile)
 		include(self.config.declare_file)
@@ -478,7 +478,7 @@ def write_some(config: OutConfig, binds: list):
 
 
 		'''.format(cache_init=cache_init))
-		
+
 	for e in exec_expr:
 		name = get_leaf_name(e)
 		init_name = get_leaf_name(CFunction(name, 'init'))

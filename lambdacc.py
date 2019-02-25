@@ -240,7 +240,7 @@ def processone(args):
 def main():
 	args = get_arguments()
 	processone(args)
-	
+
 if __name__ == '__main__':
 	try:
 		main()

@@ -67,7 +67,7 @@ class Branch:
 					re.branches.append(sub.branches[0])
 				else:
 					re.branches.append(sub)
-				
+
 				expr = ''
 			elif expr[0] == '(':    # another branch
 				stop = find_next_bracket(expr)
@@ -98,7 +98,7 @@ class Leaf:
 	def __init__(self, leafs: list, parent):
 		self.leafs = leafs
 		self.parent = parent
-		
+
 		global counter
 		self.unique_id = counter
 		counter += 1
@@ -240,7 +240,7 @@ def transformMultipleLambdas(s: str) -> str:
 				buff = buff[:-(len(LAMBDA_SYMBOL))].strip()
 				buff = buff.replace(' ', ' {} {}'.format(LAMBDA_SYMBOL, LAMBDA_DECL)) + ' '
 				re += buff + LAMBDA_SYMBOL
-				
+
 				buff = ''
 				last_lambda = False
 		else:

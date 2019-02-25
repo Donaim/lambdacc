@@ -208,7 +208,7 @@ def get_cache_func(o: lambda_obj) -> str:
 	if o.pure:
 		def common(bindname: str, customname: str, decl: str, rest: list, custom_code: str, carry_index: int) -> list:
 			# use custom code from cache function doc
-			
+
 			# call cache function to get the rest
 			custom_mems = []
 			for r in rest:

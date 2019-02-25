@@ -94,9 +94,14 @@ def loop(file, buffor):
 def setup(args, callback):
 	buffor = OrderedDict()
 	if not args.refresh:
-		with open(SRC) as r:
-			text = r.read()
-			buffor = lines_splited(text)
+		r = None
+		try:
+			with open(SRC, 'r') as r:
+				text = r.read()
+				buffor = lines_splited(text)
+		except:
+			with open(SRC, 'w+'):
+				pass
 
 	file = open(SRC, 'w')
 

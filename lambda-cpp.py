@@ -87,7 +87,7 @@ def filter_lines(lines: iter) -> iter:
 		else:
 			yield ClassifiedLine (o, o)
 
-def get_splitted_lines(text: str) -> list:
+def get_splitted_lines(text: str) -> iter:
 	linesR = text.split('\n')
 	linesR = list(filter_lines(linesR))
 	lines = list(join_lines(linesR))

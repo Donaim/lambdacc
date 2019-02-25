@@ -87,7 +87,7 @@ def loop(file, buffor):
 			try:
 				kcompile()
 			except:
-				print('Repl sees error')
+				pass
 
 			buffor.pop(name)
 

@@ -43,7 +43,7 @@ def split_binding_and_def(cline: ClassifiedLine) -> SplittedLine:
 	post = post.strip()
 	if len(p2) <= 0:
 		if not post:
-			raise RuntimeError('Binding at line "{}" cannot have empty definition'.format(line))
+			return SplittedLine(pre=None, post='(\\x -> x) ' + pre, all=cline.all)
 
 		pre = pre.strip()
 		if not pre:

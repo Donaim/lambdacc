@@ -3,6 +3,8 @@
 from multiprocessing import Pool
 import subprocess
 
+from lambdacc import get_splitted_lines
+
 CC = 'tcc'
 PROJ = 'repl'
 SRC = PROJ + '/repl.ini'
@@ -38,20 +40,30 @@ TFLAGS = [
 ]
 TFLAGS = [s.format(PROJ=PROJ) for s in TFLAGS]
 
-def is_binding(line: str) -> bool:
+def get_binding_name(line: str) -> str:
 	(pre, _, p) = line.partition(' ')
 	(p2, mid, post) = p.strip().partition('=')
-	return post
+	if post:
+		return pre
+	else:
+		return None
+
+def lines_splited(text: str) -> list:
+	''' Fold lines that start with tab '''
+
+	sp = get_splitted_lines(text)
+	return [ (line.pre, line.all + '\n') for line in sp ]
 
 def kcompile():
-	subprocess.check_call(['./lambda-cpp.py'] + TFLAGS)
+	subprocess.check_call(['./lambdacc.py'] + TFLAGS)
 	subprocess.check_call([CC, '-o', 'repl.exe', '-O0', DEST, PROJ + '/header.c'])
 	subprocess.check_call(['./repl.exe'])
 
 def dump_buffor(file, buffor):
 	file.seek(0, 0)
 	file.truncate(0)
-	file.writelines(buffor)
+	for line in buffor:
+		file.write(line[1])
 	file.flush()
 
 def loop(file, buffor):
@@ -62,10 +74,12 @@ def loop(file, buffor):
 			dump_buffor(file, buffor)
 			break
 
-		buffor.append(inp + '\n')
+		name = get_binding_name(inp)
+
+		buffor.append((name, '\n' + inp + '\n'))
 		dump_buffor(file, buffor)
 
-		if not is_binding(inp):
+		if not name:
 			try:
 				kcompile()
 			except:
@@ -77,7 +91,8 @@ def setup(args, callback):
 	buffor = []
 	if not args.refresh:
 		with open(SRC) as r:
-			buffor = r.readlines()
+			text = r.read()
+			buffor = lines_splited(text)
 
 	file = open(SRC, 'w')
 

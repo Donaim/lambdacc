@@ -2,6 +2,7 @@
 
 from multiprocessing import Pool
 import subprocess
+from collections import OrderedDict
 
 from lambdacc import get_splitted_lines
 
@@ -52,7 +53,7 @@ def lines_splited(text: str) -> list:
 	''' Fold lines that start with tab '''
 
 	sp = get_splitted_lines(text)
-	return [ (line.pre, line.all + '\n') for line in sp ]
+	return OrderedDict([ (line.pre, line.all + '\n') for line in sp ])
 
 def kcompile():
 	subprocess.check_call(['./lambdacc.py'] + TFLAGS)
@@ -62,8 +63,8 @@ def kcompile():
 def dump_buffor(file, buffor):
 	file.seek(0, 0)
 	file.truncate(0)
-	for line in buffor:
-		file.write(line[1])
+	for line in buffor.values():
+		file.write(line)
 	file.flush()
 
 def loop(file, buffor):
@@ -76,7 +77,7 @@ def loop(file, buffor):
 
 		name = get_binding_name(inp)
 
-		buffor.append((name, '\n' + inp + '\n'))
+		buffor[name] = '\n' + inp + '\n'
 		dump_buffor(file, buffor)
 
 		if not name:
@@ -85,10 +86,10 @@ def loop(file, buffor):
 			except:
 				print('Repl sees error')
 
-			buffor.pop()
+			buffor.pop(name)
 
 def setup(args, callback):
-	buffor = []
+	buffor = OrderedDict()
 	if not args.refresh:
 		with open(SRC) as r:
 			text = r.read()

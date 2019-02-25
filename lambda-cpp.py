@@ -87,12 +87,15 @@ def filter_lines(lines: iter) -> iter:
 		else:
 			yield ClassifiedLine (o, o)
 
-def parse_text(text: str) -> iter:
+def get_splitted_lines(text: str) -> list:
 	linesR = text.split('\n')
 	linesR = list(filter_lines(linesR))
 	lines = list(join_lines(linesR))
 	tuples = map(split_binding_and_def, lines)
-	toks = map(SplittedLine.get_name_and_token, tuples)
+	return map(SplittedLine.get_name_and_token, tuples)
+
+def parse_text(text: str) -> iter:
+	toks = get_splitted_lines(text)
 
 	def get_tagged_tok(acc, tok):
 		(tid, arr) = acc

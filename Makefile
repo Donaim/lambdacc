@@ -38,7 +38,7 @@ $(PROJ).exe: $(PROJ).c $(PROJ)/header.c
 	$(CC) -o $@ $^ $(CFLAGS)
 
 $(PROJ).c: $(PROJ)/script.ini $(headers) $(additional-deps)
-	./lambda-cpp.py --source $(PROJ)/script.ini --dest $(PROJ).c \
+	./lambdacc.py --source $(PROJ)/script.ini --dest $(PROJ).c \
 		--no-make-inline \
 		--do-caching \
 		--no-print-intermediate \

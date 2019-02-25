@@ -57,20 +57,25 @@ def split_binding_and_def(cline: ClassifiedLine) -> SplittedLine:
 
 def join_lines(lines: iter) -> iter:
 	prev = None
+	prevAll = None
 	lasto = None
 	for o in lines:
 		if  o.all.startswith('\t') or o.all.startswith('  '):
 			prev += ' ' + o.good.strip()
+			prevAll += '\n' + o.all
 		else:
 			if not prev is None:
 				lasto.good = prev
+				lasto.all = prevAll
 			if not lasto is None:
 				yield lasto
 			lasto = o
 			prev = o.good
+			prevAll = o.all
 
 	if prev:
 		lasto.good = prev
+		lasto.all = prevAll
 		yield lasto
 
 def filter_lines(lines: iter) -> iter:

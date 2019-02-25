@@ -54,6 +54,8 @@ This project is under active development
 - [ ] maybe use llvm instead (faster compile-time) [hard]
 - [ ] improve code quality (*.py -> *.hs)
 - [ ] incremental compilation
-- [ ] repl
+- [x] repl
+	- [ ] use incremental compilation
+	- [ ] allow to use arrow keys
 - [ ] improve dynamic typing
 - [ ] introduce static typing [hard]

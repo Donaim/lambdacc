@@ -74,6 +74,9 @@ def loop(file, buffor):
 		if inp == '#exit':
 			dump_buffor(file, buffor)
 			break
+		if inp == '#env':
+			print('\t' + '\n\t'.join(filter(lambda k: k, buffor.keys())))
+			continue
 
 		name = get_binding_name(inp)
 

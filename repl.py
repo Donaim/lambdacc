@@ -100,6 +100,8 @@ def setup(args, callback):
 
 	file = open(SRC, 'w')
 
+	subprocess.check_call(['make', 'PROJ={PROJ}'.format(PROJ=PROJ), '{PROJ}/define.c'.format(PROJ=PROJ)])
+
 	callback(file, buffor=buffor)
 
 def main():

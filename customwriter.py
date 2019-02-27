@@ -93,8 +93,7 @@ class lambda_obj:
 						struct Custom_{t} * {name} = {name}_base->custom;
 					#ifdef USE_TYPEID
 						if ({name}_base->typeuuid != Typeid_Bind_{t}) {{
-							fprintf(stderr, "%s", "Type error\\n");
-							return fin;
+							return lambda_error("Type: expected type %d ({t}) / got type %d", Typeid_Bind_{t}, {name}_base->typeuuid);
 						}}
 					#endif
 					''', 0)).format(t = arg_t, name = arg)
@@ -104,11 +103,10 @@ class lambda_obj:
 				codepre += tufold(block_norm('''
 				ff ret = ALLOC(struct fun);
 				if (Init_Bind_{t}(ret)) {{
-					fprintf(stderr, "%s", "Initialization failed\\n");
-					return fin;
+					return lambda_error("Initialization: failed of type {t} during exec of type {name}");
 				}}
 				struct Custom_{t} * rc = ret->custom;
-				''', 1)).format(t = arg_t)
+				''', 1)).format(t = arg_t, name=arg)
 
 			self.code = tufold(block_norm(self.code, 1))
 			self.code = codepre + self.code

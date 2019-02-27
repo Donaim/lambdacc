@@ -3,6 +3,7 @@
 
 #include "memorypool.c"
 #include "fin.c"
+#include "error.c"
 
 #include "list.c"
 #include "map.c"

@@ -39,11 +39,23 @@ vsprintf_alloc(const char *format, va_list args)
 }
 
 ff lambda_error_eval_now(ff me, ff x) {
-	if (me->custom) {
-		fprintf(stderr, "%s", (char*)me->custom);
+	void * out;
+	char * type;
+
+	if (x == fin) {
+		out = stdout;
+		type = "[ERROR]";
 	} else {
-		fprintf(stderr, "%s", "This is crazy!");
+		out = stderr;
+		type = "[ERROR-EVALUATED]";
 	}
+
+	if (me->custom) {
+		fprintf(out, "%s %s\n", type, (char*)me->custom);
+	} else {
+		fprintf(out, "%s %s\n", type, "Empty error (bad)");
+	}
+
 	return x;
 }
 

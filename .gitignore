@@ -12,6 +12,7 @@ devel/
 *.c++
 *.inline.ini
 *.txt
+*.o
 
 */flags.h
 */declare.h

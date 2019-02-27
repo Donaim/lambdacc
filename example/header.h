@@ -60,5 +60,6 @@ struct fun {
 ff eval(ff me, ff x);
 
 #include "fin.h"
+#include "error.h"
 
 #include "memorypool.h"

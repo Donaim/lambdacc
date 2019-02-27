@@ -40,7 +40,7 @@ vsprintf_alloc(const char *format, va_list args)
 
 ff lambda_error_eval_now(ff me, ff x) {
 	if (me->custom) {
-		fprintf(stderr, "%s", me->custom);
+		fprintf(stderr, "%s", (char*)me->custom);
 	} else {
 		fprintf(stderr, "%s", "This is crazy!");
 	}

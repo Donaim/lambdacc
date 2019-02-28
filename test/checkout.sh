@@ -1,7 +1,8 @@
 
 if ./test.exe 2> errors.txt 1> output.txt
 then
-	if cat output.txt | grep '  = false' -q; then
+	if cat output.txt | grep '  = false' -q || cat output.txt | grep '[ERROR]' -q
+	then
 		echo 'Wrong output'
 		cat output.txt
 		exit 1

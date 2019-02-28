@@ -20,13 +20,13 @@ test:
 	$(CC) $@/internal-test.c -O0 -g -o $@.internal.exe
 	./$@.internal.exe
 
-	$(MAKE) all PROJ=test CFLAGS='-O0' CC=tcc TFLAGS='--no-do-caching --no-use-typeid'
-	test/checkout.sh
 	$(MAKE) all PROJ=test CFLAGS='-O0' CC=tcc TFLAGS='--no-do-caching'
 	test/checkout.sh
-	$(MAKE) all PROJ=test CFLAGS='-O0' CC=tcc TFLAGS='--make-inline --no-do-caching --no-use-typeid'
+	$(MAKE) all PROJ=test CFLAGS='-O0' CC=tcc TFLAGS='--no-do-caching --no-use-typeid'
 	test/checkout.sh
-	$(MAKE) all PROJ=test CFLAGS='-O0' CC=tcc TFLAGS='--make-inline --no-use-typeid'
+	$(MAKE) all PROJ=test CFLAGS='-O0' CC=tcc TFLAGS='--no-do-caching --no-use-typeid --make-inline'
+	test/checkout.sh
+	$(MAKE) all PROJ=test CFLAGS='-O0' CC=tcc TFLAGS='--do-caching    --no-use-typeid --make-inline'
 	test/checkout.sh
 	$(MAKE) all PROJ=test CFLAGS='-O0' CC=tcc
 	test/checkout.sh

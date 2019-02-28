@@ -44,6 +44,8 @@ TFLAGS = [s.format(PROJ=PROJ) for s in TFLAGS]
 def get_binding_name(line: str) -> str:
 	(pre, _, p) = line.partition(' ')
 	(p2, mid, post) = p.strip().partition('=')
+	if p2:
+		return None
 	if post:
 		return pre
 	else:

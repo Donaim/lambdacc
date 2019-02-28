@@ -4,7 +4,8 @@ from multiprocessing import Pool
 import subprocess
 from collections import OrderedDict
 
-from lambdacc import get_splitted_lines
+import lambdacc
+import inliner
 
 CC = 'tcc'
 PROJ = 'repl'
@@ -54,7 +55,7 @@ def get_binding_name(line: str) -> str:
 def lines_splited(text: str) -> list:
 	''' Fold lines that start with tab '''
 
-	sp = get_splitted_lines(text)
+	sp = lambdacc.get_splitted_lines(text)
 	return OrderedDict([ (line.pre, line.all + '\n') for line in sp ])
 
 def kcompile():
@@ -69,15 +70,47 @@ def dump_buffor(file, buffor):
 		file.write(line)
 	file.flush()
 
-def loop(file, buffor):
+def show_inlined(buffor: dict, name: str) -> str:
+	if not name in buffor:
+		return "Error: symbol `{}' is undefined".format(name)
+
+	v = buffor[name]
+
+	text = '\n'.join(buffor.values())
+	parsed = list(lambdacc.parse_text(text))
+
+	for p in parsed:
+		if p.bind:
+			if p.bind.name == name:
+				return inliner.get_leaf_text(le=p.bind.target)
+
+	return "Error: symbol `{}' was not found".format(name)
+
+def loop(file, buffor: dict):
 	while True:
-		inp = input('> ')
+		try:
+			inp = input('> ')
+		except:
+			dump_buffor(file, buffor)
+			break
+
 		inp = (inp.replace('\n', ' ')).strip()
 		if inp == '#exit':
 			dump_buffor(file, buffor)
 			break
 		if inp == '#env':
 			print('\t' + '\n\t'.join(filter(lambda k: k, buffor.keys())))
+			continue
+		if inp.startswith('#inline '):
+			(_, _, name) = inp.partition(' ')
+			print(show_inlined(buffor=buffor,name=name))
+			continue
+		if inp.startswith('#define '):
+			(_, _, name) = inp.partition(' ')
+			if name in buffor:
+				print(buffor[name], end='')
+			else:
+				print("Error: symbol `{}' is undefined".format(name))
 			continue
 
 		name = get_binding_name(inp)
@@ -116,8 +149,5 @@ def main():
 	setup(args, loop)
 
 if __name__ == '__main__':
-	try:
-		main()
-	except EOFError:
-		pass
+	main()
 

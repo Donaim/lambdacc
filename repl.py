@@ -143,10 +143,11 @@ def setup(args, callback):
 			callback(file, buffor=buffor)
 		except EOFError:
 			pass
-		except Exception as e:
-			pass
 		except KeyboardInterrupt:
 			pass
+		except Exception as e:
+			dump_buffor(file, buffor)
+			raise e
 
 		dump_buffor(file, buffor)
 

@@ -59,9 +59,12 @@ def lines_splited(text: str) -> list:
 	return OrderedDict([ (line.pre, line.all + '\n') for line in sp ])
 
 def kcompile():
-	subprocess.check_call(['./lambdacc.py'] + TFLAGS)
-	subprocess.check_call([CC, '-o', 'repl.exe', '-O0', DEST, PROJ + '/header.c'])
-	subprocess.check_call(['./repl.exe'])
+	try:
+		subprocess.check_call(['./lambdacc.py'] + TFLAGS)
+		subprocess.check_call([CC, '-o', 'repl.exe', '-O0', DEST, PROJ + '/header.c'])
+		subprocess.check_call(['./repl.exe'])
+	except KeyboardInterrupt:
+		print('Interrupted')
 
 def dump_buffor(file, buffor):
 	file.seek(0, 0)
@@ -88,12 +91,7 @@ def show_inlined(buffor: dict, name: str) -> str:
 
 def loop(file, buffor: dict):
 	while True:
-		try:
-			inp = input('> ')
-		except:
-			dump_buffor(file, buffor)
-			break
-
+		inp = input('> ')
 		inp = (inp.replace('\n', ' ')).strip()
 		if inp == '#exit':
 			dump_buffor(file, buffor)
@@ -138,11 +136,19 @@ def setup(args, callback):
 			with open(SRC, 'w+'):
 				pass
 
-	file = open(SRC, 'w')
+	with open(SRC, 'w') as file:
+		subprocess.check_call(['make', 'PROJ={PROJ}'.format(PROJ=PROJ), '{PROJ}/define.c'.format(PROJ=PROJ)])
 
-	subprocess.check_call(['make', 'PROJ={PROJ}'.format(PROJ=PROJ), '{PROJ}/define.c'.format(PROJ=PROJ)])
+		try:
+			callback(file, buffor=buffor)
+		except EOFError:
+			pass
+		except Exception as e:
+			pass
+		except KeyboardInterrupt:
+			pass
 
-	callback(file, buffor=buffor)
+		dump_buffor(file, buffor)
 
 def main():
 	args = get_arguments()

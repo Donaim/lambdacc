@@ -1,21 +1,23 @@
-This is a lambda-calculus to C translator  
-You can write code in lambda-calculus and let the script generate C translation  
+This is a lambda-calculus to C compiler  
 
 # Usage
 
-1) Write lambda script to example/script.ini
+1) Write lambda expressions to example/script.ini
 2) `$ make`
+
+or just  
+1) `$ ./repl.py`
 
 # Features
 
-- Based on True lazy untyped lambda-calculus
+- Based on true lazy untyped lambda-calculus
 - Easily extensible
 - Allows to define expression bindings
-- Optional caching of evaluations (most of the time allow for exponential speed up)
-- Easy to hack into generated translation as it is using classes and inheritance and preserves the names
-- Easy to define efectful bindings by using special syntax (example at example-custom.cfg.py)
+- Optional caching (memoization) of evaluations (most of the time allow for exponential speed up)
+- Easy to hack into generated translation as it preserves the names and has simple structure
+- Easy to define efectful bindings by using special syntax (example at example/custom.cfg.py)
 - No predefined symbols
-- Optional expanding of bindigs a.k.a inlining
+- Optional expanding of bindigs a.k.a inlining (use `--make-inline`)
 - Call stack trace is available at will
 
 # TODO
@@ -59,7 +61,8 @@ This project is under active development
 	- [ ] allow to use arrow keys
 - [ ] improve dynamic typing
 - [ ] introduce static typing [hard]
-- [ ] fix bindings case: 
+- [ ] fix bindings case:
+	- reproduces with `--no-do-caching` only
 	- doesnt work: `sum = \l -> fold + l 0`
 	- does   work: `sum = \l -> fold (\acc cur -> + acc cur) l 0`
 	- also  works: `sum = \l -> fold $add l $mint`

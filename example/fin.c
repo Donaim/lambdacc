@@ -7,7 +7,7 @@
 
 ff fin_eval_now(ff me, ff x) {
 	// Init leafs
-	fprintf(stderr, "%s", "fin should not be evaluated!");
+	fprintf(stderr, "%s", "fin should not be evaluated!\n");
 	return me;
 }
 

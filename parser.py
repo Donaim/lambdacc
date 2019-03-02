@@ -93,15 +93,15 @@ class Branch:
 				expr = expr[stop:]
 		return re
 
-counter = 0
 class Leaf:
+	counter = 0
+
 	def __init__(self, leafs: list, parent):
 		self.leafs = leafs
 		self.parent = parent
 
-		global counter
-		self.unique_id = counter
-		counter += 1
+		self.unique_id = Leaf.counter
+		Leaf.counter += 1
 
 	def print(self, indent: int):
 		i_str = '\t' * indent

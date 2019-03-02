@@ -275,3 +275,30 @@ class mnil:
 		rc->value = l->value == NULL;
 		return ret;
 		'''
+
+class dolist:
+	''' Evaluates given expression for every element of list
+	    Returns last evaluated element '''
+
+	def exec(f, l: mlist):
+		'''
+		ff evaled;
+
+		do {
+			eval(eval(f, l->value), fin);
+
+			ff next = l->next;
+			if (next == NULL) {
+				break;
+			}
+
+			evaled = eval(next, fin);
+			if (evaled == NULL) {
+				return lambda_error("NULL during dolist");
+			}
+
+			l = evaled->custom;
+		} while (l != NULL && l->value != NULL);
+
+		return evaled;
+		'''

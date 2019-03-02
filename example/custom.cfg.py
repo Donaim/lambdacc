@@ -282,9 +282,16 @@ class dolist:
 
 	def exec(f, l: mlist):
 		'''
-		ff evaled;
+		ff evaled = NULL;
 
 		do {
+			if (l->value == NULL) {
+				if (evaled) {
+					return evaled;
+				} else {
+					return lambda_error("dolist got []");
+				}
+			}
 			eval(f, l->value);
 
 			ff next = l->next;

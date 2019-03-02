@@ -66,3 +66,5 @@ This project is under active development
 	- doesnt work: `sum = \l -> fold + l 0`
 	- does   work: `sum = \l -> fold (\acc cur -> + acc cur) l 0`
 	- also  works: `sum = \l -> fold $add l $mint`
+- [ ] add string literals
+	- [ ] add parser for machine integers like `parsemint "3"` -> `$msuc ($msuc ($msuc $mint))`

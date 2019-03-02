@@ -305,7 +305,10 @@ class dolist:
 			}
 
 			l = evaled->custom;
-		} while (l != NULL && l->value != NULL);
+			if (l == NULL) {
+				return lambda_error("dolist got NULL for next list");
+			}
+		} while (1);
 
 		return evaled;
 		'''

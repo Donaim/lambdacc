@@ -285,7 +285,7 @@ class dolist:
 		ff evaled;
 
 		do {
-			eval(eval(f, l->value), fin);
+			eval(f, l->value);
 
 			ff next = l->next;
 			if (next == NULL) {

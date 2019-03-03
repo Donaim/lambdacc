@@ -8,6 +8,8 @@
 #include "list.c"
 #include "map.c"
 
+#include <string.h> /* memcpy */
+
 #ifdef COUNT_TOTAL_EXEC
 int total_eval_count = 0;
 #ifdef DO_CACHING
@@ -16,8 +18,6 @@ int g_cache_hits_count = 0;
 #endif
 
 #ifdef DO_CACHING
-#include <string.h> /* memcpy */
-
 int __recset_eq(void * a, void * b) {
 	return a == b;
 }
@@ -42,7 +42,7 @@ ff eval(ff me, ff x) {
 	 * to ensure immutability */
 	struct fun * my_copy = ALLOC(struct fun);
 	memcpy(my_copy, me, sizeof(struct fun));
-	my_copy->leafs = ALLOC_GET(me->leafs_count * sizeof(*(me->leafs)));
+	my_copy->leafs = me->leafs;
 	if (me->customsize) {
 		my_copy->custom = ALLOC_GET(me->customsize);
 		memcpy(my_copy->custom, me->custom, me->customsize);

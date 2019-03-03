@@ -282,6 +282,7 @@ def get_init_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 		caching = block_to_text(1,
 		'''
 		me->cache = {cache_funcname};
+		me->leafs_count = {num_leafs};
 		'''
 		).format(cache_funcname=cache_funcname, num_leafs=num_leafs)
 
@@ -294,7 +295,6 @@ def get_init_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 			me->x = NULL;
 			me->parent = parent;
 			me->leafs = (ff*) ALLOC_GET(sizeof(ff) * {num_leafs});
-			me->leafs_count = {num_leafs};
 			me->eval_now = {exec_name};
 			me->customsize = 0;
 

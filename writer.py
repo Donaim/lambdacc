@@ -256,8 +256,6 @@ def get_exec_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 	if out.config.show_debug:
 		defi += '	printf ("Lam [%s] got [%s]\\n", me->tostr(), x->tostr());\n'
 
-	defi += init_children(le=le, parent_lambda_name=lambda_name)
-
 	# Return statement (depends on caching)
 	return_statement = get_ovv(out=out, le=le)
 	defi += return_statement + '\n'
@@ -287,6 +285,8 @@ def get_init_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 		'''
 		).format(cache_funcname=cache_funcname, num_leafs=num_leafs)
 
+	children = init_children(le=le, parent_lambda_name=lambda_name)
+
 	out.init_definitions += block_to_text(0,
 		'''
 		{decl} {{
@@ -301,12 +301,15 @@ def get_init_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 		{typeuuid}
 		{caching}
 
+		{children}
+
 			return me;
 		}}
 		''').format(
 			decl=decl,
 			exec_name=exec_name,
 			num_leafs=num_leafs,
+			children=children,
 			typeuuid=typeuuid,
 			caching=caching)
 

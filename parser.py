@@ -62,7 +62,7 @@ class Branch:
 				sub = Branch.from_text(expr)
 				size = len(sub.branches)
 				if size == 0:
-					raise SyntaxError('Sub-expression "{}" of expression "{}" cannot be empty!'.format(body, expr))
+					raise RuntimeError('Sub-expression "{}" of expression "{}" cannot be empty!'.format(body, expr))
 				elif size == 1:
 					re.branches.append(sub.branches[0])
 				else:
@@ -77,7 +77,7 @@ class Branch:
 				sub = Branch.from_text(body)
 				size = len(sub.branches)
 				if size == 0:
-					raise SyntaxError('Sub-expression "{}" of expression "{}" cannot be empty!'.format(body, expr))
+					raise RuntimeError('Sub-expression "{}" of expression "{}" cannot be empty!'.format(body, expr))
 				elif size == 1:
 					re.branches.append(sub.branches[0])
 				else:

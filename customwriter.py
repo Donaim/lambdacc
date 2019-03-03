@@ -183,8 +183,6 @@ def get_init_func(o: lambda_obj) -> str:
 				me->cache = Cache_{bindname};
 			#endif
 
-			{children}
-
 				return me;
 			}}
 			'''
@@ -192,8 +190,7 @@ def get_init_func(o: lambda_obj) -> str:
 			decl=decl,
 			members=members,
 			bindname=bindname,
-			customname=customname,
-			children=children)
+			customname=customname)
 
 	re = get_common_init(o.bind_name(), o.custom_name(), o.mems, get_init_decl(o))
 
@@ -308,7 +305,7 @@ def get_exec_func(o: lambda_obj) -> str:
 					struct {name} * custom = me_abs->custom;
 
 					ff ret = ALLOC(struct fun);
-					if (Init_{ret_t}(ret)) {{
+					if (Init_{ret_t}(ret) == NULL) {{
 						fprintf(stderr, "%s", "Could not initialize type {ret_t} \\n");
 					}}
 					ret->parent = me_abs;

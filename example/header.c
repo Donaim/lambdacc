@@ -38,7 +38,6 @@ ff eval(ff me, ff x) {
 	total_eval_count++;
 #endif
 
-#ifdef DO_CACHING
 	/* If we do caching, it is important to make copies of expressions,
 	 * to ensure immutability */
 	struct fun * my_copy = ALLOC(struct fun);
@@ -50,6 +49,7 @@ ff eval(ff me, ff x) {
 	}
 	my_copy->x = x;
 
+#ifdef DO_CACHING
 	mapkey_t * cache_key = list_alloc();
 	recursion_set * set = map_alloc(177);
 	int efectful = my_copy->cache(my_copy, cache_key, set);
@@ -71,7 +71,6 @@ ff eval(ff me, ff x) {
 		return ret;
 	}
 #else
-	me->x = x;
-	return me->eval_now(me, x);
+	return my_copy->eval_now(my_copy, x);
 #endif
 }

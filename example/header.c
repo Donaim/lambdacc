@@ -32,7 +32,7 @@ int  recset_check(recursion_set * set, ff me) {
 }
 #endif
 
-ff eval(ff me, ff x) {
+ff eval(ff me, ff x, ff parent) {
 
 #ifdef COUNT_TOTAL_EXEC
 	total_eval_count++;
@@ -48,6 +48,7 @@ ff eval(ff me, ff x) {
 		memcpy(my_copy->custom, me->custom, me->customsize);
 	}
 	my_copy->x = x;
+	my_copy->parent = parent;
 
 #ifdef DO_CACHING
 	mapkey_t * cache_key = list_alloc();

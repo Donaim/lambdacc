@@ -201,7 +201,7 @@ def get_return_part(out: SplittedOut, le: Leaf, base_lambda: Lambda) -> list:
 		if ret is None:
 			ret = ['ff ret = {mem};'.format(mem=mem)]
 		else:
-			ret.append('ret = eval(ret, {mem});'.format(mem=mem))
+			ret.append('ret = eval(ret, {mem}, me);'.format(mem=mem))
 	return ret
 
 def get_ovv(out: SplittedOut, le: Leaf) -> str:
@@ -214,9 +214,9 @@ def get_ovv(out: SplittedOut, le: Leaf) -> str:
 		if type(lt.target) is Lambda:
 			lines.append('return ret;')
 		else:
-			lines.append('return eval(ret, x);')
+			lines.append('return eval(ret, x, me);')
 	elif lt is Leaf or lt is Argument:
-		lines.append('return eval(ret, x);')
+		lines.append('return eval(ret, x, me);')
 	else:
 		raise Exception('get_ovv expects {} or {} but got {}'.format(Bind, Lambda, lt))
 
@@ -491,7 +491,7 @@ def write_some(config: OutConfig, binds: list):
 			footer += '	puts("{}");\n'.format(e.target.to_text().replace('\\', '\\\\'))
 			footer += '	printf("  = ");\n'
 
-		footer += '	eval({}, fin);\n\n'.format(varname)
+		footer += '	eval({}, fin, fin);\n\n'.format(varname)
 
 		if out.config.echo_expr:
 			footer += '	puts("");\n'

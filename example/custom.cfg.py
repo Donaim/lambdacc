@@ -292,14 +292,14 @@ class dolist:
 					return lambda_error("dolist got []");
 				}
 			}
-			eval(f, l->value);
+			eval(f, l->value, me_abs);
 
 			ff next = l->next;
 			if (next == NULL) {
 				break;
 			}
 
-			evaled = eval(next, fin);
+			evaled = eval(next, fin, me_abs);
 			if (evaled == NULL) {
 				return lambda_error("NULL during dolist");
 			}

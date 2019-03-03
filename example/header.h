@@ -57,7 +57,7 @@ struct fun {
 #endif
 };
 
-ff eval(ff me, ff x);
+ff eval(ff me, ff x, ff parent);
 
 #include "fin.h"
 #include "error.h"

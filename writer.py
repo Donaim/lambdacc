@@ -269,7 +269,7 @@ def get_exec_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 def get_init_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 	init_name = get_leaf_name(CFunction(lambda_name, 'init'))
 	exec_name = get_leaf_name(CFunction(lambda_name, 'exec'))
-	decl = 'int {:<30} (ff me)'.format(init_name)
+	decl = 'ff {:<30} (ff parent)'.format(init_name)
 	out.init_declarations += decl + ';\n'
 
 	num_leafs = 1 + max([f.index for f in get_fields(le=le)])
@@ -277,33 +277,33 @@ def get_init_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 	typeuuid = ''
 	if out.config.use_typeid:
 		typeid_name = get_leaf_name(CFunction(lambda_name, 'typeid'))
-		typeuuid = line('me->typeuuid = {};\n'.format(typeid_name), 2)
+		typeuuid = line('me->typeuuid = {};\n'.format(typeid_name), 1)
 		out.typeuuids += 'const int {} = __COUNTER__ ; \n'.format(typeid_name)
 
 	caching = ''
 	if out.config.do_caching:
 		cache_funcname = get_leaf_name(CFunction(lambda_name, 'cache'))
-		caching = block_to_text(2,
+		caching = block_to_text(1,
 		'''
 		me->cache = {cache_funcname};
-		me->customsize = 0;
-		me->leafs_count = {num_leafs};
 		'''
 		).format(cache_funcname=cache_funcname, num_leafs=num_leafs)
 
 	out.init_definitions += block_to_text(0,
 		'''
 		{decl} {{
-			if (me->eval_now == NULL) {{
-				me->x = NULL;
-				me->leafs = (ff*) ALLOC_GET(sizeof(ff) * {num_leafs});
-				me->eval_now = {exec_name};
+			ff me = ALLOC(struct fun);
+			me->x = NULL;
+			me->parent = parent;
+			me->leafs = (ff*) ALLOC_GET(sizeof(ff) * {num_leafs});
+			me->leafs_count = {num_leafs};
+			me->eval_now = {exec_name};
+			me->customsize = 0;
 
 		{typeuuid}
 		{caching}
-			}}
 
-			return 0;
+			return me;
 		}}
 		''').format(
 			decl=decl,

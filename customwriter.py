@@ -183,6 +183,8 @@ def get_init_func(o: lambda_obj) -> str:
 				me->cache = Cache_{bindname};
 			#endif
 
+			{children}
+
 				return me;
 			}}
 			'''
@@ -190,7 +192,8 @@ def get_init_func(o: lambda_obj) -> str:
 			decl=decl,
 			members=members,
 			bindname=bindname,
-			customname=customname)
+			customname=customname,
+			children=children)
 
 	re = get_common_init(o.bind_name(), o.custom_name(), o.mems, get_init_decl(o))
 

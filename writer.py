@@ -235,10 +235,8 @@ def init_children(le: Leaf, parent_lambda_name: str) -> str:
 
 			mem += block_to_text(1,
 				'''
-				ff leaf_{i} = ALLOC(struct fun);
-				leaf_{i}->parent = me;
+				ff leaf_{i} = {init}(me);
 				me->leafs[{i}] = leaf_{i};
-				{init}(leaf_{i});
 				'''
 			).format(i=field.index, init = init_name)
 		elif t is Argument:

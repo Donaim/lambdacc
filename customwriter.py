@@ -155,9 +155,9 @@ def get_carry_typeid_str(o: lambda_obj, argument_index: int):
 	return 'const int Typeid_{} = __COUNTER__;'.format(o.carry_bind_name(argument_index))
 
 def get_init_decl(o: lambda_obj) -> str:
-	return 'int Init_{name} (ff me_abs)'.format(name=o.bind_name())
+	return 'ff Init_{name} (ff parent)'.format(name=o.bind_name())
 def get_carry_init_decl(o: lambda_obj, argument_index: int) -> str:
-	return 'int Init_{name} (ff me_abs)'.format(name=o.carry_bind_name(argument_index))
+	return 'ff Init_{name} (ff parent)'.format(name=o.carry_bind_name(argument_index))
 
 def get_init_func(o: lambda_obj) -> str:
 	def get_common_init(bindname: str, customname: str, mems: dict, decl: str) -> str:
@@ -166,22 +166,24 @@ def get_init_func(o: lambda_obj) -> str:
 		return block_to_text(0,
 			'''
 			{decl} {{
-				me_abs->eval_now = Exec_{bindname};
+				ff me = ALLOC(struct fun);
+				me->eval_now = Exec_{bindname};
 
-				me_abs->custom = ALLOC(struct {customname});
-				struct {customname} * custom = me_abs->custom;
+				me->custom = ALLOC(struct {customname});
+				struct {customname} * custom = me->custom;
+				me->customsize = sizeof(struct {customname});
+				me->leafs_count = 0;
+
 			{members}
 
 			#ifdef USE_TYPEID
-				me_abs->typeuuid = Typeid_{bindname};
+				me->typeuuid = Typeid_{bindname};
 			#endif
 			#ifdef DO_CACHING
-				me_abs->cache = Cache_{bindname};
-				me_abs->customsize = sizeof(struct {customname});
-				me_abs->leafs_count = 0;
+				me->cache = Cache_{bindname};
 			#endif
 
-				return 0;
+				return me;
 			}}
 			'''
 		).format(

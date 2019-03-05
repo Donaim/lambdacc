@@ -89,7 +89,7 @@ class lambda_obj:
 				else:
 					arg_t = self.args[arg].annotation.__name__
 					codepre += tufold(block_norm('''
-						ff {name}_base = (eval(${name}, fin, me_abs));
+						ff {name}_base = (eval(${name}, fin));
 						struct Custom_{t} * {name} = {name}_base->custom;
 					#ifdef USE_TYPEID
 						if ({name}_base->typeuuid != Typeid_Bind_{t}) {{

@@ -32,7 +32,7 @@ int  recset_check(recursion_set * set, ff me) {
 }
 #endif
 
-ff eval(ff me, ff x, ff parent) {
+ff eval(ff me, ff x) {
 
 #ifdef COUNT_TOTAL_EXEC
 	total_eval_count++;

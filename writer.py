@@ -223,30 +223,20 @@ def get_ovv(out: SplittedOut, le: Leaf) -> str:
 	return lfoldn(lines, 1)
 def init_children(le: Leaf, parent_lambda_name: str) -> str:
 	members = get_fields(le=le)
-	st_members = ''
-	ret = ''
+	ret = []
 	for field in members:
 		l = field.leaf
-		mem = ''
 		t = field.t
 		if t is Lambda or t is Bind or t is Leaf:
 			name = get_leaf_name(l)
 			init_name = get_leaf_name(CFunction(name, 'init'))
 
-			mem += block_to_text(1,
-				'''
-				ff leaf_{i} = {init}(me);
-				me->leafs[{i}] = leaf_{i};
-				me->leafs[{i}]->parent = me;
-				'''
-			).format(i=field.index, init = init_name)
+			ret.append((1, 'me->leafs[{i}] = {init}(me);'.format(i=field.index, init = init_name)))
 		elif t is Argument:
 			continue
 		else:
 			raise Exception('Unexpected member type {}'.format(type(l)))
-		ret += mem
-	ret += '\n'
-	return ret
+	return tufold(ret)
 def get_exec_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 	exec_name = get_leaf_name(CFunction(lambda_name, 'exec'))
 	decl = 'ff {:<30} (ff me, ff x)'.format(exec_name)
@@ -255,16 +245,16 @@ def get_exec_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 	defi  = decl + ' {\n'
 
 	children = init_children(le=le, parent_lambda_name=lambda_name)
-	defi += children
+	defi += children + '\n'
 
 	if out.config.show_debug:
 		defi += '	printf ("Lam [%s] got [%s]\\n", me->tostr(), x->tostr());\n'
 
 	# Return statement (depends on caching)
 	return_statement = get_ovv(out=out, le=le)
-	defi += return_statement + '\n'
+	defi += return_statement
 
-	defi += '\n}\n\n'
+	defi += '}\n\n'
 	out.exec_definitions += defi
 def get_init_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 	init_name = get_leaf_name(CFunction(lambda_name, 'init'))
@@ -294,7 +284,7 @@ def get_init_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 		{decl} {{
 			ff me = ALLOC(struct fun);
 			me->x = NULL;
-			me->parent = NULL;
+			me->parent = parent;
 			me->eval_now = {exec_name};
 			me->customsize = 0;
 			me->leafs_count = {num_leafs};

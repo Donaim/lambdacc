@@ -48,9 +48,14 @@ ff eval(ff me, ff x, ff parent) {
 	}
 	if (me->leafs_count) {
 		my_copy->leafs = ALLOC_GET(sizeof(struct fun) * me->leafs_count);
-		memcpy(my_copy->leafs, me->leafs, sizeof(struct fun) * me->leafs_count);
 		for (int i = 0; i < me->leafs_count; i++) {
+			my_copy->leafs[i] = ALLOC(struct fun);
+			memcpy(my_copy->leafs[i], me->leafs[i], sizeof(struct fun));
 			my_copy->leafs[i]->parent = my_copy;
+			if (my_copy->leafs[i]->customsize) {
+				my_copy->leafs[i]->custom = ALLOC_GET(my_copy->leafs[i]->customsize);
+				memcpy(my_copy->leafs[i]->custom, me->leafs[i]->custom, my_copy->leafs[i]->customsize);
+			}
 		}
 	}
 	my_copy->x = x;

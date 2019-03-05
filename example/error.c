@@ -56,7 +56,7 @@ ff lambda_error_eval_now(ff me, ff x) {
 		fprintf(out, "%s %s\n", type, "Empty error (bad)");
 	}
 
-	return x;
+	return me;
 }
 
 #ifdef DO_CACHING

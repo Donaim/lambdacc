@@ -243,7 +243,7 @@ class head:
 	def exec(l: mlist):
 		'''
 		if (l->value == NULL) {
-			return fin;
+			return lambda_error("Head got empty list");
 		} else {
 			return l->value;
 		}
@@ -258,7 +258,7 @@ class tail:
 	def exec(l: mlist) -> mlist:
 		'''
 		if (l->next == NULL) {
-			return fin;
+			return lambda_error("Tail got empty list");
 		} else {
 			return l->next;
 		}

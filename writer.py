@@ -273,17 +273,12 @@ def get_init_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 	caching = ''
 	if out.config.do_caching:
 		cache_funcname = get_leaf_name(CFunction(lambda_name, 'cache'))
-		caching = block_to_text(1,
-		'''
-		me->cache = {cache_funcname};
-		'''
-		).format(cache_funcname=cache_funcname, num_leafs=num_leafs)
+		caching = line('me->cache = {cache_funcname};', 1).format(cache_funcname=cache_funcname, num_leafs=num_leafs)
 
 	out.init_definitions += block_to_text(0,
 		'''
 		{decl} {{
 			ff me = ALLOC(struct fun);
-			me->x = NULL;
 			me->parent = parent;
 			me->eval_now = {exec_name};
 			me->customsize = 0;

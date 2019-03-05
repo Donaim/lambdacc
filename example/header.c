@@ -40,7 +40,7 @@ ff eval(ff me, ff x) {
 
 	/* If we do caching, it is important to make copies of expressions,
 	 * to ensure immutability */
-	struct fun * my_copy = ALLOC(struct fun);
+	struct fun * my_copy = ALLOC_GET(sizeof(struct fun));
 	memcpy(my_copy, me, sizeof(struct fun));
 	if (me->customsize) {
 		my_copy->custom = ALLOC_GET(me->customsize);

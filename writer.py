@@ -278,7 +278,7 @@ def get_init_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 	out.init_definitions += block_to_text(0,
 		'''
 		{decl} {{
-			ff me = ALLOC(struct fun);
+			ff me = ALLOC_GET(sizeof(struct fun));
 			me->parent = parent;
 			me->eval_now = {exec_name};
 			me->customsize = 0;

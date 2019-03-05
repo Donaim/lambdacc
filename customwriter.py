@@ -166,12 +166,12 @@ def get_init_func(o: lambda_obj) -> str:
 		return block_to_text(0,
 			'''
 			{decl} {{
-				ff me = ALLOC(struct fun);
+				ff me = ALLOC_GET(sizeof(struct fun));
 				me->x = NULL;
 				me->parent = NULL;
 				me->eval_now = Exec_{bindname};
 
-				me->custom = ALLOC(struct {customname});
+				me->custom = ALLOC_GET(sizeof(struct {customname}));
 				struct {customname} * custom = me->custom;
 				me->customsize = sizeof(struct {customname});
 				me->leafs_count = 0;

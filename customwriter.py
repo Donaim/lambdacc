@@ -168,7 +168,7 @@ def get_init_func(o: lambda_obj) -> str:
 			{decl} {{
 				ff me = ALLOC_GET(sizeof(struct fun));
 				me->x = NULL;
-				me->parent = NULL;
+				me->parent = parent;
 				me->eval_now = Exec_{bindname};
 
 				me->custom = ALLOC_GET(sizeof(struct {customname}));

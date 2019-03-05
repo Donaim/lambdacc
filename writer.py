@@ -237,6 +237,7 @@ def init_children(le: Leaf, parent_lambda_name: str) -> str:
 				'''
 				ff leaf_{i} = {init}(me);
 				me->leafs[{i}] = leaf_{i};
+				me->leafs[{i}]->parent = me;
 				'''
 			).format(i=field.index, init = init_name)
 		elif t is Argument:
@@ -252,6 +253,9 @@ def get_exec_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 	out.exec_declarations += decl + ';\n'
 
 	defi  = decl + ' {\n'
+
+	children = init_children(le=le, parent_lambda_name=lambda_name)
+	defi += children
 
 	if out.config.show_debug:
 		defi += '	printf ("Lam [%s] got [%s]\\n", me->tostr(), x->tostr());\n'
@@ -285,31 +289,18 @@ def get_init_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 		'''
 		).format(cache_funcname=cache_funcname, num_leafs=num_leafs)
 
-	children = init_children(le=le, parent_lambda_name=lambda_name)
-
 	out.init_definitions += block_to_text(0,
 		'''
-		ff Inited_{name} = NULL;
-
 		{decl} {{
-			if (Inited_{name}) {{
-				return Inited_{name};
-			}}
-
 			ff me = ALLOC(struct fun);
-			Inited_{name} = me;
-
 			me->x = NULL;
 			me->parent = NULL;
-			me->leafs = (ff*) ALLOC_GET(sizeof(ff) * {num_leafs});
 			me->eval_now = {exec_name};
 			me->customsize = 0;
 			me->leafs_count = {num_leafs};
 
 		{typeuuid}
 		{caching}
-
-		{children}
 
 			return me;
 		}}
@@ -318,7 +309,6 @@ def get_init_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 			decl=decl,
 			exec_name=exec_name,
 			num_leafs=num_leafs,
-			children=children,
 			typeuuid=typeuuid,
 			caching=caching)
 

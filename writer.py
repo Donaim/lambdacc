@@ -289,8 +289,16 @@ def get_init_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 
 	out.init_definitions += block_to_text(0,
 		'''
+		ff Inited_{name} = NULL;
+
 		{decl} {{
+			if (Inited_{name}) {{
+				return Inited_{name};
+			}}
+
 			ff me = ALLOC(struct fun);
+			Inited_{name} = me;
+
 			me->x = NULL;
 			me->parent = NULL;
 			me->leafs = (ff*) ALLOC_GET(sizeof(ff) * {num_leafs});
@@ -306,6 +314,7 @@ def get_init_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 			return me;
 		}}
 		''').format(
+			name=lambda_name,
 			decl=decl,
 			exec_name=exec_name,
 			num_leafs=num_leafs,

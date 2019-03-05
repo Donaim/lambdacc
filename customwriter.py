@@ -306,8 +306,8 @@ def get_exec_func(o: lambda_obj) -> str:
 				{declaration} {{
 					struct {name} * custom = me_abs->custom;
 
-					ff ret = ALLOC(struct fun);
-					if (Init_{ret_t}(ret) == NULL) {{
+					ff ret = Init_{ret_t}(NULL);
+					if (ret == NULL) {{
 						fprintf(stderr, "%s", "Could not initialize type {ret_t} \\n");
 					}}
 					ret->parent = me_abs;

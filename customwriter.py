@@ -101,8 +101,8 @@ class lambda_obj:
 			if not self.sign.return_annotation is inspect._empty:
 				arg_t = self.sign.return_annotation.__name__
 				codepre += tufold(block_norm('''
-				ff ret = ALLOC(struct fun);
-				if (Init_Bind_{t}(ret)) {{
+				ff ret = Init_Bind_{t}(NULL);
+				if (ret == NULL) {{
 					return lambda_error("Initialization: failed of type {t} during exec of type {name}");
 				}}
 				struct Custom_{t} * rc = ret->custom;

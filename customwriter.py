@@ -167,11 +167,14 @@ def get_init_func(o: lambda_obj) -> str:
 			'''
 			{decl} {{
 				ff me = ALLOC(struct fun);
+				me->x = NULL;
+				me->parent = NULL;
 				me->eval_now = Exec_{bindname};
 
 				me->custom = ALLOC(struct {customname});
 				struct {customname} * custom = me->custom;
 				me->customsize = sizeof(struct {customname});
+				me->leafs_count = 0;
 
 			{members}
 
@@ -180,7 +183,6 @@ def get_init_func(o: lambda_obj) -> str:
 			#endif
 			#ifdef DO_CACHING
 				me->cache = Cache_{bindname};
-				me->leafs_count = 0;
 			#endif
 
 				return me;

@@ -47,12 +47,12 @@ struct fun {
 
 	void * custom; /* For custom expressions */
 	int customsize; /* For copying */
+	int leafs_count; /* For copying */
 
 #ifdef USE_TYPEID
 	int typeuuid;
 #endif
 #ifdef DO_CACHING
-	int leafs_count; /* For copying */
 	int (*cache)(ff me, mapkey_t * ret, recursion_set * set);
 #endif
 };

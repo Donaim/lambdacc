@@ -42,13 +42,18 @@ ff eval(ff me, ff x, ff parent) {
 	 * to ensure immutability */
 	struct fun * my_copy = ALLOC(struct fun);
 	memcpy(my_copy, me, sizeof(struct fun));
-	my_copy->leafs = me->leafs;
 	if (me->customsize) {
 		my_copy->custom = ALLOC_GET(me->customsize);
 		memcpy(my_copy->custom, me->custom, me->customsize);
 	}
+	if (me->leafs_count) {
+		my_copy->leafs = ALLOC_GET(sizeof(struct fun) * me->leafs_count);
+		memcpy(my_copy->leafs, me->leafs, sizeof(struct fun) * me->leafs_count);
+		for (int i = 0; i < me->leafs_count; i++) {
+			my_copy->leafs[i]->parent = my_copy;
+		}
+	}
 	my_copy->x = x;
-	my_copy->parent = parent;
 
 #ifdef DO_CACHING
 	mapkey_t * cache_key = list_alloc();

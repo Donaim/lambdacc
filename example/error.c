@@ -79,10 +79,10 @@ ff lambda_error(const char *fmt, ...) {
 		.eval_now = lambda_error_eval_now,
 		.custom = str,
 		.customsize = 0,
+		.leafs_count = 0,
 
 #ifdef DO_CACHING
 		.cache = lambda_error_cache,
-		.leafs_count = 0,
 #endif
 	};
 

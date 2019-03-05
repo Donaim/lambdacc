@@ -68,3 +68,5 @@ This project is under active development
 	- also  works: `sum = \l -> fold $add l $mint`
 - [ ] add string literals
 	- [ ] add parser for machine integers like `parsemint "3"` -> `$msuc ($msuc ($msuc $mint))`
+- [ ] get better types info than just index
+	- [ ] by default print lambdas as tree using type names

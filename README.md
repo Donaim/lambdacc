@@ -61,7 +61,7 @@ This project is under active development
 	- [ ] allow to use arrow keys
 - [ ] improve dynamic typing
 - [ ] introduce static typing [hard]
-- [ ] fix bindings case:
+- [x] fix bindings case:
 	- reproduces with `--no-do-caching` only
 	- doesnt work: `sum = \l -> fold + l 0`
 	- does   work: `sum = \l -> fold (\acc cur -> + acc cur) l 0`

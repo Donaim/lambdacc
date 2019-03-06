@@ -186,18 +186,24 @@ def get_argument_by_parents(me: Lambda, arg: Argument):
 
 def get_ovv_member_name(field: StructField, base_lambda: Lambda):
 	t = field.t
-	if t is Bind or t is Lambda or t is Leaf:
-		return '(me->leafs[{}])'.format(field.index)
-	elif t is Argument:
+	if t is Argument:
 		return get_argument_by_parents(base_lambda, field.leaf)
 	else:
-		raise Exception('expected types {} and {} '.format(Bind, Argument, Lambda))
+		raise Exception('expected type {} but got type {} '.format(Argument, t))
 
 def get_return_part(out: SplittedOut, le: Leaf, base_lambda: Lambda) -> list:
 	ret = None
 	for field in get_fields(le=le):
 		l = field.leaf
-		mem = get_ovv_member_name(field=field, base_lambda=base_lambda)
+		t = field.t
+		name = get_leaf_name(le=field.leaf)
+		init_name = get_leaf_name(CFunction(name, 'init'))
+		mem = None
+		if t is Lambda or t is Bind or t is Leaf:
+			mem = '{init}(me)'.format(init=init_name)
+		else:
+			mem = get_ovv_member_name(field=field, base_lambda=base_lambda)
+
 		if ret is None:
 			ret = ['ff ret = {mem};'.format(mem=mem)]
 		else:
@@ -244,9 +250,6 @@ def get_exec_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 
 	defi  = decl + ' {\n'
 
-	children = init_children(le=le, parent_lambda_name=lambda_name)
-	defi += children + '\n'
-
 	if out.config.show_debug:
 		defi += '	printf ("Lam [%s] got [%s]\\n", me->tostr(), x->tostr());\n'
 
@@ -282,7 +285,6 @@ def get_init_func(out: SplittedOut, le: Leaf, lambda_name: str) -> None:
 			me->parent = parent;
 			me->eval_now = {exec_name};
 			me->customsize = 0;
-			me->leafs_count = {num_leafs};
 
 		{typeuuid}
 		{caching}

@@ -75,11 +75,9 @@ ff lambda_error(const char *fmt, ...) {
 	struct fun ret = {
 		.parent = 0,
 		.x = 0,
-		.leafs = 0,
 		.eval_now = lambda_error_eval_now,
 		.custom = str,
 		.customsize = 0,
-		.leafs_count = 0,
 
 #ifdef DO_CACHING
 		.cache = lambda_error_cache,

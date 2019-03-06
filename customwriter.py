@@ -174,7 +174,6 @@ def get_init_func(o: lambda_obj) -> str:
 				me->custom = ALLOC_GET(sizeof(struct {customname}));
 				struct {customname} * custom = me->custom;
 				me->customsize = sizeof(struct {customname});
-				me->leafs_count = 0;
 
 			{members}
 

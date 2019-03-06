@@ -46,9 +46,6 @@ ff eval(ff me, ff x) {
 		my_copy->custom = ALLOC_GET(me->customsize);
 		memcpy(my_copy->custom, me->custom, me->customsize);
 	}
-	if (me->leafs_count) {
-		my_copy->leafs = ALLOC_GET(sizeof(struct fun) * me->leafs_count);
-	}
 	my_copy->x = x;
 
 #ifdef DO_CACHING

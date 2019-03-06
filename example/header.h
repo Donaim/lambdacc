@@ -41,13 +41,11 @@ extern int g_cache_hits_count;
 struct fun {
 	ff parent;
 	ff x;
-	ff * leafs;
 
 	ff (*eval_now)(ff, ff);
 
 	void * custom; /* For custom expressions */
 	int customsize; /* For copying */
-	int leafs_count; /* For copying */
 
 #ifdef USE_TYPEID
 	int typeuuid;

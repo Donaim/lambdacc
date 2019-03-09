@@ -19,3 +19,9 @@ devel/
 
 repl/repl.ini
 repl/repl.inline.ini
+
+.stack-work/
+*.cabal
+*~
+
+.*.swp

@@ -25,3 +25,5 @@ repl/repl.inline.ini
 *~
 
 .*.swp
+
+dist/

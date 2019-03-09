@@ -56,10 +56,7 @@ data Branch = Branch String [Branch] BranchType
 
 branchParse :: ParserConfig -> String -> ParseResult Branch
 branchParse cfg sraw = do
-	if null s
-	then Bad $ SyntaxError "Empty branch"
-	else return ()
-
+	guard (null s) (SyntaxError "Empty branch")
 	return $ Branch "Hello" [] TokenBranch
 
 	where

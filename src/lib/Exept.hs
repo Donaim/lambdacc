@@ -21,8 +21,8 @@ instance Monad ParseResult where
 
 	return                = Ok
 
--- guard :: Bool -> String -> ParseResult a
--- guard b r =
--- 	if b
--- 	then r
--- 	else Ok ()
+guard :: Bool -> ParseError -> ParseResult ()
+guard b r =
+	if b
+	then Bad r
+	else Ok ()

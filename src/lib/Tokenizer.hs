@@ -86,3 +86,19 @@ transformer toks charno lineno str (Just (kind, split)) =
 					_       -> lineno
 
 
+tokenizers = [tokenizeLambdaDecl, tokenizeLambdaSymbol, tokenizeNewline, tokenizeSpace, tokenizeQuote, tokenizeComment, tokenizeName]
+
+tokenize :: ParserConfig -> String -> [Token]
+tokenize cfg str =
+	cycle [] 0 0 str
+	where
+		tokers = map (\f -> f cfg) tokenizers
+
+		folder :: (String -> Maybe (TokenType, Int)) -> ([Token], Int, Int, String) -> ([Token], Int, Int, String)
+		folder ftoken (toks, charno, lineno, str) = transformer toks charno lineno str (ftoken str)
+
+		cycle toks charno lineno []  = toks
+		cycle toks charno lineno str =
+			cycle newtoks newcharno newlineno newstr
+			where
+				(newtoks, newcharno, newlineno, newstr) = foldr folder (toks, charno, lineno, str) tokers

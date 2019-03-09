@@ -3,15 +3,19 @@
 
 class str {
 private:
-	const str * parent;
+	str * parent;
 	const char * buffor;
 	const int length;
 
-	str(const str * parent, int start, int end);
+	int reference_counter;
+
+	void checkput(void);
+
+	str(str * parent, int start, int end);
 	str(const char * buf);
 public:
 	static str from_cstring(const char * cstr);
-	static str make_clip(const str * parent, int start, int end);
+	static str make_clip(str * parent, int start, int end);
 
 	char * to_cstr(void); // allocates new
 

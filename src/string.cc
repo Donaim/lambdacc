@@ -25,14 +25,16 @@ const char * buffor_parents(const str * parent, int start, int end) {
 	return parent->buffor + start;
 }
 
-str::str(const str * parent, int start, int end)
-	: parent{parent}, length{end - start}, buffor{buffor_parents(parent, start, end)}
+str::str(str * parent, int start, int end)
+	: parent{parent}, length{end - start}, buffor{buffor_parents(parent, start, end)},
+	  reference_counter{1}
 {
 
 }
 
 str::str(const char * buf)
-	: parent{nullptr}, length{(int)strlen(buf)}
+	: parent{nullptr}, length{(int)strlen(buf)},
+	  reference_counter{1}
 {
 
 }
@@ -40,16 +42,36 @@ str::str(const char * buf)
 str str::from_cstring(const char * cstr) {
 	return str{cstr};
 }
-str str::make_clip(const str * parent, int start, int end) {
+str str::make_clip(str * parent, int start, int end) {
 	return str{parent, start, end};
 }
 
 char * str::to_cstr(void)
 {
-	return nullptr;
+	char * ret = (char*)malloc(sizeof(char) * (this->length + 1));
+
+	for (int i = 0; i < this->length; i++) {
+		ret[i] = this->buffor[i];
+	}
+	ret[this->length] = 0;
+
+	return ret;
+}
+
+void str::checkput(void)
+{
+	if (this->reference_counter == 0) {
+		if (parent == nullptr) {
+			free((void*)this->buffor);
+		} else {
+			parent->reference_counter--;
+			parent->checkput();
+		}
+	}
 }
 
 str::~str()
 {
-	std::cout << "kek\n";
+	this->reference_counter--;
+	this->checkput();
 }

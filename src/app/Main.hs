@@ -4,6 +4,7 @@ import Lib
 
 import Tokenizer
 import ParserConfig
+import FileSys
 
 cfg = ParserConfig 
 	{ lambdaDecl    = "\\"
@@ -13,5 +14,10 @@ cfg = ParserConfig
 	}
 
 main :: IO ()
-main =
-	print $ tokenize cfg "hello ! there bro!"
+main = do
+	text <- getFileText "example/script.ini"
+	case text of
+		Just text ->
+			print $ (\toks -> toks !! (length toks - 1)) (tokenize cfg text)
+		Nothing ->
+			putStrLn "Error reading text"

@@ -4,7 +4,10 @@ module Exept where
 import Control.Applicative
 import Control.Monad
 
-data ParseResult a = Ok a | SyntaxError String | LogicError String
+data ParseError = SyntaxError String | LogicError String
+	deriving (Show, Eq)
+
+data ParseResult a = Ok a | Bad ParseError
 	deriving (Show, Eq)
 
 instance Functor ParseResult where
@@ -14,7 +17,12 @@ instance Applicative ParseResult where
 	(<*>) = ap
 instance Monad ParseResult where
 	(Ok          x) >>= f = f x
-	(SyntaxError x) >>= f = SyntaxError x
-	(LogicError  x) >>= f = LogicError x
+	(Bad         x) >>= f = Bad x
 
 	return                = Ok
+
+-- guard :: Bool -> String -> ParseResult a
+-- guard b r =
+-- 	if b
+-- 	then r
+-- 	else Ok ()

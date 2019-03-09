@@ -55,9 +55,14 @@ data Branch = Branch String [Branch] BranchType
 	deriving (Show, Eq)
 
 branchParse :: ParserConfig -> String -> ParseResult Branch
-branchParse _   [] = SyntaxError "Empty branch"
-branchParse cfg sraw@(x:xs) =
-	Ok $ Branch "Hello" [] TokenBranch
+branchParse cfg sraw = do
+	if null s
+	then Bad $ SyntaxError "Empty branch"
+	else return ()
+
+	return $ Branch "Hello" [] TokenBranch
+
 	where
 		isLambda = (lambdaDecl cfg) `isPrefixOf` s
 		s = trim sraw
+		lambaArg = (tail) s

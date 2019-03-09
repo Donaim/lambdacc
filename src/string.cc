@@ -6,9 +6,7 @@
 
 using namespace std;
 
-int strlen(const char * str) {
-
-}
+#include <cstring>
 
 const char * buffor_parents(const str * parent, int start, int end) {
 	if (parent == nullptr) {
@@ -34,7 +32,7 @@ str::str(const str * parent, int start, int end)
 }
 
 str::str(const char * buf)
-	: parent{nullptr}, length{strlen(buf)}
+	: parent{nullptr}, length{(int)strlen(buf)}
 {
 
 }

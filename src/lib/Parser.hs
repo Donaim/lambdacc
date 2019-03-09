@@ -50,7 +50,8 @@ findNextBracket s = findNextBracketR s 0 0
 data BranchType = 
 	LambdaBranch | 
 	TokenBranch | -- A binding or constant expression
-	ArgBranch
+	ArgBranch |
+	LeafBranch
 	deriving (Show, Eq)
 
 data Branch = Branch String [Branch] BranchType
@@ -60,15 +61,17 @@ branchParse :: ParserConfig -> String -> ParseResult Branch
 branchParse cfg sraw = do
 	guard (null s) (SyntaxError "Empty branch")
 
-	guard (isLambda && null lambdaBody) (SyntaxError "Lambda body does not start")
+	guard (isLambda && lambdaArgRaw == tail s) (SyntaxError "Lambda does not start")
+	guard (isLambda && null lambdaBody) (SyntaxError "Lambda has empty body")
 
-	return $ Branch "Hello" [] TokenBranch
+	-- return $ branchLoop afterLambdaArgs
+	return $ Branch ("After = " ++ afterLambdaArgs) [] TokenBranch
 
 	where
 		isLambda = (lambdaDecl cfg) `isPrefixOf` s
 		s = trim sraw
 
-		lambdaArgRaw = tracePeekS $
+		lambdaArgRaw =
 			case findFirstSub t [lambdaSymbol cfg] of
 				Just i  -> take i t
 				Nothing -> t
@@ -76,6 +79,16 @@ branchParse cfg sraw = do
 				t = tail s
 		lambdaArg = trim lambdaArgRaw
 
-		lambdaBodyRaw = drop (length lambdaArgRaw + 1) s
+		lambdaBodyRaw = drop (1 + length lambdaArgRaw + length (lambdaSymbol cfg)) s
 		lambdaBody = trim lambdaBodyRaw
+
+		argumentBranches =
+			if isLambda
+			then [Branch lambdaArg [] ArgBranch]
+			else []
+
+		afterLambdaArgs =
+			if isLambda
+			then lambdaBody
+			else s
 

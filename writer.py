@@ -191,7 +191,7 @@ def get_ovv_member_name(field: StructField, base_lambda: Lambda):
 	else:
 		raise Exception('expected type {} but got type {} '.format(Argument, t))
 
-def get_return_part(out: SplittedOut, le: Leaf, base_lambda: Lambda) -> list:
+def get_return_part(out: SplittedOut, le: Leaf, base_lambda: Lambda) -> str:
 	ret = None
 	for field in get_fields(le=le):
 		l = field.leaf
@@ -205,24 +205,24 @@ def get_return_part(out: SplittedOut, le: Leaf, base_lambda: Lambda) -> list:
 			mem = get_ovv_member_name(field=field, base_lambda=base_lambda)
 
 		if ret is None:
-			ret = ['ff ret = {mem};'.format(mem=mem)]
+			ret = '{mem}'.format(mem=mem)
 		else:
-			ret.append('ret = eval(ret, {mem});'.format(mem=mem))
+			ret = 'eval({ret}, {mem})'.format(ret=ret, mem=mem)
 	return ret
 
 def get_ovv(out: SplittedOut, le: Leaf) -> str:
-	lines = get_return_part(out=out, le=le, base_lambda=le)
+	ret = get_return_part(out=out, le=le, base_lambda=le)
 
 	lt = type(le)
 	if lt is Lambda:
-		lines.append('return ret;')
+		return '	return {ret};\n'.format(ret=ret)
 	elif lt is Bind:
 		if type(lt.target) is Lambda:
-			lines.append('return ret;')
+			return '	return {ret};\n'.format(ret=ret)
 		else:
-			lines.append('return eval(ret, x);')
+			return '	return eval({ret}, x);\n'.format(ret=ret)
 	elif lt is Leaf or lt is Argument:
-		lines.append('return eval(ret, x);')
+		return '	return eval({ret}, x);\n'.format(ret=ret)
 	else:
 		raise Exception('get_ovv expects {} or {} but got {}'.format(Bind, Lambda, lt))
 

@@ -10,6 +10,7 @@ devel/
 *.inline.ini
 *.txt
 *.o
+*.oo
 
 */flags.h
 */declare.h

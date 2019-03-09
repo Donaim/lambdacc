@@ -10,6 +10,6 @@ main = do
 	where
 		p = branchParse
 			(ParserConfig { lambdaDecl = "\\", lambdaSymbol = "->" })
-			"Hehehehe"
+			"\\ a   ->   "
 
 

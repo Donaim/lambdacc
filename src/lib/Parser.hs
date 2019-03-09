@@ -5,6 +5,8 @@ import Utils
 import Exept
 import ParserConfig
 
+import Debug.Trace
+
 findFirstChar :: String -> [Char] -> Maybe Int
 findFirstChar s stops = findFirstCharR s 0
 	where
@@ -57,9 +59,23 @@ data Branch = Branch String [Branch] BranchType
 branchParse :: ParserConfig -> String -> ParseResult Branch
 branchParse cfg sraw = do
 	guard (null s) (SyntaxError "Empty branch")
+
+	guard (isLambda && null lambdaBody) (SyntaxError "Lambda body does not start")
+
 	return $ Branch "Hello" [] TokenBranch
 
 	where
 		isLambda = (lambdaDecl cfg) `isPrefixOf` s
 		s = trim sraw
-		lambaArg = (tail) s
+
+		lambdaArgRaw = tracePeekS $
+			case findFirstSub t [lambdaSymbol cfg] of
+				Just i  -> take i t
+				Nothing -> t
+			where
+				t = tail s
+		lambdaArg = trim lambdaArgRaw
+
+		lambdaBodyRaw = drop (length lambdaArgRaw + 1) s
+		lambdaBody = trim lambdaBodyRaw
+

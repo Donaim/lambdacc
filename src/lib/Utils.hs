@@ -3,6 +3,8 @@ module Utils where
 import Data.Maybe
 import Data.Char as C
 
+import Debug.Trace
+
 (|>) :: a -> (a -> b) -> b
 (|>) x f = f x
 infixl 0 |>
@@ -69,3 +71,11 @@ trim xs = dropSpaceTail "" $ dropWhile C.isSpace xs
 			| isSpace x = dropSpaceTail (x:maybeStuff) xs
 			| null maybeStuff = x : dropSpaceTail "" xs
 			| otherwise       = reverse maybeStuff ++ x : dropSpaceTail "" xs
+
+tracePeek :: (Show a) => a -> a
+tracePeek x =
+	traceShow ("TRACE: [" ++ show x ++ "]") x
+
+tracePeekS :: String -> String
+tracePeekS x =
+	trace ("TRACE: [" ++ x ++ "]") x

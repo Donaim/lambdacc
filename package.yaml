@@ -20,6 +20,8 @@ dependencies:
 
 library:
   source-dirs: src/lib
+  ghc-options:
+    - -Wno-tabs
 
 executables:
   lambdacc-exe:

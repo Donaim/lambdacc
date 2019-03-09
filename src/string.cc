@@ -30,19 +30,19 @@ const char * buffor_parents(const str * parent, int start, int end) {
 str::str(const str * parent, int start, int end)
 	: parent{parent}, length{end - start}, buffor{buffor_parents(parent, start, end)}
 {
-	
+
 }
 
 str::str(const char * buf)
-	: parent{nullptr}, length{strlen()}
+	: parent{nullptr}, length{strlen(buf)}
 {
 
 }
 
-static str str::from_cstring(const char * cstr) {
-	return str{cstr}
+str str::from_cstring(const char * cstr) {
+	return str{cstr};
 }
-static str str::make_clip(const str * parent, int start, int end) {
+str str::make_clip(const str * parent, int start, int end) {
 	return str{parent, start, end};
 }
 

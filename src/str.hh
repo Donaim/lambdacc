@@ -15,5 +15,7 @@ public:
 
 	char * to_cstr(void); // allocates new
 
+	friend const char * buffor_parents(const str * parent, int start, int end);
+
 	~str();
 };

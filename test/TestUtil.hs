@@ -2,7 +2,7 @@ module TestUtil where
 
 import Utils
 
-boxedStringMaxLinelen = 180
+boxedStringMaxLinelen = 170
 
 boxedString :: String -> String
 boxedString [] = []

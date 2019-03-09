@@ -1,6 +1,7 @@
 module Utils where
 
 import Data.Maybe
+import Data.Char as C
 
 (|>) :: a -> (a -> b) -> b
 (|>) x f = f x
@@ -59,3 +60,12 @@ joinMaybeSeq initial funcs =
 padWith :: Char -> Int -> String -> String
 padWith padS padN str =
 	str ++ (replicate (max 0 $ padN - length str) padS)
+
+
+trim xs = dropSpaceTail "" $ dropWhile C.isSpace xs
+	where
+		dropSpaceTail maybeStuff "" = ""
+		dropSpaceTail maybeStuff (x:xs)
+			| isSpace x = dropSpaceTail (x:maybeStuff) xs
+			| null maybeStuff = x : dropSpaceTail "" xs
+			| otherwise       = reverse maybeStuff ++ x : dropSpaceTail "" xs

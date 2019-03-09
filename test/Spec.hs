@@ -1,4 +1,15 @@
 import TestUtil
 
+import Parser
+import ParserConfig
+
 main :: IO ()
-main = putBox "Test suite not yet implemented"
+main = do
+	putBox "Test suite not yet implemented"
+	putBox $ show p
+	where
+		p = branchParse
+			(ParserConfig { lambdaDecl = "\\", lambdaSymbol = "->" })
+			"Hehehehe"
+
+

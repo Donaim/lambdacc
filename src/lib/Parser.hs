@@ -3,6 +3,7 @@ module Parser where
 import Data.List
 import Utils
 import Exept
+import ParserConfig
 
 findFirstChar :: String -> [Char] -> Maybe Int
 findFirstChar s stops = findFirstCharR s 0
@@ -44,13 +45,19 @@ findNextBracket s = findNextBracketR s 0 0
 			findNextBracketR xs (succ index) count
 
 
-data BranchType = LambdaBranch | TokenBranch | ArgBranch
+data BranchType = 
+	LambdaBranch | 
+	TokenBranch | -- A binding or constant expression
+	ArgBranch
+	deriving (Show, Eq)
 
-data Branch = String [Branch] BranchType
+data Branch = Branch String [Branch] BranchType
+	deriving (Show, Eq)
 
-branchParse :: String -> ParseResult Branch
-branchParse [] = SyntaxError "Empty branch"
-branchParse s@(x:xs) =
-	undefined
+branchParse :: ParserConfig -> String -> ParseResult Branch
+branchParse _   [] = SyntaxError "Empty branch"
+branchParse cfg sraw@(x:xs) =
+	Ok $ Branch "Hello" [] TokenBranch
 	where
-		isLambda = ""
+		isLambda = (lambdaDecl cfg) `isPrefixOf` s
+		s = trim sraw

@@ -10,54 +10,22 @@ TFLAGS =
 # clang is faster. TCC is the fastest that I know of
 CC = gcc
 
-run: all
-	./$(PROJ).exe
+CPP = g++
 
-all: $(PROJ).exe
-	@echo compiled
+compilersrcs = $(shell find src -name \*.cc)
+compilerojbs = ${compilersrcs:.cc=.comp.o}
 
-test:
-	$(CC) $@/internal-test.c -O0 -g -o $@.internal.exe
-	./$@.internal.exe
+testsrcs = $(shell find src -name \*.cc)
+testobjs = ${testsrcs:.cc=.test.o} $(filter-out src/main%, $(compilerojbs))
 
-	$(MAKE) all PROJ=test CFLAGS='-O0' CC=tcc TFLAGS='--no-do-caching'
-	test/checkout.sh
-	$(MAKE) all PROJ=test CFLAGS='-O0' CC=tcc TFLAGS='--no-do-caching --no-use-typeid'
-	test/checkout.sh
-	$(MAKE) all PROJ=test CFLAGS='-O0' CC=tcc TFLAGS='--no-do-caching --no-use-typeid --make-inline'
-	test/checkout.sh
-	$(MAKE) all PROJ=test CFLAGS='-O0' CC=tcc TFLAGS='--do-caching    --no-use-typeid --make-inline'
-	test/checkout.sh
-	$(MAKE) all PROJ=test CFLAGS='-O0' CC=tcc
-	test/checkout.sh
+test.exe: $(testobjs)
+	$(CPP) -o $@ $^
 
-clean:
-	- rm -f $(PROJ).c $(PROJ).exe $(PROJ)/script.inline.ini
+compiler.exe: $(compilerojbs)
+	$(CPP) -o $@ $^
 
-$(PROJ).exe: $(PROJ).c $(PROJ)/header.c
-	$(CC) -o $@ $^ $(CFLAGS)
+%.comp.o : %.cc
+	$(CPP) -o $@ -c $<
 
-$(PROJ).c: $(PROJ)/script.ini $(headers) $(additional-deps)
-	./lambdacc.py --source $(PROJ)/script.ini --dest $(PROJ).c \
-		--no-make-inline \
-		--do-caching \
-		--no-print-intermediate \
-		--count-total-exec \
-		--no-show-debug \
-		--use-typeid \
-		--echo-expr \
-		--no-track-allocs \
-		--no-track-pool-allocs \
-		--flagsfile $(PROJ)/flags.h \
-		--headerfile $(PROJ)/header.h \
-		--declare-file $(PROJ)/declare.h \
-		--define-file $(PROJ)/define.c \
-		--footerfile $(PROJ)/footer.c \
-		$(TFLAGS)
-
-	@echo translated
-
-$(PROJ)/declare.h $(PROJ)/define.c: $(PROJ)/custom.cfg.py $(additional-deps)
-	./customwriter.py $(PROJ)/custom.cfg.py $(PROJ)/declare.h $(PROJ)/define.c
-
-.PHONY: test clean all run
+%.test.o : %.cc
+	$(CPP) -o $@ -c $< -Isrc

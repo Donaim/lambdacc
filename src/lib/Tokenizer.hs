@@ -50,8 +50,8 @@ tokenizeQuote _ ('\'' : xs ) = Just (Quote, 1 + lenQuote xs False)
 tokenizeQuote _ _            = Nothing
 
 tokenizeComment :: ParserConfig -> String -> Maybe (TokenType, Int)
-tokenizeComment _ ('#' : xs ) = Just ( Comment, countWhile (/= '\n') xs)
-tokenizeComment _ (';' : xs ) = Just ( Comment, countWhile (/= '\n') xs)
+tokenizeComment _ ('#' : xs ) = Just ( Comment, 1 + countWhile (/= '\n') xs)
+tokenizeComment _ (';' : xs ) = Just ( Comment, 1 + countWhile (/= '\n') xs)
 tokenizeComment _   _ = Nothing
 
 tokenizeName :: ParserConfig -> String -> Maybe (TokenType, Int)

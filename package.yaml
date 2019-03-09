@@ -1,0 +1,47 @@
+name:                lambdacc
+version:             0.1.0.0
+github:              "Donaim/lambdacc"
+license:             BSD3
+author:              "Vitaliy Mysak"
+maintainer:          "3Donaim@gmail.com"
+copyright:           "2019 Vitaliy Mysak"
+
+extra-source-files:
+- README.md
+- ChangeLog.md
+
+synopsis:            Lambda calculus to C compiler
+category:            Compiler
+
+description:         Please see the README on GitHub at <https://github.com/Donaim/lambdacc#readme>
+
+dependencies:
+- base >= 4.7 && < 5
+
+library:
+  source-dirs: src/lib
+
+executables:
+  lambdacc-exe:
+    main:                Main.hs
+    source-dirs:         src/app
+    ghc-options:
+    - -Wno-tabs
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - lambdacc
+
+tests:
+  lambdacc-test:
+    main:                Spec.hs
+    source-dirs:         test
+    ghc-options:
+    - -Wno-tabs
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - lambdacc
+    - QuickCheck

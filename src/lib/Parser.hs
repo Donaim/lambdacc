@@ -19,8 +19,8 @@ findFirstSub :: String -> [String] -> Maybe Int
 findFirstSub s subs = findFirstSubR s 0
 	where
 		findFirstSubR :: String -> Int -> Maybe Int
-		findFirstSubR []     _     = Nothing
-		findFirstSubR (x:xs) index =
+		findFirstSubR []       _     = Nothing
+		findFirstSubR s@(x:xs) index =
 			if any (`isPrefixOf` s) subs
 			then Just index
 			else findFirstSubR xs (succ index)

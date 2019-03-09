@@ -79,3 +79,18 @@ tracePeek x =
 tracePeekS :: String -> String
 tracePeekS x =
 	trace ("TRACE: [" ++ x ++ "]") x
+
+countWhile :: (a -> Bool) -> [a] -> Int
+countWhile p [] = 0
+countWhile p (x : xs) =
+	if p x
+	then 1 + countWhile p xs
+	else 0
+
+lenQuote :: String -> Bool -> Int
+lenQuote []                 escaped = 0
+lenQuote ('\\' : '\'' : xs) False   = 2 + lenQuote xs False
+lenQuote ('\\' : '\'' : xs) True    = 2
+lenQuote ('\\' : xs)        escaped = 1 + lenQuote xs (not escaped)
+lenQuote ('\'' : xs)        escaped = 1
+lenQuote (x : xs)           escaped = 1 + lenQuote xs escaped

@@ -1,5 +1,7 @@
 module Tokenizer where
 
+-- This module will split text into dumb context unaware tokens
+
 import ParserConfig
 import Utils
 
@@ -7,7 +9,7 @@ import qualified Data.Char as C
 import Data.List
 
 data TokenType =
-	LambdaDecl | LambdaSymbol | LambdaArgument | Variable | Newline | Space | Comment
+	LambdaDecl | LambdaSymbol | Name | Newline | Space | Comment | Quote
 	deriving (Show, Eq)
 
 data Token =
@@ -26,6 +28,41 @@ tokenizeLambdaDecl cfg s =
 	else Nothing
 	where split = length (lambdaDecl cfg)
 
+tokenizeLambdaSymbol :: ParserConfig -> String -> Maybe (TokenType, Int)
+tokenizeLambdaSymbol cfg s =
+	if (lambdaSymbol cfg) `isPrefixOf` s
+	then Just (LambdaSymbol, split)
+	else Nothing
+	where split = length (lambdaSymbol cfg)
+
+tokenizeNewline :: ParserConfig -> String -> Maybe (TokenType, Int)
+tokenizeNewline _ ('\n' : xs ) = Just ( Newline, 1 )
+tokenizeNewline _   _ = Nothing
+
+tokenizeSpace :: ParserConfig -> String -> Maybe (TokenType, Int)
+tokenizeSpace _ (' ' : xs )  = Just ( Space, 1 )
+tokenizeSpace _ ('\t' : xs ) = Just ( Space, 1 )
+tokenizeSpace _   _ = Nothing
+
+tokenizeQuote :: ParserConfig -> String -> Maybe (TokenType, Int)
+tokenizeQuote _ ('\'' : xs ) = Just (Quote, 1 + lenQuote xs False)
+tokenizeQuote _ _            = Nothing
+
+tokenizeComment :: ParserConfig -> String -> Maybe (TokenType, Int)
+tokenizeComment _ ('#' : xs )  = Just ( Comment, 1 )
+tokenizeComment _ (';' : xs ) = Just ( Comment, 1 )
+tokenizeComment _   _ = Nothing
+
+tokenizeName :: ParserConfig -> String -> Maybe (TokenType, Int)
+tokenizeName _ s =
+	if split == 0
+	then Nothing
+	else Just (Name, split)
+	where
+		split = countWhile C.isAlpha s
+
+-- State transformer
+-- `Maybe (TokenType, Int)' is the "delta"
 transformer :: [Token] -> Int -> Int -> String -> Maybe (TokenType, Int) -> ([Token], Int, Int, String)
 transformer toks charno lineno str Nothing =
 	(toks, charno, lineno, str)
@@ -48,45 +85,4 @@ transformer toks charno lineno str (Just (kind, split)) =
 					Newline -> lineno + 1
 					_       -> lineno
 
--- tokenizeSpace :: String -> Maybe (String, RTok)
--- tokenizeSpace s@(c:cs) =
--- 	if C.isSpace c then
--- 		Just $ collect (c, 1) cs
--- 	else
--- 		Nothing
--- 	where
--- 		collect :: (Char, Int) -> String -> (String, RTok)
--- 		collect (cha, count) []       =
--- 			([], Space cha count)
--- 		collect (cha, count) s@(c:cs) =
--- 			if c == cha then
--- 				collect (cha, succ count) cs
--- 			else
--- 				(s, Space cha count)
 
--- tokenizeNewline :: String -> Maybe (String, RTok)
--- tokenizeNewline s@(c:cs) =
--- 	if c == '\n' then Just (cs, Newline)
--- 	else Nothing
-
--- tokenizeSymbol :: String -> Maybe (String, RTok)
--- tokenizeSymbol (x:xs) = Just (xs, Symbol x)
--- tokenizeSymbol []     = Nothing
-
--- tokenizeNumber :: String -> Maybe (String, RTok)
--- tokenizeNumber s =
--- 	if null buf then Nothing
--- 	else Just (drop (length buf) s, Number buf)
--- 	where
--- 		buf = takeWhile C.isDigit s
-
--- tokenizeS :: String -> Maybe (String, RTok)
--- tokenizeS s =
--- 	if null buf then Nothing
--- 	else Just (drop (length buf) s, Text buf)
--- 	where
--- 		buf = takeWhile C.isAlpha s
-
--- tokenize :: String -> [RTok]
--- tokenize s = joinMaybeSeq s [tokenizeNewline, tokenizeSpace, tokenizeNumber, tokenizeS, tokenizeSymbol]
-	

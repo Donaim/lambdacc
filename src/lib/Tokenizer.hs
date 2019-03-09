@@ -3,6 +3,7 @@ module Tokenizer where
 -- This module will split text into dumb context unaware tokens
 
 import ParserConfig
+import Exept
 import Utils
 
 import qualified Data.Char as C
@@ -54,12 +55,30 @@ tokenizeComment _ (';' : xs ) = Just ( Comment, countWhile (/= '\n') xs)
 tokenizeComment _   _ = Nothing
 
 tokenizeName :: ParserConfig -> String -> Maybe (TokenType, Int)
-tokenizeName _ s =
+tokenizeName cfg s =
 	if split == 0
 	then Nothing
 	else Just (Name, split)
 	where
-		split = countWhile C.isAlpha s
+		split = count s
+
+		count [] = 0
+
+		count (' ' : xs)  = 0
+		count ('\n' : xs) = 0
+
+		count ('#' : xs) =
+			if parseComments cfg then 0
+			else 1 + count xs
+		count (';' : xs) =
+			if parseComments cfg then 0
+			else 1 + count xs
+
+		count ('\'' : xs) =
+			if parseQuotes cfg then 0
+			else 1 + count xs
+
+		count (x : xs) = 1 + count xs
 
 -- State transformer
 -- `Maybe (TokenType, Int)' is the "delta"

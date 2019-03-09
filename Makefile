@@ -15,8 +15,11 @@ CPP = g++
 compilersrcs = $(shell find src -name \*.cc)
 compilerojbs = ${compilersrcs:.cc=.comp.o}
 
-testsrcs = $(shell find src -name \*.cc)
+testsrcs = $(shell find testcomp -name \*.cc)
 testobjs = ${testsrcs:.cc=.test.o} $(filter-out src/main%, $(compilerojbs))
+
+testcomp: test.exe
+	./test.exe
 
 test.exe: $(testobjs)
 	$(CPP) -o $@ $^

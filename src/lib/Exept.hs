@@ -5,6 +5,7 @@ import Control.Applicative
 import Control.Monad
 
 data ParseResult a = Ok a | SyntaxError String | LogicError String
+	deriving (Show, Eq)
 
 instance Functor ParseResult where
 	fmap = liftM

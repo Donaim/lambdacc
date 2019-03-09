@@ -7,9 +7,6 @@ rawc/
 devel/
 
 *.c
-*.cc
-*.cpp
-*.c++
 *.inline.ini
 *.txt
 *.o

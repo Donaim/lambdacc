@@ -69,7 +69,7 @@ str::~str()
 	if (*(this->reference_counter) == 0) {
 		free((void*)this->reference_counter);
 	}
-	if (*(this->reference_counter) <= 0) {
+	if (*(this->reference_counter) == 0) {
 		free((void*)this->original_buffor);
 	}
 }

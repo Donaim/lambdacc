@@ -8,7 +8,8 @@
 
 using namespace std;
 
-int main() {
+void test_startswith(void)
+{
 	auto content = readfile("example/script.ini");
 
 	// cout << "file:" << endl << content << endl;
@@ -23,5 +24,21 @@ int main() {
 	string cmp = "comment";
 
 	cout << "Startswith: " << kek.startswith(cmp) << endl;
+}
 
+void test_parse_tokens(void)
+{
+	auto content = readfile("example/script.ini");
+	str s{content};
+
+	ParserConfig cfg { "\\", "->" };
+	vector<Token> vec = parse_tokens(cfg, s);
+
+}
+
+int main() {
+	test_startswith();
+	test_parse_tokens();
+
+	return 0;
 }

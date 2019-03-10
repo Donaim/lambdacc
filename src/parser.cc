@@ -1,6 +1,10 @@
 
 #include "parser.hh"
 
+#include <iostream>
+
+using namespace std;
+
 struct parse_result {
 	int split;
 	TokenType type;
@@ -17,9 +21,14 @@ parse_result tokenizeLambdaDecl(const ParserConfig & cfg, const char * str, int 
 		return { 0 };
 	}
 }
+parse_result unrecognizedToken(const ParserConfig & cfg, const char * str, int len)
+{
+	return { 1, TokenType::Name };
+}
 
 tokenizer tokers[] = {
 	tokenizeLambdaDecl,
+	unrecognizedToken,
 };
 int tokers_len = sizeof(tokers) / sizeof(*tokers);
 
@@ -29,6 +38,8 @@ vector<Token> parse_tokens(const ParserConfig & cfg, const str text)
 	int charno = 0;
 	const char * buf = text.buffor;
 	vector<Token> ret;
+
+	cout << "tokers len: " << tokers_len << endl;
 
 	for (int i = 0; i < text.length; i++) {
 		for (int k = 0; k < tokers_len; k++) {

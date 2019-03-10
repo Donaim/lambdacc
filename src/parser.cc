@@ -12,6 +12,8 @@ const char * TokenTypeCSTR(TokenType type)
 	switch (type) {
 		case TokenType::LambdaDecl: return "LambdaDecl";
 		case TokenType::LambdaSymbol: return "LambdaSymbol";
+		case TokenType::OpenBracket: return "OpenBracket";
+		case TokenType::CloseBracket: return "CloseBracket";
 		case TokenType::Space: return "Space";
 		case TokenType::Newline: return "Newline";
 		case TokenType::Comment: return "Comment";
@@ -57,6 +59,22 @@ parse_result tokenizeLambdaSymbol(const ParserConfig & cfg, const char * str, in
 {
 	if (startswiths(str, len, cfg.LambdaSymbol.c_str(), cfg.LambdaSymbol.size())) {
 		return { (int)cfg.LambdaSymbol.size(), TokenType::LambdaSymbol };
+	} else {
+		return { 0 };
+	}
+}
+parse_result tokenizeOpenBracket(const ParserConfig & cfg, const char * str, int len)
+{
+	if (startswiths(str, len, "(", 1)) {
+		return { 1, TokenType::OpenBracket };
+	} else {
+		return { 0 };
+	}
+}
+parse_result tokenizeCloseBracket(const ParserConfig & cfg, const char * str, int len)
+{
+	if (startswiths(str, len, ")", 1)) {
+		return { 1, TokenType::CloseBracket };
 	} else {
 		return { 0 };
 	}
@@ -119,6 +137,8 @@ parse_result unrecognizedToken(const ParserConfig & cfg, const char * str, int l
 tokenizer tokers[] = {
 	tokenizeLambdaDecl,
 	tokenizeLambdaSymbol,
+	tokenizeOpenBracket,
+	tokenizeCloseBracket,
 	tokenizeSpace,
 	tokenizeNewline,
 	tokenizeComment,

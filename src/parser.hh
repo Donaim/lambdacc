@@ -17,6 +17,8 @@ struct ParserConfig {
 enum class TokenType {
 	LambdaDecl,
 	LambdaSymbol,
+	OpenBracket,
+	CloseBracket,
 	Space,
 	Newline,
 	Comment,

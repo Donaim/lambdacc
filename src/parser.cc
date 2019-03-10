@@ -25,7 +25,7 @@ ostream & operator<< (ostream& os, const Token & me)
 {
 	const char * text = me.text.to_cstr();
 
-	os << "{ " << TokenTypeCSTR(me.type) << " [" << text << "] " << " }";
+	os << "{ " << TokenTypeCSTR(me.type) << " [" << text << "] " << me.lineno << ":" << me.charno << " }";
 
 	free((void*)text);
 

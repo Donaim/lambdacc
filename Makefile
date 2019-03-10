@@ -10,7 +10,7 @@ TFLAGS =
 # clang is faster. TCC is the fastest that I know of
 CC = gcc
 
-CPP = g++ -O0 -g
+CPP = g++ -O3
 
 compilersrcs = $(shell find src -name \*.cc)
 compilerojbs = ${compilersrcs:.cc=.comp.o}

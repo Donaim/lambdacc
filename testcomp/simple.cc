@@ -35,13 +35,13 @@ void test_parse_tokens(void)
 	vector<Token> * vec = parse_tokens(cfg, s);
 
 	for (int i = 0; i < vec->size(); i++) {
-		cout << vec->at(i) << endl;
+		// cout << vec->at(i) << endl;
 	}
 
 }
 
 int main() {
-	test_startswith();
+	// test_startswith();
 	test_parse_tokens();
 
 	return 0;

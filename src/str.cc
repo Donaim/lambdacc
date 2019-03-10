@@ -12,10 +12,10 @@ const char * buffor_parents(const str parent, int start, int end) {
 	if (end <= start) {
 		throw runtime_error {"clip range is negative"};
 	}
-	if (parent.length < start) {
+	if (parent.length <= start) {
 		throw runtime_error {"clip range start is too big"};
 	}
-	if (parent.length < start + end) {
+	if (parent.length <= end) {
 		throw runtime_error {"clip range end is too big"};
 	}
 

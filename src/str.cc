@@ -53,7 +53,7 @@ str str::make_clip(str * parent, int start, int end) {
 	return str{parent, start, end};
 }
 
-char * str::to_cstr(void)
+char * str::to_cstr(void) const
 {
 	char * ret = (char*)malloc(sizeof(char) * (this->length + 1));
 

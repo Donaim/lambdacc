@@ -1,5 +1,6 @@
 
 #include "parser.hh"
+#include "svector.hpp"
 
 #include <stdexcept>
 #include <cstdlib>
@@ -162,13 +163,12 @@ parse_result tokenizeName(const ParserConfig & cfg, const char * str, int len)
 	return { len, TokenType::Name };
 }
 
-vector<Token> * parse_tokens(const ParserConfig & cfg, const str text)
+svector<Token> * parse_tokens(const ParserConfig & cfg, const str text)
 {
 	int lineno = 1;
 	int charno = 1;
 	const char * buf = text.buffor;
-	vector<Token> * ret = new vector<Token>{};
-	ret->reserve(text.length);
+	svector<Token> * ret = new svector<Token>{(size_t)text.length};
 
 	for (int i = 0; i < text.length; i++) {
 		for (int k = 0; k < tokers_len; k++) {
@@ -177,14 +177,12 @@ vector<Token> * parse_tokens(const ParserConfig & cfg, const str text)
 			if (re.split) {
 				str clip { text, i, i + re.split };
 
-				Token t = {
-					clip,
-					re.type,
-					charno,
-					lineno,
-				};
+				Token * t = ret->get_next();
 
-				ret->push_back(t);
+				t->text = clip;
+				t->type = re.type;
+				t->lineno = lineno;
+				t->charno = charno;
 
 				if (re.type == TokenType::Newline) {
 					lineno++;

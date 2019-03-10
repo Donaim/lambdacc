@@ -1,11 +1,10 @@
 
 #pragma once
 
-#include <vector>
 #include <string>
 #include "str.hh"
+#include "svector.hpp"
 
-using std::vector;
 using std::string;
 using std::ostream;
 
@@ -29,12 +28,12 @@ enum class TokenType {
 const char * TokenTypeCSTR(TokenType type);
 
 struct Token {
-	const str text;
-	const TokenType type;
-	const int charno;
-	const int lineno;
+	str text;
+	TokenType type;
+	int charno;
+	int lineno;
 
 	friend ostream & operator<< (ostream & os, const Token & me);
 };
 
-vector<Token> * parse_tokens(const ParserConfig & cfg, const str text);
+svector<Token> * parse_tokens(const ParserConfig & cfg, const str text);

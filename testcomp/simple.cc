@@ -32,10 +32,10 @@ void test_parse_tokens(void)
 	str s{content};
 
 	ParserConfig cfg { "\\", "->" };
-	vector<Token> * vec = parse_tokens(cfg, s);
+	svector<Token> * vec = parse_tokens(cfg, s);
 
-	for (int i = 0; i < vec->size(); i++) {
-		// cout << vec->at(i) << endl;
+	for (int i = 0; i < vec->get_size(); i++) {
+		cout << vec->at(i) << endl;
 	}
 
 }

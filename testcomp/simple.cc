@@ -35,7 +35,7 @@ void test_parse_tokens(void)
 	svector<Token> * vec = parse_tokens(cfg, s);
 
 	for (int i = 0; i < vec->get_size(); i++) {
-		cout << vec->at(i) << endl;
+		// cout << vec->at(i) << endl;
 	}
 
 }

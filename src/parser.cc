@@ -135,11 +135,11 @@ parse_result tokenizeQuote(const ParserConfig & cfg, const char * str, int len)
 parse_result tokenizeName(const ParserConfig & cfg, const char * str, int len);
 
 tokenizer tokers[] = {
-	tokenizeLambdaDecl,
-	tokenizeLambdaSymbol,
+	tokenizeSpace,
 	tokenizeOpenBracket,
 	tokenizeCloseBracket,
-	tokenizeSpace,
+	tokenizeLambdaDecl,
+	tokenizeLambdaSymbol,
 	tokenizeNewline,
 	tokenizeComment,
 	tokenizeQuote,

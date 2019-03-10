@@ -129,10 +129,8 @@ parse_result tokenizeQuote(const ParserConfig & cfg, const char * str, int len)
 		return { 0 };
 	}
 }
-parse_result unrecognizedToken(const ParserConfig & cfg, const char * str, int len)
-{
-	return { 1, TokenType::Name };
-}
+
+parse_result unrecognizedToken(const ParserConfig & cfg, const char * str, int len);
 
 tokenizer tokers[] = {
 	tokenizeLambdaDecl,
@@ -146,6 +144,22 @@ tokenizer tokers[] = {
 	unrecognizedToken,
 };
 int tokers_len = sizeof(tokers) / sizeof(*tokers);
+
+parse_result unrecognizedToken(const ParserConfig & cfg, const char * str, int len)
+{
+	for (int i = 0; i < len; i++) {
+		for (int k = 0; k < tokers_len; k++) {
+			if (tokers[k] == unrecognizedToken) { continue; }
+
+			parse_result re = tokers[k](cfg, str + i, len - i);
+			if (re.split) {
+				return { i, TokenType::Name };
+			}
+		}
+	}
+
+	return { len, TokenType::Name };
+}
 
 vector<Token> * parse_tokens(const ParserConfig & cfg, const str text)
 {

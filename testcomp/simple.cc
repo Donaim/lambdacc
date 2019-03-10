@@ -3,7 +3,7 @@
 #include <string>
 
 #include <filesys.hh>
-#include <parser.hh>
+#include <tokenizer.hh>
 #include <str.hh>
 
 using namespace std;

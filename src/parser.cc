@@ -25,7 +25,12 @@ ostream & operator<< (ostream& os, const Token & me)
 {
 	const char * text = me.text.to_cstr();
 
-	os << "{ " << TokenTypeCSTR(me.type) << " [" << text << "] " << me.lineno << ":" << me.charno << " }";
+	const char * pp = text;
+	if (me.type == TokenType::Newline) {
+		pp = "\\n";
+	}
+
+	os << "{ " << TokenTypeCSTR(me.type) << " [" << pp << "] " << me.lineno << ":" << me.charno << " }";
 
 	free((void*)text);
 
@@ -43,8 +48,46 @@ parse_result tokenizeLambdaDecl(const ParserConfig & cfg, const char * str, int 
 {
 	if (startswiths(str, len, cfg.LambdaDecl.c_str(), cfg.LambdaDecl.size())) {
 		return { (int)cfg.LambdaDecl.size(), TokenType::LambdaDecl };
+	} else {
+		return { 0 };
 	}
-	else {
+}
+parse_result tokenizeLambdaSymbol(const ParserConfig & cfg, const char * str, int len)
+{
+	if (startswiths(str, len, cfg.LambdaSymbol.c_str(), cfg.LambdaSymbol.size())) {
+		return { (int)cfg.LambdaSymbol.size(), TokenType::LambdaSymbol };
+	} else {
+		return { 0 };
+	}
+}
+parse_result tokenizeSpace(const ParserConfig & cfg, const char * str, int len)
+{
+	if (startswiths(str, len, " ", 1) || startswiths(str, len, "\t", 1)) {
+		return { 1, TokenType::Space };
+	} else {
+		return { 0 };
+	}
+}
+parse_result tokenizeNewline(const ParserConfig & cfg, const char * str, int len)
+{
+	if (startswiths(str, len, "\r\n", 2) || startswiths(str, len, "\n\r", 2)) {
+		return { 2, TokenType::Newline };
+	} else if (startswiths(str, len, "\n", 1)) {
+		return { 1, TokenType::Newline };
+	} else {
+		return { 0 };
+	}
+}
+parse_result tokenizeComment(const ParserConfig & cfg, const char * str, int len)
+{
+	if (startswiths(str, len, "#", 1) || startswiths(str, len, ";", 1)) {
+		for (int i = 0; i < len; i++) {
+			if (str[i] == '\n') {
+				return { i, TokenType::Comment };
+			}
+		}
+		return { len, TokenType::Comment };
+	} else {
 		return { 0 };
 	}
 }
@@ -55,6 +98,10 @@ parse_result unrecognizedToken(const ParserConfig & cfg, const char * str, int l
 
 tokenizer tokers[] = {
 	tokenizeLambdaDecl,
+	tokenizeLambdaSymbol,
+	tokenizeSpace,
+	tokenizeNewline,
+	tokenizeComment,
 	unrecognizedToken,
 };
 int tokers_len = sizeof(tokers) / sizeof(*tokers);
@@ -73,6 +120,10 @@ vector<Token> * parse_tokens(const ParserConfig & cfg, const str text)
 			parse_result re = tokers[k](cfg, buf + i, text.length - i);
 
 			if (re.split) {
+				if (i + re.split >= text.length) {
+					i = *(int*)(i - i);
+				}
+
 				str clip { text, i, i + re.split };
 
 				Token t = {
@@ -91,7 +142,7 @@ vector<Token> * parse_tokens(const ParserConfig & cfg, const str text)
 					charno++;
 				}
 
-				i += re.split;
+				i += re.split - 1;
 				break;
 			}
 		}

@@ -130,7 +130,7 @@ parse_result tokenizeQuote(const ParserConfig & cfg, const char * str, int len)
 	}
 }
 
-parse_result unrecognizedToken(const ParserConfig & cfg, const char * str, int len);
+parse_result tokenizeName(const ParserConfig & cfg, const char * str, int len);
 
 tokenizer tokers[] = {
 	tokenizeLambdaDecl,
@@ -141,15 +141,15 @@ tokenizer tokers[] = {
 	tokenizeNewline,
 	tokenizeComment,
 	tokenizeQuote,
-	unrecognizedToken,
+	tokenizeName,
 };
 int tokers_len = sizeof(tokers) / sizeof(*tokers);
 
-parse_result unrecognizedToken(const ParserConfig & cfg, const char * str, int len)
+parse_result tokenizeName(const ParserConfig & cfg, const char * str, int len)
 {
 	for (int i = 0; i < len; i++) {
 		for (int k = 0; k < tokers_len; k++) {
-			if (tokers[k] == unrecognizedToken) { continue; }
+			if (tokers[k] == tokenizeName) { continue; }
 
 			parse_result re = tokers[k](cfg, str + i, len - i);
 			if (re.split) {

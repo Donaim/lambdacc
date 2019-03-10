@@ -15,6 +15,7 @@ const char * TokenTypeCSTR(TokenType type)
 		case TokenType::Space: return "Space";
 		case TokenType::Newline: return "Newline";
 		case TokenType::Comment: return "Comment";
+		case TokenType::Quote: return "Quote";
 		case TokenType::Name: return "Name";
 		default:
 			throw runtime_error {"Unrecognized tokentype"};
@@ -91,6 +92,25 @@ parse_result tokenizeComment(const ParserConfig & cfg, const char * str, int len
 		return { 0 };
 	}
 }
+parse_result tokenizeQuote(const ParserConfig & cfg, const char * str, int len)
+{
+	if (startswiths(str, len, "'", 1)) {
+		bool escaped = false;
+		for (int i = 1; i < len; i++) {
+			if (str[i] == '\'' && !escaped) {
+				return { i + 1, TokenType::Quote };
+			}
+			if (str[i] == '\\') {
+				escaped = !escaped;
+			} else {
+				escaped = false;
+			}
+		}
+		throw runtime_error { "Quote does not end" };
+	} else {
+		return { 0 };
+	}
+}
 parse_result unrecognizedToken(const ParserConfig & cfg, const char * str, int len)
 {
 	return { 1, TokenType::Name };
@@ -102,14 +122,15 @@ tokenizer tokers[] = {
 	tokenizeSpace,
 	tokenizeNewline,
 	tokenizeComment,
+	tokenizeQuote,
 	unrecognizedToken,
 };
 int tokers_len = sizeof(tokers) / sizeof(*tokers);
 
 vector<Token> * parse_tokens(const ParserConfig & cfg, const str text)
 {
-	int lineno = 0;
-	int charno = 0;
+	int lineno = 1;
+	int charno = 1;
 	const char * buf = text.buffor;
 	vector<Token> * ret = new vector<Token>{};
 
@@ -120,10 +141,6 @@ vector<Token> * parse_tokens(const ParserConfig & cfg, const str text)
 			parse_result re = tokers[k](cfg, buf + i, text.length - i);
 
 			if (re.split) {
-				if (i + re.split >= text.length) {
-					i = *(int*)(i - i);
-				}
-
 				str clip { text, i, i + re.split };
 
 				Token t = {
@@ -137,7 +154,7 @@ vector<Token> * parse_tokens(const ParserConfig & cfg, const str text)
 
 				if (re.type == TokenType::Newline) {
 					lineno++;
-					charno = 0;
+					charno = 1;
 				} else {
 					charno++;
 				}

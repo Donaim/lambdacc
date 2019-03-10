@@ -20,6 +20,7 @@ enum class TokenType {
 	Space,
 	Newline,
 	Comment,
+	Quote,
 	Name,
 };
 

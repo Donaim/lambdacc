@@ -3,14 +3,29 @@
 
 #include <iostream>
 #include <cstdlib>
+#include <exception>
 
 using namespace std;
+
+const char * TokenTypeCSTR(TokenType type)
+{
+	switch (type) {
+		case TokenType::LambdaDecl: return "LambdaDecl";
+		case TokenType::LambdaSymbol: return "LambdaSymbol";
+		case TokenType::Space: return "Space";
+		case TokenType::Newline: return "Newline";
+		case TokenType::Comment: return "Comment";
+		case TokenType::Name: return "Name";
+		default:
+			throw runtime_error {"Unrecognized tokentype"};
+	}
+}
 
 ostream & operator<< (ostream& os, const Token & me)
 {
 	const char * text = me.text.to_cstr();
 
-	os << "{ " << text << " }";
+	os << "{ " << TokenTypeCSTR(me.type) << " [" << text << "] " << " }";
 
 	free((void*)text);
 

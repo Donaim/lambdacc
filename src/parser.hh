@@ -23,6 +23,8 @@ enum class TokenType {
 	Name,
 };
 
+const char * TokenTypeCSTR(TokenType type);
+
 struct Token {
 	const str text;
 	const TokenType type;

@@ -168,6 +168,7 @@ vector<Token> * parse_tokens(const ParserConfig & cfg, const str text)
 	int charno = 1;
 	const char * buf = text.buffor;
 	vector<Token> * ret = new vector<Token>{};
+	ret->reserve(text.length);
 
 	for (int i = 0; i < text.length; i++) {
 		for (int k = 0; k < tokers_len; k++) {

@@ -10,6 +10,7 @@ private:
 
 	str(str * parent, int start, int end);
 	str(const char * buf);
+	str(const str & copy);
 public:
 	const char * buffor;
 	const int length;

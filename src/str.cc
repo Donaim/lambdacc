@@ -33,8 +33,15 @@ str::str(str * parent, int start, int end)
 }
 
 str::str(const char * buf)
-	: parent{nullptr}, length{(int)strlen(buf)},
+	: parent{nullptr}, length{(int)strlen(buf)}, buffor{buf},
 	  reference_counter{1}
+{
+
+}
+
+str::str(const str & copy)
+	: parent(copy.parent), length{copy.length}, buffor{copy.buffor},
+	  reference_counter{copy.reference_counter + 1}
 {
 
 }

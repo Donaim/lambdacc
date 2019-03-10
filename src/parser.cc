@@ -67,7 +67,7 @@ parse_result tokenizeLambdaSymbol(const ParserConfig & cfg, const char * str, in
 }
 parse_result tokenizeOpenBracket(const ParserConfig & cfg, const char * str, int len)
 {
-	if (startswiths(str, len, "(", 1)) {
+	if (*str == '(') {
 		return { 1, TokenType::OpenBracket };
 	} else {
 		return { 0 };
@@ -75,7 +75,7 @@ parse_result tokenizeOpenBracket(const ParserConfig & cfg, const char * str, int
 }
 parse_result tokenizeCloseBracket(const ParserConfig & cfg, const char * str, int len)
 {
-	if (startswiths(str, len, ")", 1)) {
+	if (*str == ')') {
 		return { 1, TokenType::CloseBracket };
 	} else {
 		return { 0 };
@@ -83,7 +83,7 @@ parse_result tokenizeCloseBracket(const ParserConfig & cfg, const char * str, in
 }
 parse_result tokenizeSpace(const ParserConfig & cfg, const char * str, int len)
 {
-	if (startswiths(str, len, " ", 1) || startswiths(str, len, "\t", 1)) {
+	if (*str == ' ' || *str == '\t' || *str == '\r') {
 		return { 1, TokenType::Space };
 	} else {
 		return { 0 };
@@ -91,9 +91,7 @@ parse_result tokenizeSpace(const ParserConfig & cfg, const char * str, int len)
 }
 parse_result tokenizeNewline(const ParserConfig & cfg, const char * str, int len)
 {
-	if (startswiths(str, len, "\r\n", 2) || startswiths(str, len, "\n\r", 2)) {
-		return { 2, TokenType::Newline };
-	} else if (startswiths(str, len, "\n", 1)) {
+	if (*str == '\n') {
 		return { 1, TokenType::Newline };
 	} else {
 		return { 0 };
@@ -101,7 +99,7 @@ parse_result tokenizeNewline(const ParserConfig & cfg, const char * str, int len
 }
 parse_result tokenizeComment(const ParserConfig & cfg, const char * str, int len)
 {
-	if (startswiths(str, len, "#", 1) || startswiths(str, len, ";", 1)) {
+	if (*str == '#' || *str == ';') {
 		for (int i = 0; i < len; i++) {
 			if (str[i] == '\n') {
 				return { i, TokenType::Comment };
@@ -114,7 +112,7 @@ parse_result tokenizeComment(const ParserConfig & cfg, const char * str, int len
 }
 parse_result tokenizeQuote(const ParserConfig & cfg, const char * str, int len)
 {
-	if (startswiths(str, len, "'", 1)) {
+	if (*str == '\'') {
 		bool escaped = false;
 		for (int i = 1; i < len; i++) {
 			if (str[i] == '\'' && !escaped) {

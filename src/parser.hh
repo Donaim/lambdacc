@@ -7,6 +7,7 @@
 
 using std::vector;
 using std::string;
+using std::ostream;
 
 struct ParserConfig {
 	const string LambdaDecl;
@@ -27,6 +28,8 @@ struct Token {
 	const TokenType type;
 	const int charno;
 	const int lineno;
+
+	friend ostream & operator<< (ostream & os, const Token & me);
 };
 
 vector<Token> * parse_tokens(const ParserConfig & cfg, const str text);

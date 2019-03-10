@@ -2,8 +2,20 @@
 #include "parser.hh"
 
 #include <iostream>
+#include <cstdlib>
 
 using namespace std;
+
+ostream & operator<< (ostream& os, const Token & me)
+{
+	const char * text = me.text.to_cstr();
+
+	os << "{ " << text << " }";
+
+	free((void*)text);
+
+	return os;
+}
 
 struct parse_result {
 	int split;

@@ -5,6 +5,8 @@
 
 using std::string;
 
+bool startswiths(const char * me, int melen, const char * prefix, int plen);
+
 class str {
 private:
 	const char * original_buffor;
@@ -16,7 +18,7 @@ public:
 	str(const str & copy);
 
 	const char * buffor;
-	const int length;
+	int length;
 
 	static str from_cstring(const char * cstr);
 	static str make_clip(str parent, int start, int end);

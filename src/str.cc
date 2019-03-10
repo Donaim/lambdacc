@@ -74,15 +74,18 @@ str::~str()
 	}
 }
 
+bool startswiths(const char * me, int melen, const char * prefix, int plen)
+{
+	for (int i = 0; i < melen; i++) {
+		if (i >= plen) { return true; }
+		if (prefix[i] != me[i]) { return false; }
+	}
+
+	return plen == melen;
+}
 
 bool str::startswith(const string & prefix) const
 {
 	int plen = prefix.size(), melen = this->length;
-
-	for (int i = 0; i < melen; i++) {
-		if (i >= plen) { return true; }
-		if (prefix[i] != this->buffor[i]) { return false; }
-	}
-
-	return plen == melen;
+	return startswiths(this->buffor, melen, prefix.c_str(), plen);
 }

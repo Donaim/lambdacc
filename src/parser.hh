@@ -29,4 +29,4 @@ struct Token {
 	const int lineno;
 };
 
-vector<Token> parse_tokens(const ParserConfig & cfg, const str text);
+vector<Token> * parse_tokens(const ParserConfig & cfg, const str text);

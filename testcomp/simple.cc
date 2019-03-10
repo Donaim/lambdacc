@@ -32,7 +32,7 @@ void test_parse_tokens(void)
 	str s{content};
 
 	ParserConfig cfg { "\\", "->" };
-	vector<Token> vec = parse_tokens(cfg, s);
+	vector<Token> * vec = parse_tokens(cfg, s);
 
 }
 

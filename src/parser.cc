@@ -32,12 +32,12 @@ tokenizer tokers[] = {
 };
 int tokers_len = sizeof(tokers) / sizeof(*tokers);
 
-vector<Token> parse_tokens(const ParserConfig & cfg, const str text)
+vector<Token> * parse_tokens(const ParserConfig & cfg, const str text)
 {
 	int lineno = 0;
 	int charno = 0;
 	const char * buf = text.buffor;
-	vector<Token> ret;
+	vector<Token> * ret = new vector<Token>{};
 
 	cout << "tokers len: " << tokers_len << endl;
 
@@ -55,7 +55,7 @@ vector<Token> parse_tokens(const ParserConfig & cfg, const str text)
 					lineno,
 				};
 
-				ret.push_back(t);
+				ret->push_back(t);
 
 				if (re.type == TokenType::Newline) {
 					lineno++;

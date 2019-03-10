@@ -1,12 +1,11 @@
 
 #include "parser.hh"
-#include <vector>
 
-bool startswith(const char * prefix, const char * main)
+bool startswith(const string prefix, const str main)
 {
-	for (int i = 0; main[i] != 0; i++) {
-		if (prefix[i] == 0) { return true; }
-		if (prefix[i] != main[i]) { return false; }
+	for (int i = 0, plen = prefix.size(); i < main.length; i++) {
+		if (i >= plen) { return true; }
+		if (prefix[i] != main.buffor[i]) { return false; }
 	}
 	return false;
 }

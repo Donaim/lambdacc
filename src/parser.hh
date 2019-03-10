@@ -2,13 +2,15 @@
 #pragma once
 
 #include <vector>
+#include <string>
 #include "str.hh"
 
 using std::vector;
+using std::string;
 
 struct ParserConfig {
-	const char * LambdaDecl;
-	const char * LambdaSymbol;
+	const string LambdaDecl;
+	const string LambdaSymbol;
 };
 
 enum class TokenType {

@@ -1,6 +1,10 @@
 
 #pragma once
 
+#include <string>
+
+using std::string;
+
 class str {
 private:
 	const char * original_buffor;
@@ -18,6 +22,8 @@ public:
 	static str make_clip(str parent, int start, int end);
 
 	char * to_cstr(void) const; // allocates new
+
+	bool startswith(const string & prefix) const;
 
 	~str();
 };

@@ -73,3 +73,16 @@ str::~str()
 		free((void*)this->original_buffor);
 	}
 }
+
+
+bool str::startswith(const string & prefix) const
+{
+	int plen = prefix.size(), melen = this->length;
+
+	for (int i = 0; i < melen; i++) {
+		if (i >= plen) { return true; }
+		if (prefix[i] != this->buffor[i]) { return false; }
+	}
+
+	return plen == melen;
+}

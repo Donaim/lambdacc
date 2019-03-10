@@ -9,8 +9,7 @@ protected:
 	T * buffer;
 	size_t size;
 	size_t allocated;
-	
-	svector() {}
+
 public:
 	svector(size_t initial_size)
 	{
@@ -27,16 +26,24 @@ public:
 		if (i < this->size) {
 			return this->buffer[i];
 		} else {
-			throw std::runtime_error("index was outside of SArray!");
+			throw std::runtime_error("index was outside of svector");
+		}
+	}
+	inline T * atptr(size_t i) const {
+		if (i < this->size) {
+			return this->buffer + i;
+		} else {
+			throw std::runtime_error("index was outside of svector");
 		}
 	}
 
-	// Return pointer to next free cell or NULL
+	// Return pointer to next free cell. Unsafe
 	inline T * get_next(void)
 	{
 		return this->buffer + this->size++;
 	}
 
+	// No destructor, need to manual free
 	void freeall(void) {
 		free(this->buffer);
 	}

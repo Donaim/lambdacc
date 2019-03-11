@@ -9,7 +9,7 @@ import FileSys
 cfg = ParserConfig 
 	{ lambdaDecl    = "\\"
 	, lambdaSymbol  = "->"
-	, parseComments = False
+	, parseComments = True
 	, parseQuotes   = True
 	}
 
@@ -21,7 +21,7 @@ main = do
 			let toks = tokenize cfg text
 			-- print $ sum $ map (\c -> if c == 'a' then 1 else 0) text
 			-- print $ sum $ map lineno toks
-			-- putStrLn $ foldr (++) "" $ map ('\n' : ) (map show toks)
+			putStrLn $ foldr (++) "" $ map ('\n' : ) (map show toks)
 			putStrLn $ "len = " ++ show (length toks)
 			-- print $ "last: \n" ++ show (head toks)
 			return ()

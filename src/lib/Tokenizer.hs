@@ -122,11 +122,17 @@ tokenize cfg str =
 		tokersNoName = map (\f -> f cfg []) tokersRaw
 		tokers       = tokersNoName ++ [tokenizeName cfg tokersNoName]
 
-		folder :: TokenizeTransform -> TransformerState -> TransformerState
-		folder ftoken (toks, charno, lineno, str) = transformer toks charno lineno str (ftoken str)
+		folder :: TransformerState -> [TokenizeTransform] -> TransformerState
+		folder p@(toks, charno, lineno, str) (tok : xs) =
+			if isJust current
+			then result
+			else folder p xs
+			where
+				current = tok str
+				result  = transformer toks charno lineno str current
 
 		cycle toks charno lineno []  = toks
 		cycle toks charno lineno str =
 			cycle newtoks newcharno newlineno newstr
 			where
-				(newtoks, newcharno, newlineno, newstr) = foldr folder (toks, charno, lineno, str) tokers
+				(newtoks, newcharno, newlineno, newstr) = folder (toks, charno, lineno, str) tokers

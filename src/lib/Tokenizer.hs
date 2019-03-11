@@ -83,10 +83,9 @@ type TransformerState = ([Token], Int, Int, String)
 
 -- State transformer
 -- `Maybe (TokenType, Int)' is the "delta"
-transformer :: [Token] -> Int -> Int -> String -> TokenizeResponce -> TransformerState
-transformer toks charno lineno str Nothing =
-	(toks, charno, lineno, str)
-transformer toks charno lineno str (Just (kind, split)) =
+transformer :: TransformerState -> TokenizeResponce -> TransformerState
+transformer state Nothing = state
+transformer (toks, charno, lineno, str) (Just (kind, split)) =
 	(tok : toks, nextcharno, nextlineno, rest)
 	where
 		cur  = take split str
@@ -127,7 +126,7 @@ tokenize cfg str =
 			else folder p xs
 			where
 				current = tok str
-				result  = transformer toks charno lineno str current
+				result  = transformer p current
 
 		cycle toks charno lineno []  = toks
 		cycle toks charno lineno str =

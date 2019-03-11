@@ -69,9 +69,7 @@ tokenizeComment _ _ _ = Nothing
 
 tokenizeName :: TokenizeFulltype
 tokenizeName cfg tokenizers s =
-	if split == 0
-	then Nothing
-	else Just (Name, split)
+	Just (Name, split)
 	where
 		split = count s
 

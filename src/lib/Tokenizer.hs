@@ -10,7 +10,7 @@ import qualified Data.Char as C
 import Data.List
 
 data TokenType =
-	LambdaDecl | LambdaSymbol | Name | Newline | Space | Comment | Quote
+	OpenBracket | CloseBracket | LambdaDecl | LambdaSymbol | Name | Newline | Space | Comment | Quote
 	deriving (Show, Eq)
 
 data Token =
@@ -35,6 +35,14 @@ tokenizeLambdaSymbol cfg s =
 	then Just (LambdaSymbol, split)
 	else Nothing
 	where split = length (lambdaSymbol cfg)
+
+tokenizeOpenBracket :: ParserConfig -> String -> Maybe (TokenType, Int)
+tokenizeOpenBracket _ ('(' : xs ) = Just ( OpenBracket, 1 )
+tokenizeOpenBracket _   _ = Nothing
+
+tokenizeCloseBracket :: ParserConfig -> String -> Maybe (TokenType, Int)
+tokenizeCloseBracket _ (')' : xs ) = Just ( CloseBracket, 1 )
+tokenizeCloseBracket _   _ = Nothing
 
 tokenizeNewline :: ParserConfig -> String -> Maybe (TokenType, Int)
 tokenizeNewline _ ('\n' : xs ) = Just ( Newline, 1 )
@@ -64,7 +72,10 @@ tokenizeName cfg s =
 
 		count [] = 0
 
+		count ('(' : xs)  = 0
+		count (')' : xs)  = 0
 		count (' ' : xs)  = 0
+		count ('\t' : xs) = 0
 		count ('\n' : xs) = 0
 
 		count ('#' : xs) =
@@ -104,14 +115,19 @@ transformer toks charno lineno str (Just (kind, split)) =
 					Newline -> lineno + 1
 					_       -> lineno
 
-
-tokenizers = [tokenizeLambdaDecl, tokenizeLambdaSymbol, tokenizeNewline, tokenizeSpace, tokenizeQuote, tokenizeComment, tokenizeName]
+sometokenizers = [tokenizeOpenBracket, tokenizeCloseBracket, tokenizeSpace, tokenizeLambdaDecl, tokenizeLambdaSymbol, tokenizeNewline]
 
 tokenize :: ParserConfig -> String -> [Token]
 tokenize cfg str =
 	cycle [] 0 0 str
 	where
-		tokers = map (\f -> f cfg) tokenizers
+		tokenizers   = 
+			sometokenizers ++ 
+			(if parseQuotes cfg then [tokenizeQuote] else []) ++
+			(if parseComments cfg then [tokenizeComment] else []) ++
+			[tokenizeName]
+
+		tokers       = map (\f -> f cfg) tokenizers
 
 		folder :: (String -> Maybe (TokenType, Int)) -> ([Token], Int, Int, String) -> ([Token], Int, Int, String)
 		folder ftoken (toks, charno, lineno, str) = transformer toks charno lineno str (ftoken str)

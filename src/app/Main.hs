@@ -15,7 +15,7 @@ cfg = ParserConfig
 
 main :: IO ()
 main = do
-	text <- getFileText "example/script.inline.ini"
+	text <- getFileText "example/script.ini"
 	case text of
 		Just text -> do
 			let toks = tokenize cfg text

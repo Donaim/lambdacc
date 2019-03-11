@@ -8,6 +8,7 @@ import Utils
 
 import qualified Data.Char as C
 import Data.List
+import Data.Maybe
 
 data TokenType =
 	OpenBracket | CloseBracket | LambdaDecl | LambdaSymbol | Name | Newline | Space | Comment | Quote
@@ -22,78 +23,69 @@ data Token =
 	}
 	deriving (Show, Eq)
 
-tokenizeLambdaDecl :: ParserConfig -> String -> Maybe (TokenType, Int)
-tokenizeLambdaDecl cfg s =
+type TokenizeResponce  = Maybe (TokenType, Int)
+type TokenizeTransform = String -> TokenizeResponce
+type TokenizeFulltype  = ParserConfig -> [TokenizeTransform] -> TokenizeTransform
+
+tokenizeLambdaDecl :: TokenizeFulltype
+tokenizeLambdaDecl cfg _ s =
 	if (lambdaDecl cfg) `isPrefixOf` s
 	then Just (LambdaDecl, split)
 	else Nothing
 	where split = length (lambdaDecl cfg)
 
-tokenizeLambdaSymbol :: ParserConfig -> String -> Maybe (TokenType, Int)
-tokenizeLambdaSymbol cfg s =
+tokenizeLambdaSymbol :: TokenizeFulltype
+tokenizeLambdaSymbol cfg _ s =
 	if (lambdaSymbol cfg) `isPrefixOf` s
 	then Just (LambdaSymbol, split)
 	else Nothing
 	where split = length (lambdaSymbol cfg)
 
-tokenizeOpenBracket :: ParserConfig -> String -> Maybe (TokenType, Int)
-tokenizeOpenBracket _ ('(' : xs ) = Just ( OpenBracket, 1 )
-tokenizeOpenBracket _   _ = Nothing
+tokenizeOpenBracket :: TokenizeFulltype
+tokenizeOpenBracket _ _ ('(' : xs ) = Just ( OpenBracket, 1 )
+tokenizeOpenBracket _ _ _ = Nothing
 
-tokenizeCloseBracket :: ParserConfig -> String -> Maybe (TokenType, Int)
-tokenizeCloseBracket _ (')' : xs ) = Just ( CloseBracket, 1 )
-tokenizeCloseBracket _   _ = Nothing
+tokenizeCloseBracket :: TokenizeFulltype
+tokenizeCloseBracket _ _ (')' : xs ) = Just ( CloseBracket, 1 )
+tokenizeCloseBracket _ _ _ = Nothing
 
-tokenizeNewline :: ParserConfig -> String -> Maybe (TokenType, Int)
-tokenizeNewline _ ('\n' : xs ) = Just ( Newline, 1 )
-tokenizeNewline _   _ = Nothing
+tokenizeNewline :: TokenizeFulltype
+tokenizeNewline _ _ ('\n' : xs ) = Just ( Newline, 1 )
+tokenizeNewline _ _ _ = Nothing
 
-tokenizeSpace :: ParserConfig -> String -> Maybe (TokenType, Int)
-tokenizeSpace _ (' ' : xs )  = Just ( Space, 1 )
-tokenizeSpace _ ('\t' : xs ) = Just ( Space, 1 )
-tokenizeSpace _   _ = Nothing
+tokenizeSpace :: TokenizeFulltype
+tokenizeSpace _ _ (' ' : xs )  = Just ( Space, 1 )
+tokenizeSpace _ _ ('\t' : xs ) = Just ( Space, 1 )
+tokenizeSpace _ _ _ = Nothing
 
-tokenizeQuote :: ParserConfig -> String -> Maybe (TokenType, Int)
-tokenizeQuote _ ('\'' : xs ) = Just (Quote, 1 + lenQuote xs False)
-tokenizeQuote _ _            = Nothing
+tokenizeQuote :: TokenizeFulltype
+tokenizeQuote _ _ ('\'' : xs ) = Just (Quote, 1 + lenQuote xs False)
+tokenizeQuote _ _ _            = Nothing
 
-tokenizeComment :: ParserConfig -> String -> Maybe (TokenType, Int)
-tokenizeComment _ ('#' : xs ) = Just ( Comment, 1 + countWhile (/= '\n') xs)
-tokenizeComment _ (';' : xs ) = Just ( Comment, 1 + countWhile (/= '\n') xs)
-tokenizeComment _   _ = Nothing
+tokenizeComment :: TokenizeFulltype
+tokenizeComment _ _ ('#' : xs ) = Just ( Comment, 1 + countWhile (/= '\n') xs)
+tokenizeComment _ _ (';' : xs ) = Just ( Comment, 1 + countWhile (/= '\n') xs)
+tokenizeComment _ _ _ = Nothing
 
-tokenizeName :: ParserConfig -> String -> Maybe (TokenType, Int)
-tokenizeName cfg s =
+tokenizeName :: TokenizeFulltype
+tokenizeName cfg tokenizers s =
 	if split == 0
 	then Nothing
 	else Just (Name, split)
 	where
 		split = count s
 
-		count [] = 0
-
-		count ('(' : xs)  = 0
-		count (')' : xs)  = 0
-		count (' ' : xs)  = 0
-		count ('\t' : xs) = 0
-		count ('\n' : xs) = 0
-
-		count ('#' : xs) =
-			if parseComments cfg then 0
-			else 1 + count xs
-		count (';' : xs) =
-			if parseComments cfg then 0
+		count []         = 0
+		count s@(x : xs) =
+			if any isJust $ map (\t -> t s) tokenizers
+			then 0
 			else 1 + count xs
 
-		count ('\'' : xs) =
-			if parseQuotes cfg then 0
-			else 1 + count xs
-
-		count (x : xs) = 1 + count xs
+type TransformerState = ([Token], Int, Int, String)
 
 -- State transformer
 -- `Maybe (TokenType, Int)' is the "delta"
-transformer :: [Token] -> Int -> Int -> String -> Maybe (TokenType, Int) -> ([Token], Int, Int, String)
+transformer :: [Token] -> Int -> Int -> String -> TokenizeResponce -> TransformerState
 transformer toks charno lineno str Nothing =
 	(toks, charno, lineno, str)
 transformer toks charno lineno str (Just (kind, split)) =
@@ -125,12 +117,12 @@ tokenize cfg str =
 			sometokenizers ++ 
 			(if parseQuotes cfg then [tokenizeQuote] else []) ++
 			(if parseComments cfg then [tokenizeComment] else []) ++
-			(if null $ lambdaDecl cfg then [] else [tokenizeLambdaDecl]) ++
-			[tokenizeName]
+			(if null $ lambdaDecl cfg then [] else [tokenizeLambdaDecl])
 
-		tokers       = map (\f -> f cfg) tokenizers
+		tokersNoName = map (\f -> f cfg []) tokenizers
+		tokers       = tokersNoName ++ [tokenizeName cfg tokersNoName]
 
-		folder :: (String -> Maybe (TokenType, Int)) -> ([Token], Int, Int, String) -> ([Token], Int, Int, String)
+		folder :: TokenizeTransform -> TransformerState -> TransformerState
 		folder ftoken (toks, charno, lineno, str) = transformer toks charno lineno str (ftoken str)
 
 		cycle toks charno lineno []  = toks

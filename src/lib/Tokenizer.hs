@@ -75,11 +75,11 @@ tokenizeName cfg tokenizers s =
 	where
 		split = count s
 
-		count []         = 0
-		count s@(x : xs) =
+		count [] = 0
+		count s  =
 			if any isJust $ map (\t -> t s) tokenizers
 			then 0
-			else 1 + count xs
+			else 1 + count (tail s)
 
 type TransformerState = ([Token], Int, Int, String)
 
@@ -113,13 +113,13 @@ tokenize :: ParserConfig -> String -> [Token]
 tokenize cfg str =
 	cycle [] 0 0 str
 	where
-		tokenizers   = 
+		tokersRaw    =
 			sometokenizers ++ 
 			(if parseQuotes cfg then [tokenizeQuote] else []) ++
 			(if parseComments cfg then [tokenizeComment] else []) ++
 			(if null $ lambdaDecl cfg then [] else [tokenizeLambdaDecl])
 
-		tokersNoName = map (\f -> f cfg []) tokenizers
+		tokersNoName = map (\f -> f cfg []) tokersRaw
 		tokers       = tokersNoName ++ [tokenizeName cfg tokersNoName]
 
 		folder :: TokenizeTransform -> TransformerState -> TransformerState

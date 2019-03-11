@@ -115,7 +115,7 @@ transformer toks charno lineno str (Just (kind, split)) =
 					Newline -> lineno + 1
 					_       -> lineno
 
-sometokenizers = [tokenizeOpenBracket, tokenizeCloseBracket, tokenizeSpace, tokenizeLambdaDecl, tokenizeLambdaSymbol, tokenizeNewline]
+sometokenizers = [tokenizeOpenBracket, tokenizeCloseBracket, tokenizeSpace, tokenizeLambdaSymbol, tokenizeNewline]
 
 tokenize :: ParserConfig -> String -> [Token]
 tokenize cfg str =
@@ -125,6 +125,7 @@ tokenize cfg str =
 			sometokenizers ++ 
 			(if parseQuotes cfg then [tokenizeQuote] else []) ++
 			(if parseComments cfg then [tokenizeComment] else []) ++
+			(if null $ lambdaDecl cfg then [] else [tokenizeLambdaDecl]) ++
 			[tokenizeName]
 
 		tokers       = map (\f -> f cfg) tokenizers

@@ -79,14 +79,14 @@ tokenizeName cfg tokenizers s =
 			then 0
 			else 1 + count (tail s)
 
-type TransformerState = ([Token], Int, Int, String)
+type TransformerState = (Int, Int, String)
 
 -- State transformer
 -- `Maybe (TokenType, Int)' is the "delta"
-transformer :: TransformerState -> TokenizeResponce -> TransformerState
-transformer state Nothing = state
-transformer (toks, charno, lineno, str) (Just (kind, split)) =
-	(tok : toks, nextcharno, nextlineno, rest)
+transformer :: TransformerState -> TokenizeResponce -> (Maybe Token, TransformerState)
+transformer state Nothing = (Nothing, state)
+transformer (charno, lineno, str) (Just (kind, split)) =
+	(Just tok, (nextcharno, nextlineno, rest))
 	where
 		cur  = take split str
 		rest = drop split str
@@ -108,7 +108,7 @@ sometokenizers = [tokenizeOpenBracket, tokenizeCloseBracket, tokenizeSpace, toke
 
 tokenize :: ParserConfig -> String -> [Token]
 tokenize cfg str =
-	cycle [] 0 0 str
+	cycle 0 0 str
 	where
 		tokersRaw    =
 			sometokenizers ++ 
@@ -119,17 +119,20 @@ tokenize cfg str =
 		tokersNoName = map (\f -> f cfg []) tokersRaw
 		tokers       = tokersNoName ++ [tokenizeName cfg tokersNoName]
 
-		folder :: TransformerState -> [TokenizeTransform] -> TransformerState
-		folder p@(toks, charno, lineno, str) (tok : xs) =
+		folder :: TransformerState -> [TokenizeTransform] -> (Maybe Token, TransformerState)
+		folder p@(charno, lineno, str) (tokenizer : xs) =
 			if isJust current
 			then result
 			else folder p xs
 			where
-				current = tok str
+				current = tokenizer str
 				result  = transformer p current
 
-		cycle toks charno lineno []  = toks
-		cycle toks charno lineno str =
-			cycle newtoks newcharno newlineno newstr
+		cycle :: Int -> Int -> String -> [Token]
+		cycle charno lineno []  = []
+		cycle charno lineno str =
+			(justTok tok) : cycle newcharno newlineno newstr
 			where
-				(newtoks, newcharno, newlineno, newstr) = folder (toks, charno, lineno, str) tokers
+				(tok, (newcharno, newlineno, newstr)) = folder (charno, lineno, str) tokers
+				justTok (Just t) = t
+				justTok Nothing = error "Unrecognized token"

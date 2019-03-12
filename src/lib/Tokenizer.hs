@@ -25,59 +25,47 @@ data Token =
 
 type TokenizeResponce  = Maybe (TokenType, Int)
 type TokenizeTransform = String -> TokenizeResponce
-type TokenizeFulltype  = ParserConfig -> [TokenizeTransform] -> TokenizeTransform
+type TokenizeFulltype  = ParserConfig -> TokenizeTransform
 
 tokenizeLambdaDecl :: TokenizeFulltype
-tokenizeLambdaDecl cfg _ s =
+tokenizeLambdaDecl cfg s =
 	if (lambdaDecl cfg) `isPrefixOf` s
 	then Just (LambdaDecl, split)
 	else Nothing
 	where split = length (lambdaDecl cfg)
 
 tokenizeLambdaSymbol :: TokenizeFulltype
-tokenizeLambdaSymbol cfg _ s =
+tokenizeLambdaSymbol cfg s =
 	if (lambdaSymbol cfg) `isPrefixOf` s
 	then Just (LambdaSymbol, split)
 	else Nothing
 	where split = length (lambdaSymbol cfg)
 
 tokenizeOpenBracket :: TokenizeFulltype
-tokenizeOpenBracket _ _ ('(' : xs ) = Just ( OpenBracket, 1 )
-tokenizeOpenBracket _ _ _ = Nothing
+tokenizeOpenBracket _ ('(' : xs ) = Just ( OpenBracket, 1 )
+tokenizeOpenBracket _ _ = Nothing
 
 tokenizeCloseBracket :: TokenizeFulltype
-tokenizeCloseBracket _ _ (')' : xs ) = Just ( CloseBracket, 1 )
-tokenizeCloseBracket _ _ _ = Nothing
+tokenizeCloseBracket _ (')' : xs ) = Just ( CloseBracket, 1 )
+tokenizeCloseBracket _ _ = Nothing
 
 tokenizeNewline :: TokenizeFulltype
-tokenizeNewline _ _ ('\n' : xs ) = Just ( Newline, 1 )
-tokenizeNewline _ _ _ = Nothing
+tokenizeNewline _ ('\n' : xs ) = Just ( Newline, 1 )
+tokenizeNewline _ _ = Nothing
 
 tokenizeSpace :: TokenizeFulltype
-tokenizeSpace _ _ (' ' : xs )  = Just ( Space, 1 )
-tokenizeSpace _ _ ('\t' : xs ) = Just ( Space, 1 )
-tokenizeSpace _ _ _ = Nothing
+tokenizeSpace _ (' ' : xs )  = Just ( Space, 1 )
+tokenizeSpace _ ('\t' : xs ) = Just ( Space, 1 )
+tokenizeSpace _ _ = Nothing
 
 tokenizeQuote :: TokenizeFulltype
-tokenizeQuote _ _ ('\'' : xs ) = Just (Quote, 1 + lenQuote xs False)
-tokenizeQuote _ _ _            = Nothing
+tokenizeQuote _ ('\'' : xs ) = Just (Quote, 1 + lenQuote xs False)
+tokenizeQuote _ _            = Nothing
 
 tokenizeComment :: TokenizeFulltype
-tokenizeComment _ _ ('#' : xs ) = Just ( Comment, 1 + countWhile (/= '\n') xs)
-tokenizeComment _ _ (';' : xs ) = Just ( Comment, 1 + countWhile (/= '\n') xs)
-tokenizeComment _ _ _ = Nothing
-
-tokenizeName :: TokenizeFulltype
-tokenizeName cfg tokenizers s =
-	Just (Name, split)
-	where
-		split = count s
-
-		count [] = 0
-		count s  =
-			if any isJust $ map (\t -> t s) tokenizers
-			then 0
-			else 1 + count (tail s)
+tokenizeComment _ ('#' : xs ) = Just ( Comment, 1 + countWhile (/= '\n') xs)
+tokenizeComment _ (';' : xs ) = Just ( Comment, 1 + countWhile (/= '\n') xs)
+tokenizeComment _ _ = Nothing
 
 type TransformerState = (Int, Int, String)
 
@@ -108,7 +96,7 @@ sometokenizers = [tokenizeOpenBracket, tokenizeCloseBracket, tokenizeSpace, toke
 
 tokenize :: ParserConfig -> String -> [Token]
 tokenize cfg str =
-	cycle 0 0 str
+	cycle 0 0 "" str
 	where
 		tokersRaw    =
 			sometokenizers ++ 
@@ -116,10 +104,10 @@ tokenize cfg str =
 			(if parseComments cfg then [tokenizeComment] else []) ++
 			(if null $ lambdaDecl cfg then [] else [tokenizeLambdaDecl])
 
-		tokersNoName = map (\f -> f cfg []) tokersRaw
-		tokers       = tokersNoName ++ [tokenizeName cfg tokersNoName]
+		tokers = map (\f -> f cfg) tokersRaw
 
 		folder :: TransformerState -> [TokenizeTransform] -> (Maybe Token, TransformerState)
+		folder state [] = (Nothing, state)
 		folder p@(charno, lineno, str) (tokenizer : xs) =
 			if isJust current
 			then result
@@ -128,11 +116,20 @@ tokenize cfg str =
 				current = tokenizer str
 				result  = transformer p current
 
-		cycle :: Int -> Int -> String -> [Token]
-		cycle charno lineno []  = []
-		cycle charno lineno str =
-			(justTok tok) : cycle newcharno newlineno newstr
+		cycle :: Int -> Int -> String -> String -> [Token]
+		cycle charno lineno carryStr []  = []
+		cycle charno lineno carryStr str =
+			case tok of
+				Just t  ->
+					if null carryStr
+					then t : cycle newcharno newlineno "" newstr
+					else nameTok : t : cycle newcharno newlineno "" newstr
+				Nothing -> cycle (succ newcharno) newlineno (head str : carryStr) (tail str)
 			where
 				(tok, (newcharno, newlineno, newstr)) = folder (charno, lineno, str) tokers
-				justTok (Just t) = t
-				justTok Nothing = error "Unrecognized token"
+				nameTok = Token
+					{ text = reverse carryStr
+					, kind = Name
+					, lineno = lineno
+					, charno = charno - length carryStr
+					}

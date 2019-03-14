@@ -29,6 +29,7 @@ parse cfg (t : xs) =
 				_     -> False
 
 groupTokens :: ParserConfig -> [Token] -> [[Token]]
+groupTokens _   [] = []
 groupTokens cfg toks =
 	cur : groupTokens cfg recur
 	where

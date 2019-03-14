@@ -31,11 +31,17 @@ parse cfg (t : xs) =
 groupTokens :: ParserConfig -> [Token] -> [[Token]]
 groupTokens _   [] = []
 groupTokens cfg toks =
-	cur : groupTokens cfg recur
+	if isEmpty
+	then groupTokens cfg recur
+	else  cur : groupTokens cfg recur
 	where
-		curLen = map kind toks |> takeExpr
-		cur    = take curLen toks
-		recur  = drop curLen toks
+		curLen  = map kind toks |> takeExpr
+		cur     = take curLen toks
+		recur   = drop curLen toks
+		isEmpty = all isEmptyCheck cur
+
+		isEmptyCheck :: Token -> Bool
+		isEmptyCheck t = kind t == Space || kind t == Newline
 
 takeExpr :: [TokenType] -> Int
 takeExpr [] = 0

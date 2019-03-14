@@ -53,9 +53,14 @@ tokenizeNewline :: TokenizeFulltype
 tokenizeNewline _ ('\n' : xs ) = Just ( Newline, 1 )
 tokenizeNewline _ _ = Nothing
 
+isSpace :: Char -> Bool
+isSpace ' '  = True
+isSpace '\t' = True
+isSpace _    = False
+
 tokenizeSpace :: TokenizeFulltype
-tokenizeSpace _ (' ' : xs )  = Just ( Space, 1 )
-tokenizeSpace _ ('\t' : xs ) = Just ( Space, 1 )
+tokenizeSpace _ (' '  : xs) = Just ( Space, 1 + countWhile isSpace xs)
+tokenizeSpace _ ('\t' : xs) = Just ( Space, 1 + countWhile isSpace xs)
 tokenizeSpace _ _ = Nothing
 
 tokenizeQuote :: TokenizeFulltype

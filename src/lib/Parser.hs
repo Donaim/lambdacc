@@ -28,3 +28,18 @@ parse cfg (t : xs) =
 				Space -> True
 				_     -> False
 
+groupTokens :: ParserConfig -> [Token] -> [[Token]]
+groupTokens cfg toks =
+	cur : groupTokens cfg recur
+	where
+		curLen = map kind toks |> takeExpr
+		cur    = take curLen toks
+		recur  = drop curLen toks
+
+takeExpr :: [TokenType] -> Int
+takeExpr [] = 0
+
+takeExpr (Newline : Space : xs) = 2 + takeExpr xs
+takeExpr (Newline : xs)         = 1
+takeExpr (x : xs)               = 1 + takeExpr xs
+

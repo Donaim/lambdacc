@@ -12,7 +12,6 @@ data Toplevel = Binding String [Token] | Expr [Token]
 	deriving (Show, Eq)
 
 parse :: ParserConfig -> [Token] -> [Toplevel]
-parse cfg []   = error "Empty"
 parse cfg toks = groupTokens cfg toks |> map classifyGroup
 
 classifyGroup :: [Token] -> Toplevel

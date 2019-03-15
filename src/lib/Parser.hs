@@ -9,7 +9,11 @@ import Tokenizer
 import Debug.Trace
 
 data Toplevel = Binding String [Token] | Expr [Token]
-	deriving (Show, Eq)
+	deriving (Eq)
+
+instance Show Toplevel where
+	show (Binding name toks) = "{ Binding '" ++ name ++ "' \n\t" ++ (foldr (++) "" $ map (' ' :) $ map text toks) ++ " }"
+	show (Expr toks)         = "{ Expr \n\t" ++ (foldr (++) "" $ map (' ' :) $ map text toks) ++ " }"
 
 parse :: ParserConfig -> [Token] -> [Toplevel]
 parse cfg toks = groupTokens cfg toks |> map classifyGroup

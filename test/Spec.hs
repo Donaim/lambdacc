@@ -14,7 +14,8 @@ cfg = ParserConfig
 
 main :: IO ()
 main = do
-	showGroup
+	-- showGroup
+	showTopLevel
 	putBox "Test suite not yet implemented"
 
 getText :: IO String
@@ -38,3 +39,15 @@ showGroup = do
 	putStrLn fout
 
 	return ()
+
+showTopLevel :: IO ()
+showTopLevel = do
+	s <- getText
+	let toks   = tokenize cfg s
+	let tops   = parse cfg toks
+
+	sequence $ map print tops
+	-- let out    = (map (\t -> foldr (++) "" $ map text t) groups) :: [String]
+
+	return ()
+

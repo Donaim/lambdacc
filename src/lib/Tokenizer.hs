@@ -124,13 +124,17 @@ tokenize cfg str =
 		cycle :: Int -> Int -> String -> String -> [Token]
 		cycle charno lineno carryStr str =
 			if null str
-			then [nameTok]
-			else case tok of
-				Just t  ->
-					if null carryStr
-					then t : cycle newcharno newlineno "" newstr
-					else nameTok : t : cycle newcharno newlineno "" newstr
-				Nothing -> cycle (succ newcharno) newlineno (head str : carryStr) (tail str)
+			then
+				if null carryStr
+				then []
+				else [nameTok]
+			else
+				case tok of
+					Just t  ->
+						if null carryStr
+						then t : cycle newcharno newlineno "" newstr
+						else nameTok : t : cycle newcharno newlineno "" newstr
+					Nothing -> cycle (succ newcharno) newlineno (head str : carryStr) (tail str)
 			where
 				(tok, (newcharno, newlineno, newstr)) = folder (charno, lineno, str) tokers
 				nameTok = Token

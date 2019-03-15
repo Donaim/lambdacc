@@ -122,9 +122,10 @@ tokenize cfg str =
 				result  = transformer p current
 
 		cycle :: Int -> Int -> String -> String -> [Token]
-		cycle charno lineno carryStr []  = []
 		cycle charno lineno carryStr str =
-			case tok of
+			if null str
+			then [nameTok]
+			else case tok of
 				Just t  ->
 					if null carryStr
 					then t : cycle newcharno newlineno "" newstr

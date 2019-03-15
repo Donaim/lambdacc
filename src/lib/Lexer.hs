@@ -14,8 +14,14 @@ data Leaf =
 	Variable Identifier
 
 
+-- lex :: [Token] -> [Leaf]
+
+
 getNextBracket :: Int -> Int -> [Token] -> Int
-getNextBracket count index []       = -count
+getNextBracket count index []       =
+	if count > 0
+	then -count
+	else index
 getNextBracket count index (t : ts) =
 	case kind t of
 		OpenBracket ->

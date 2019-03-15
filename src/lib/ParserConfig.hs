@@ -7,3 +7,4 @@ data ParserConfig = ParserConfig
 	, parseComments :: Bool
 	, parseQuotes   :: Bool
 	}
+	deriving (Show, Eq)

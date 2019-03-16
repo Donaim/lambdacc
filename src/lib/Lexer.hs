@@ -92,7 +92,6 @@ showTree tabs (Head ((Node t) : ts)) =
 	'\n' : (take tabs $ repeat '\t')  ++ text t ++ (showTree tabs $ Head ts)
 showTree tabs (Head ((Head ts) : tss)) =
 	'\n' : (take tabs $ repeat '\t') ++ (showTree (tabs + 1) (Head ts)) ++ (showTree tabs (Head tss))
-			
 
 instance Show Leaf where
 	show t = showLeaf 0 t

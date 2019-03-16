@@ -18,19 +18,15 @@ data Leaf =
 type Scope = [String]
 
 lexe :: Scope -> [Token] -> [Leaf]
-lexe scope toks = undefined
+lexe scope toks = lexeSplit toks |> map (lexOne scope)
 
 lexOne :: Scope -> [Token] -> Leaf
-lexOne scope [tok] =
-	case kind tok of
-		Name       -> lexName scope (text tok)
-		_          -> error "Unexpected variable name"
-
 lexOne scope (t : ts) =
 	case kind t of
-		LambdaDecl -> Lambda tex (lexe (tex : scope) (tail ts))
-		OpenBracket -> SubExpr $ lexe scope (init ts)
-		_          -> SubExpr $ lexe scope ts
+		LambdaDecl  -> Lambda (text $ head ts) (lexe (tex : scope) (tail ts))
+		OpenBracket -> error "WTF"
+		Name        -> SubExpr $ (lexName scope tex) : lexe scope ts
+		_           -> SubExpr $ lexe scope ts
 
 	where tex = text t
 
@@ -71,9 +67,51 @@ getNextBracket count index (t : ts) =
 		OpenBracket ->
 			getNextBracket (count + 1) (index + 1) ts
 		CloseBracket ->
-			if count == 1
+			if count == 0
 			then index
 			else getNextBracket (count - 1) (index + 1) ts
 		_ ->
 			getNextBracket count (index + 1) ts
+
+data Tree =
+	Head [Tree] | Node Token
+	deriving (Eq)
+
+instance Show Tree where
+	show t = showTree 0 t
+
+showTree :: Int -> Tree -> String
+showTree tabs (Node t)  = text t
+showTree tabs (Head []) = []
+showTree tabs (Head ((Node t) : ts)) =
+	'\n' : (text t) ++ (showTree tabs $ Head ts)
+showTree tabs (Head ((Head ts) : tss)) =
+	'\n' : (take tabs $ repeat '\t') ++ (showTree (tabs + 1) (Head ts)) ++ (showTree (tabs + 1) (Head tss))
+
+-- Tree and left-overs
+makeTree :: [Tree] -> [Token] -> (Tree, [Token])
+makeTree nodesBuff toks =
+	if null toks
+	then (close, [])
+	else
+		case kind t of
+			CloseBracket ->
+				(close, ts)
+			OpenBracket  ->
+				makeTree (childNode : nodesBuff) childRight
+			_            ->
+				makeTree (curNode : nodesBuff) ts
+
+	where
+		t  = head toks
+		ts = tail toks
+
+		curNode = Node t
+		(childNode, childRight) = makeTree [] ts
+
+		close :: Tree
+		close =
+			if null $ tail nodesBuff
+			then head $ reverse nodesBuff
+			else Head $ reverse nodesBuff
 

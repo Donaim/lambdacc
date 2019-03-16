@@ -13,24 +13,24 @@ data Leaf =
 	Lambda String [Leaf] |
 	SubExpr [Leaf] |
 	Variable Identifier
-	deriving (Show, Eq)
+	deriving (Eq)
 
 type Scope = [String]
 
-lexe :: Scope -> Tree -> Leaf
-lexe scope (Node t) =
+lexTree :: Scope -> Tree -> Leaf
+lexTree scope (Node t) =
 	lexName scope (text t)
-lexe scope (Head []) =
+lexTree scope (Head []) =
 	error "WTF"
 
-lexe scope (Head all@(Node a : Node b : ts)) =
+lexTree scope (Head all@(Node a : Node b : ts)) =
 	case kind b of
-		LambdaSymbol -> Lambda arg $ map (lexe (arg : scope)) ts
-		_            -> SubExpr $ map (lexe scope) all
+		LambdaSymbol -> Lambda arg $ map (lexTree (arg : scope)) ts
+		_            -> SubExpr $ map (lexTree scope) all
 	where
 		arg = text a
-lexe scope (Head all) =
-	SubExpr $ map (lexe scope) all
+lexTree scope (Head all) =
+	SubExpr $ map (lexTree scope) all
 
 lexName :: Scope -> String -> Leaf
 lexName scope tex =
@@ -41,19 +41,6 @@ lexName scope tex =
 data Tree =
 	Head [Tree] | Node Token
 	deriving (Eq)
-
-instance Show Tree where
-	show t = showTree 0 t
-
-showTree :: Int -> Tree -> String
-showTree tabs (Node t)  = 
-	'\n' : (take tabs $ repeat '\t')  ++ text t
-
-showTree tabs (Head []) = []
-showTree tabs (Head ((Node t) : ts)) =
-	'\n' : (take tabs $ repeat '\t')  ++ text t ++ (showTree tabs $ Head ts)
-showTree tabs (Head ((Head ts) : tss)) =
-	'\n' : (take tabs $ repeat '\t') ++ (showTree (tabs + 1) (Head ts)) ++ (showTree tabs (Head tss))
 
 -- Tree and left-overs
 makeTree :: [Tree] -> [Token] -> (Tree, [Token])
@@ -82,3 +69,55 @@ makeTree nodesBuff toks =
 			then head $ reverse nodesBuff
 			else Head $ reverse nodesBuff
 
+
+-- UTILITY --
+
+instance Show Tree where
+	show t = showTree 0 t
+
+showTree :: Int -> Tree -> String
+showTree tabs (Node t)  = 
+	'\n' : (take tabs $ repeat '\t')  ++ text t
+
+showTree tabs (Head []) = []
+showTree tabs (Head ((Node t) : ts)) =
+	'\n' : (take tabs $ repeat '\t')  ++ text t ++ (showTree tabs $ Head ts)
+showTree tabs (Head ((Head ts) : tss)) =
+	'\n' : (take tabs $ repeat '\t') ++ (showTree (tabs + 1) (Head ts)) ++ (showTree tabs (Head tss))
+			
+
+instance Show Leaf where
+	show t = showLeaf 0 t
+
+showLeaf :: Int -> Leaf -> String
+showLeaf tabs (Variable t)  = 
+	case t of
+		Argument name ->
+			prefixed name
+		BindingTok name expr ->
+			case expr of
+				Just x  ->
+					prefixed $ "{" ++ name ++ "}"
+				Nothing ->
+					prefixed $ "{" ++ name ++ " (?)}"
+	where
+		prefixed name = (take tabs $ repeat '\t') ++ name ++ "\n"
+
+showLeaf tabs (SubExpr ts) =
+	foldr (++) "" $ map (showLeaf (tabs + 1)) ts
+	where
+		prefixed name = (take tabs $ repeat '\t') ++ name ++ "\n"
+
+showLeaf tabs (Lambda arg ts) =
+	"Lambda of [" ++ arg ++ "]:\n" ++ (foldr (++) "" $ map (showLeaf (tabs + 1)) ts)
+	where
+		prefixed name = (take tabs $ repeat '\t') ++ name ++ "\n"
+		
+-- showLeaf tabs (Head ((Node t) : ts)) =
+-- 	'\n' : (take tabs $ repeat '\t')  ++ text t ++ (showTree tabs $ Head ts)
+-- 	where
+-- 		prefixed name = '\n' : (take tabs $ repeat '\t') ++ name
+-- showLeaf tabs (Head ((Head ts) : tss)) =
+-- 	'\n' : (take tabs $ repeat '\t') ++ (showTree (tabs + 1) (Head ts)) ++ (showTree tabs (Head tss))
+-- 	where
+-- 		prefixed name = '\n' : (take tabs $ repeat '\t') ++ name

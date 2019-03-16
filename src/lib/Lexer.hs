@@ -6,6 +6,8 @@ import Parser
 import Tokenizer
 import Exept
 
+import Debug.Trace
+
 data Identifier = Argument String | BindingTok String (Maybe Leaf)
 	deriving (Show, Eq)
 
@@ -22,7 +24,6 @@ lexTree scope (Node t) =
 	lexName scope (text t)
 lexTree scope (Head []) =
 	error "WTF"
-
 lexTree scope (Head all@(Node a : Node b : ts)) =
 	case kind b of
 		LambdaSymbol -> Lambda arg $ map (lexTree (arg : scope)) ts

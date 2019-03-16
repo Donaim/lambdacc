@@ -1,21 +1,62 @@
 
 module Lexer where
 
-
 import Utils
 import Parser
 import Tokenizer
+import Exept
 
-data Identifier = Argument String | Binding String (Maybe Leaf)
+data Identifier = Argument String | BindingTok String (Maybe Leaf)
 
 data Leaf =
 	Lambda String [Leaf] |
 	SubExpr [Leaf] |
 	Variable Identifier
 
+type Scope = [String]
 
--- lex :: [Token] -> [Leaf]
+lexe :: Scope -> [Token] -> [Leaf]
+lexe scope toks = undefined
 
+lexOne :: Scope -> [Token] -> Leaf
+lexOne [tok] =
+	case kind t of
+		Name       -> lexName scope tex : lexe scope ts
+		_          -> error "Unexpected singleton"
+
+lexOne scope (t : ts) =
+	case kind t of
+		LambdaDecl -> Lambda tex (lexe (tex : scope) (tail ts))
+		_          -> SubExpr $ lexe scope ts
+
+	where tex = text t
+
+lexName :: Scope -> String -> Leaf
+lexName scope tex =
+	if tex `elem` scope
+	then Variable $ Argument tex
+	else Variable $ BindingTok tex Nothing
+
+-- Split body into parts based on brackets
+-- Result will not have brackets anymore
+lexeSplit :: [Token] -> [[Token]]
+lexeSplit []   = []
+lexeSplit toks =
+	result : lexeSplit next
+	where
+		nextBracket = getNextBracket 0 0 toks
+		result      =
+			if nextBracket >= 0
+			then take nextBracket toks
+			else toks
+		next        =
+			if nextBracket >= 0
+			then drop nextBracket toks
+			else []
+		stripped =
+			if (kind $ head result) == OpenBracket
+			then init $ tail result
+			else result
 
 getNextBracket :: Int -> Int -> [Token] -> Int
 getNextBracket count index []       =

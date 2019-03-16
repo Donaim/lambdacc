@@ -7,11 +7,13 @@ import Tokenizer
 import Exept
 
 data Identifier = Argument String | BindingTok String (Maybe Leaf)
+	deriving (Show, Eq)
 
 data Leaf =
 	Lambda String [Leaf] |
 	SubExpr [Leaf] |
 	Variable Identifier
+	deriving (Show, Eq)
 
 type Scope = [String]
 
@@ -19,14 +21,15 @@ lexe :: Scope -> [Token] -> [Leaf]
 lexe scope toks = undefined
 
 lexOne :: Scope -> [Token] -> Leaf
-lexOne [tok] =
-	case kind t of
-		Name       -> lexName scope tex : lexe scope ts
-		_          -> error "Unexpected singleton"
+lexOne scope [tok] =
+	case kind tok of
+		Name       -> lexName scope (text tok)
+		_          -> error "Unexpected variable name"
 
 lexOne scope (t : ts) =
 	case kind t of
 		LambdaDecl -> Lambda tex (lexe (tex : scope) (tail ts))
+		OpenBracket -> SubExpr $ lexe scope (init ts)
 		_          -> SubExpr $ lexe scope ts
 
 	where tex = text t

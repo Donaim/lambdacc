@@ -81,12 +81,14 @@ instance Show Tree where
 	show t = showTree 0 t
 
 showTree :: Int -> Tree -> String
-showTree tabs (Node t)  = text t
+showTree tabs (Node t)  = 
+	'\n' : (take tabs $ repeat '\t')  ++ text t
+
 showTree tabs (Head []) = []
 showTree tabs (Head ((Node t) : ts)) =
-	'\n' : (text t) ++ (showTree tabs $ Head ts)
+	'\n' : (take tabs $ repeat '\t')  ++ text t ++ (showTree tabs $ Head ts)
 showTree tabs (Head ((Head ts) : tss)) =
-	'\n' : (take tabs $ repeat '\t') ++ (showTree (tabs + 1) (Head ts)) ++ (showTree (tabs + 1) (Head tss))
+	'\n' : (take tabs $ repeat '\t') ++ (showTree (tabs + 1) (Head ts)) ++ (showTree tabs (Head tss))
 
 -- Tree and left-overs
 makeTree :: [Tree] -> [Token] -> (Tree, [Token])

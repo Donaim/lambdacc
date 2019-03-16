@@ -29,15 +29,15 @@ lexGroup toks = toks |> makeTree [] |> fst |> lexTree []
 lexTree :: Scope -> Tree -> Leaf
 lexTree scope (Node t) =
 	lexName scope (text t)
-lexTree scope (Head []) =
+lexTree scope (Branch []) =
 	error "WTF"
-lexTree scope (Head all@(Node a : Node b : ts)) =
+lexTree scope (Branch all@(Node a : Node b : ts)) =
 	case kind b of
 		LambdaSymbol -> Lambda arg $ map (lexTree (arg : scope)) ts
 		_            -> SubExpr $ map (lexTree scope) all
 	where
 		arg = text a
-lexTree scope (Head all) =
+lexTree scope (Branch all) =
 	SubExpr $ map (lexTree scope) all
 
 lexName :: Scope -> String -> Leaf
@@ -47,7 +47,7 @@ lexName scope tex =
 	else Variable $ BindingTok tex Nothing
 
 data Tree =
-	Head [Tree] | Node Token
+	Branch [Tree] | Node Token
 	deriving (Eq)
 
 -- Tree and left-overs
@@ -75,7 +75,7 @@ makeTree nodesBuff toks =
 		close =
 			if null $ tail nodesBuff
 			then head $ reverse nodesBuff
-			else Head $ reverse nodesBuff
+			else Branch $ reverse nodesBuff
 
 
 -- UTILITY --
@@ -87,11 +87,11 @@ showTree :: Int -> Tree -> String
 showTree tabs (Node t)  = 
 	'\n' : (take tabs $ repeat '\t')  ++ text t
 
-showTree tabs (Head []) = []
-showTree tabs (Head ((Node t) : ts)) =
-	'\n' : (take tabs $ repeat '\t')  ++ text t ++ (showTree tabs $ Head ts)
-showTree tabs (Head ((Head ts) : tss)) =
-	'\n' : (take tabs $ repeat '\t') ++ (showTree (tabs + 1) (Head ts)) ++ (showTree tabs (Head tss))
+showTree tabs (Branch []) = []
+showTree tabs (Branch ((Node t) : ts)) =
+	'\n' : (take tabs $ repeat '\t')  ++ text t ++ (showTree tabs $ Branch ts)
+showTree tabs (Branch ((Branch ts) : tss)) =
+	'\n' : (take tabs $ repeat '\t') ++ (showTree (tabs + 1) (Branch ts)) ++ (showTree tabs (Branch tss))
 
 instance Show Leaf where
 	show t = showLeaf 0 t

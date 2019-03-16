@@ -5,6 +5,7 @@ import Utils
 import Parser
 import Tokenizer
 import Exept
+import ParserConfig
 
 import Debug.Trace
 
@@ -18,6 +19,12 @@ data Leaf =
 	deriving (Eq)
 
 type Scope = [String]
+
+lexString :: ParserConfig -> String -> Leaf
+lexString cfg s = s |> tokenize cfg |> stripUseless |> lexGroup
+
+lexGroup :: [Token] -> Leaf
+lexGroup toks = toks |> makeTree [] |> fst |> lexTree []
 
 lexTree :: Scope -> Tree -> Leaf
 lexTree scope (Node t) =
@@ -113,12 +120,3 @@ showLeaf tabs (Lambda arg ts) =
 	"Lambda of [" ++ arg ++ "]:\n" ++ (foldr (++) "" $ map (showLeaf (tabs + 1)) ts)
 	where
 		prefixed name = (take tabs $ repeat '\t') ++ name ++ "\n"
-		
--- showLeaf tabs (Head ((Node t) : ts)) =
--- 	'\n' : (take tabs $ repeat '\t')  ++ text t ++ (showTree tabs $ Head ts)
--- 	where
--- 		prefixed name = '\n' : (take tabs $ repeat '\t') ++ name
--- showLeaf tabs (Head ((Head ts) : tss)) =
--- 	'\n' : (take tabs $ repeat '\t') ++ (showTree (tabs + 1) (Head ts)) ++ (showTree tabs (Head tss))
--- 	where
--- 		prefixed name = '\n' : (take tabs $ repeat '\t') ++ name

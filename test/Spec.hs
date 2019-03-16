@@ -4,6 +4,7 @@ import Parser
 import ParserConfig
 import Tokenizer
 import FileSys
+import Lexer
 
 cfg = ParserConfig 
 	{ lambdaDecl    = "\\"
@@ -15,7 +16,8 @@ cfg = ParserConfig
 main :: IO ()
 main = do
 	-- showGroup
-	showTopLevel
+	-- showTopLevel
+	showLeafs
 	putBox "Test suite not yet implemented"
 
 getText :: IO String
@@ -51,3 +53,14 @@ showTopLevel = do
 
 	return ()
 
+showLeafs :: IO ()
+showLeafs = do
+	s <- getText
+	let toks   = tokenize cfg s
+	let groups = groupTokens cfg toks
+	let leafs  = map lexGroup groups
+
+	-- sequence $ map print leafs
+	print $ sum $ map countVariables leafs
+
+	return ()

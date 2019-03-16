@@ -119,3 +119,8 @@ showLeaf tabs (Lambda arg ts) =
 	"Lambda of [" ++ arg ++ "]:\n" ++ (foldr (++) "" $ map (showLeaf (tabs + 1)) ts)
 	where
 		prefixed name = (take tabs $ repeat '\t') ++ name ++ "\n"
+
+countVariables :: Leaf -> Int
+countVariables (Variable _)     = 1
+countVariables (Lambda _ leafs) = 1 + (sum $ map countVariables leafs)
+countVariables (SubExpr leafs)  = sum $ map countVariables leafs

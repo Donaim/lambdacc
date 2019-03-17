@@ -8,6 +8,7 @@ import Exept
 import ParserConfig
 
 import Debug.Trace
+import Data.List
 
 data Identifier = Argument String | BindingTok String (Maybe Leaf)
 	deriving (Show, Eq)
@@ -29,16 +30,45 @@ lexGroup toks = toks |> makeTree [] |> fst |> lexTree []
 lexTree :: Scope -> Tree -> Leaf
 lexTree scope (Node t) =
 	lexName scope (text t)
-lexTree scope (Branch []) =
-	error "WTF"
-lexTree scope (Branch all@(Node a : Node b : ts)) =
-	case kind b of
-		LambdaSymbol -> Lambda arg $ map (lexTree (arg : scope)) ts
-		_            -> SubExpr $ map (lexTree scope) all
-	where
-		arg = text a
 lexTree scope (Branch all) =
-	SubExpr $ map (lexTree scope) all
+	case maybeArgIndex of
+		Just argIndex ->
+			getLambda scope all argIndex
+		Nothing ->
+			SubExpr $ map (lexTree scope) all
+	where
+		maybeArgIndex = findIndex isArg all
+
+		isArg :: Tree -> Bool
+		isArg (Branch b) =
+			False
+		isArg (Node t) =
+			kind t == LambdaSymbol
+
+getLambda :: Scope -> [Tree] -> Int -> Leaf
+getLambda scope all argIndex =
+	collectLambdas args
+	where
+		args :: [String]
+		args = all |> take argIndex |> map castToName
+
+		rest :: [Tree]
+		rest = all |> drop (argIndex + 1)
+
+		collectLambdas :: [String] -> Leaf
+		collectLambdas [x] =
+			Lambda x $ map (lexTree newscope) rest
+		collectLambdas (x : xs) =
+			Lambda x [collectLambdas xs]
+
+		newscope :: Scope
+		newscope = (reverse args) ++ scope
+
+		castToName :: Tree -> String
+		castToName (Branch bs) = error "Branch as a lambda argument"
+		castToName (Node t)    = text t
+
+	-- Lambda arg $ map (lexTree (arg : scope)) ts
 
 lexName :: Scope -> String -> Leaf
 lexName scope tex =

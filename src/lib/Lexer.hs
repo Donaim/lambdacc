@@ -116,9 +116,9 @@ showLeaf tabs (SubExpr ts) =
 		prefixed name = (take tabs $ repeat '\t') ++ name ++ "\n"
 
 showLeaf tabs (Lambda arg ts) =
-	"Lambda of [" ++ arg ++ "]:\n" ++ (foldr (++) "" $ map (showLeaf (tabs + 1)) ts)
+	prefixed ("Lambda of [" ++ arg ++ "]:\n" ++ (foldr (++) "" $ map (showLeaf (tabs + 1)) ts))
 	where
-		prefixed name = (take tabs $ repeat '\t') ++ name ++ "\n"
+		prefixed name = (take tabs $ repeat '\t') ++ name
 
 countVariables :: Leaf -> Int
 countVariables (Variable _)     = 1

@@ -7,8 +7,7 @@ import FileSys
 import Lexer
 
 cfg = ParserConfig 
-	{ lambdaDecl    = "\\"
-	, lambdaSymbol  = "->"
+	{ lambdaSymbol  = "->"
 	, parseComments = True
 	, parseQuotes   = True
 	}

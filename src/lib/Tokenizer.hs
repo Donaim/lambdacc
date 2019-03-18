@@ -11,7 +11,7 @@ import Data.List
 import Data.Maybe
 
 data TokenType =
-	OpenBracket | CloseBracket | LambdaDecl | LambdaSymbol | Name | Newline | Space | Comment | Quote
+	OpenBracket | CloseBracket | LambdaSymbol | Name | Newline | Space | Comment | Quote
 	deriving (Show, Eq)
 
 data Token =
@@ -26,13 +26,6 @@ data Token =
 type TokenizeResponce  = Maybe (TokenType, Int)
 type TokenizeTransform = String -> TokenizeResponce
 type TokenizeFulltype  = ParserConfig -> TokenizeTransform
-
-tokenizeLambdaDecl :: TokenizeFulltype
-tokenizeLambdaDecl cfg s =
-	if (lambdaDecl cfg) `isPrefixOf` s
-	then Just (LambdaDecl, split)
-	else Nothing
-	where split = length (lambdaDecl cfg)
 
 tokenizeLambdaSymbol :: TokenizeFulltype
 tokenizeLambdaSymbol cfg s =
@@ -106,8 +99,7 @@ tokenize cfg str =
 		tokersRaw    =
 			sometokenizers ++ 
 			(if parseQuotes cfg then [tokenizeQuote] else []) ++
-			(if parseComments cfg then [tokenizeComment] else []) ++
-			(if null $ lambdaDecl cfg then [] else [tokenizeLambdaDecl])
+			(if parseComments cfg then [tokenizeComment] else [])
 
 		tokers = map (\f -> f cfg) tokersRaw
 

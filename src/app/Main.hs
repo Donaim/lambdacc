@@ -8,8 +8,7 @@ import FileSys
 import Parser
 
 cfg = ParserConfig 
-	{ lambdaDecl    = "\\"
-	, lambdaSymbol  = "->"
+	{ lambdaSymbol  = "->"
 	, parseComments = True
 	, parseQuotes   = True
 	}

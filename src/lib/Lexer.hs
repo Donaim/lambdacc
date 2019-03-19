@@ -14,9 +14,9 @@ data Identifier = Argument String | BindingTok String (Maybe Leaf)
 	deriving (Show, Eq)
 
 data Leaf =
-	Lambda String [Leaf] |
-	SubExpr [Leaf] |
-	Variable Identifier
+	Lambda Scope String [Leaf] |
+	SubExpr Scope [Leaf] |
+	Variable Scope Identifier
 	deriving (Eq)
 
 type Scope = [String]
@@ -35,7 +35,7 @@ lexTree scope (Branch all) =
 		Just argIndex ->
 			getLambda scope all argIndex
 		Nothing ->
-			SubExpr $ map (lexTree scope) all
+			SubExpr scope $ map (lexTree ([] : scope)) all
 	where
 		maybeArgIndex = findIndex isArg all
 
@@ -57,9 +57,9 @@ getLambda scope all argIndex =
 
 		collectLambdas :: [String] -> Leaf
 		collectLambdas [x] =
-			Lambda x $ map (lexTree newscope) rest
+			Lambda scope x $ map (lexTree newscope) rest
 		collectLambdas (x : xs) =
-			Lambda x [collectLambdas xs]
+			Lambda scope x [collectLambdas xs]
 
 		newscope :: Scope
 		newscope = (reverse args) ++ scope
@@ -68,13 +68,11 @@ getLambda scope all argIndex =
 		castToName (Branch bs) = error "Branch as a lambda argument"
 		castToName (Node t)    = text t
 
-	-- Lambda arg $ map (lexTree (arg : scope)) ts
-
 lexName :: Scope -> String -> Leaf
 lexName scope tex =
 	if tex `elem` scope
-	then Variable $ Argument tex
-	else Variable $ BindingTok tex Nothing
+	then Variable scope $ Argument tex
+	else Variable scope $ BindingTok tex Nothing
 
 data Tree =
 	Branch [Tree] | Node Token
@@ -127,7 +125,7 @@ instance Show Leaf where
 	show t = showLeaf 0 t
 
 showLeaf :: Int -> Leaf -> String
-showLeaf tabs (Variable t)  = 
+showLeaf tabs (Variable _ t)  = 
 	case t of
 		Argument name ->
 			prefixed name
@@ -140,17 +138,17 @@ showLeaf tabs (Variable t)  =
 	where
 		prefixed name = (take tabs $ repeat '\t') ++ name ++ "\n"
 
-showLeaf tabs (SubExpr ts) =
+showLeaf tabs (SubExpr _ ts) =
 	foldr (++) "" $ map (showLeaf (tabs + 1)) ts
 	where
 		prefixed name = (take tabs $ repeat '\t') ++ name ++ "\n"
 
-showLeaf tabs (Lambda arg ts) =
+showLeaf tabs (Lambda _ arg ts) =
 	prefixed ("Lambda of [" ++ arg ++ "]:\n" ++ (foldr (++) "" $ map (showLeaf (tabs + 1)) ts))
 	where
 		prefixed name = (take tabs $ repeat '\t') ++ name
 
 countVariables :: Leaf -> Int
-countVariables (Variable _)     = 1
-countVariables (Lambda _ leafs) = 1 + (sum $ map countVariables leafs)
-countVariables (SubExpr leafs)  = sum $ map countVariables leafs
+countVariables (Variable _ _)     = 1
+countVariables (Lambda _ _ leafs) = 1 + (sum $ map countVariables leafs)
+countVariables (SubExpr _ leafs)  = sum $ map countVariables leafs

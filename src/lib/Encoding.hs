@@ -11,8 +11,6 @@ import Lexer
 import Debug.Trace
 import Data.List
 
--- UNIQNESS --
-
 encodedBegin    = 2
 encodedVariable = 3
 encodedLambda   = 4

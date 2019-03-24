@@ -31,13 +31,18 @@ getVariableName scope (Argument name) =
 			else charBump $ findBump name xs
 
 getVariableName scope (BindingTok name _) =
-	'_' : 'B': (concat $ map countDownEnd name)
+	if all (`elem` allowedChars) name
+	then '_' : 'B' : '_' : name
+	else '_' : 'B' : 'I' : (concat $ map countDownEnd name)
 	where
 		countDown :: Char -> [Char]
 		countDown x = if x == '\NUL' then "0"  else charBump $ countDown (pred x)
 
 		countDownEnd :: Char -> [Char]
 		countDownEnd x = '_' : 'C' : countDown x
+
+		allowedChars :: [Char]
+		allowedChars = ['0' .. '9'] ++ ['a' .. 'z'] ++ ['A' .. 'Z']
 
 charBump :: [Char] -> [Char]
 charBump []         = "1"

@@ -49,4 +49,4 @@ charBump []         = "1"
 charBump ('9' : xs) = 'a' : xs
 charBump ('z' : xs) = 'A' : xs
 charBump ('Z' : xs) = '0' : charBump xs
-charBump (x : xs) = (succ x) : xs
+charBump ( x  : xs) = (succ x) : xs

@@ -9,6 +9,7 @@ import CompilerConfig
 
 import Debug.Trace
 import Data.List
+import Data.Maybe
 
 data Identifier = Argument String | BindingTok String (Maybe Leaf)
 	deriving (Show, Eq)
@@ -33,11 +34,11 @@ lexTree scope (Node t) =
 lexTree scope (Branch all) =
 	case maybeArgIndex of
 		Just argIndex ->
-			getLambda scope all argIndex
+			getLambda scope all (length all - argIndex - 1)
 		Nothing ->
 			SubExpr scope $ map (lexTree ([] : scope)) all
 	where
-		maybeArgIndex = findIndex isArg all
+		maybeArgIndex = findIndex isArg (reverse all)
 
 		isArg :: Tree -> Bool
 		isArg (Branch b) =
@@ -50,7 +51,7 @@ getLambda scope all argIndex =
 	collectLambdas args
 	where
 		args :: [String]
-		args = all |> take argIndex |> map castToName
+		args = all |> take argIndex |> map castToName |> catMaybes
 
 		rest :: [Tree]
 		rest = all |> drop (argIndex + 1)
@@ -64,9 +65,12 @@ getLambda scope all argIndex =
 		newscope :: Scope
 		newscope = (reverse args) ++ scope
 
-		castToName :: Tree -> String
+		castToName :: Tree -> Maybe String
 		castToName (Branch bs) = error "Branch as a lambda argument"
-		castToName (Node t)    = text t
+		castToName (Node t)    =
+			case kind t of
+				LambdaSymbol -> Nothing
+				_            -> Just $ text t
 
 lexName :: Scope -> String -> Leaf
 lexName scope tex =

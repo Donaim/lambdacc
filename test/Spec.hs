@@ -83,5 +83,5 @@ showUniqueNames = do
 		lexClassified (Expr toks)         = ([],    lexGroup toks)
 
 		getUnique :: (String, Leaf) -> (String, String)
-		getUnique (name, leaf) = (name, getUniqueName [leaf])
+		getUnique (name, leaf) = (name, getUniqueName leaf)
 

@@ -11,21 +11,13 @@ import Lexer
 import Debug.Trace
 import Data.List
 
-getUniqueName :: [Leaf] -> [Char]
-getUniqueName leafs = concat $ encode leafs
-	where
-	encode :: [Leaf] -> [[Char]]
-	encode []       = []
-	encode (x : xs) = current : encode xs
-		where
-		current :: [Char]
-		current = case x of
-			Variable scope id ->
-				getVariableName scope id
-			Lambda scope arg leafs ->
-				'_' : 'L' : (getUniqueName leafs) ++ "_E"
-			SubExpr scope leafs ->
-				'_' : 'S' : (getUniqueName leafs) ++ "_E"
+getUniqueName :: Leaf -> [Char]
+getUniqueName (Variable scope id) =
+	getVariableName scope id
+getUniqueName (Lambda scope arg leafs) =
+	'_' : 'L' : (foldl (++) "" $ map getUniqueName leafs) ++ "_E"
+getUniqueName (SubExpr scope leafs) =
+	'_' : 'S' : (foldl (++) "" $ map getUniqueName leafs) ++ "_E"
 
 getVariableName :: Scope -> Identifier -> [Char]
 getVariableName scope (Argument name) =

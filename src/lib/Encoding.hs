@@ -36,6 +36,7 @@ getVariableInt scope (BindingTok name _) =
 	undefined
 
 charbump :: [Char] -> [Char]
+charbump []         = "1"
 charbump ('9' : xs) = 'a' : xs
 charbump ('z' : xs) = 'A' : xs
 charbump ('Z' : xs) = '0' : charbump xs

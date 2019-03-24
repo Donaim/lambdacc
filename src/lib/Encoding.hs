@@ -12,7 +12,7 @@ import Debug.Trace
 import Data.List
 
 getUniqueName :: [Leaf] -> [Char]
-getUniqueName leafs = (concat $ encode leafs) ++ "_E"
+getUniqueName leafs = concat $ encode leafs
 	where
 	encode :: [Leaf] -> [[Char]]
 	encode []       = []
@@ -23,9 +23,9 @@ getUniqueName leafs = (concat $ encode leafs) ++ "_E"
 			Variable scope id ->
 				getVariableName scope id
 			Lambda scope arg leafs ->
-				'_' : 'L' : getUniqueName leafs
+				'_' : 'L' : (getUniqueName leafs) ++ "_E"
 			SubExpr scope leafs ->
-				'_' : 'S' : getUniqueName leafs
+				'_' : 'S' : (getUniqueName leafs) ++ "_E"
 
 getVariableName :: Scope -> Identifier -> [Char]
 getVariableName scope (Argument name) =

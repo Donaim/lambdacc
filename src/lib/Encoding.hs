@@ -11,8 +11,8 @@ import Lexer
 import Debug.Trace
 import Data.List
 
-encodeBodyAsVector :: [Leaf] -> [Char]
-encodeBodyAsVector leafs = (concat $ encode leafs) ++ "_E"
+getUniqueName :: [Leaf] -> [Char]
+getUniqueName leafs = (concat $ encode leafs) ++ "_E"
 	where
 	encode :: [Leaf] -> [[Char]]
 	encode []       = []
@@ -21,14 +21,14 @@ encodeBodyAsVector leafs = (concat $ encode leafs) ++ "_E"
 		current :: [Char]
 		current = case x of
 			Variable scope id ->
-				getVariableInt scope id
+				getVariableName scope id
 			Lambda scope arg leafs ->
-				'_' : 'L' : encodeBodyAsVector leafs
+				'_' : 'L' : getUniqueName leafs
 			SubExpr scope leafs ->
-				'_' : 'S' : encodeBodyAsVector leafs
+				'_' : 'S' : getUniqueName leafs
 
-getVariableInt :: Scope -> Identifier -> [Char]
-getVariableInt scope (Argument name) =
+getVariableName :: Scope -> Identifier -> [Char]
+getVariableName scope (Argument name) =
 	'_' : 'A' : findBump name scope
 	where
 		findBump :: String -> Scope -> [Char]
@@ -38,7 +38,7 @@ getVariableInt scope (Argument name) =
 			then "0"
 			else charBump $ findBump name xs
 
-getVariableInt scope (BindingTok name _) =
+getVariableName scope (BindingTok name _) =
 	'_' : 'B': (concat $ map countDownEnd name)
 	where
 		countDown :: Char -> [Char]

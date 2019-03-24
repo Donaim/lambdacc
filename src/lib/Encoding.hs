@@ -12,7 +12,7 @@ import Debug.Trace
 import Data.List
 
 encodeBodyAsVector :: [Leaf] -> [Char]
-encodeBodyAsVector leafs = (concat $ encode leafs) ++ ['_']
+encodeBodyAsVector leafs = (concat $ encode leafs) ++ "_E"
 	where
 	encode :: [Leaf] -> [[Char]]
 	encode []       = []
@@ -29,15 +29,27 @@ encodeBodyAsVector leafs = (concat $ encode leafs) ++ ['_']
 
 getVariableInt :: Scope -> Identifier -> [Char]
 getVariableInt scope (Argument name) =
-	case elemIndex name scope of
-		Just index -> undefined
-		Nothing    -> error "Not found index"
-getVariableInt scope (BindingTok name _) =
-	undefined
+	'_' : 'A' : findBump name scope
+	where
+		findBump :: String -> Scope -> [Char]
+		findBump _    []       = error "Argument not found"
+		findBump name (x : xs) =
+			if x == name
+			then "0"
+			else charBump $ findBump name xs
 
-charbump :: [Char] -> [Char]
-charbump []         = "1"
-charbump ('9' : xs) = 'a' : xs
-charbump ('z' : xs) = 'A' : xs
-charbump ('Z' : xs) = '0' : charbump xs
-charbump (x : xs) = (succ x) : xs
+getVariableInt scope (BindingTok name _) =
+	'_' : 'B': (concat $ map countDownEnd name)
+	where
+		countDown :: Char -> [Char]
+		countDown x = if x == '\NUL' then "0"  else charBump $ countDown (pred x)
+
+		countDownEnd :: Char -> [Char]
+		countDownEnd x = '_' : 'C' : countDown x
+
+charBump :: [Char] -> [Char]
+charBump []         = "1"
+charBump ('9' : xs) = 'a' : xs
+charBump ('z' : xs) = 'A' : xs
+charBump ('Z' : xs) = '0' : charBump xs
+charBump (x : xs) = (succ x) : xs

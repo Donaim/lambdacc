@@ -3,7 +3,7 @@ module Parser where
 import Data.List
 import Utils
 import Exept
-import ParserConfig
+import CompilerConfig
 import Tokenizer
 
 import Debug.Trace
@@ -15,7 +15,7 @@ instance Show Toplevel where
 	show (Binding name toks) = "{ Binding '" ++ name ++ "' \n\t" ++ (foldr (++) "" $ map (' ' :) $ map text toks) ++ " }"
 	show (Expr toks)         = "{ Expr \n\t" ++ (foldr (++) "" $ map (' ' :) $ map text toks) ++ " }"
 
-parse :: ParserConfig -> [Token] -> [Toplevel]
+parse :: CompilerConfig -> [Token] -> [Toplevel]
 parse cfg toks = groupTokens cfg toks |> map classifyGroup
 
 classifyGroup :: [Token] -> Toplevel
@@ -26,7 +26,7 @@ classifyGroup all@(x : y : xs) =
 classifyGroup all = Expr all
 
 -- Also strips off spaces and newlines and comments
-groupTokens :: ParserConfig -> [Token] -> [[Token]]
+groupTokens :: CompilerConfig -> [Token] -> [[Token]]
 groupTokens _   [] = []
 groupTokens cfg toks =
 	if null useful

@@ -1,13 +1,13 @@
 import TestUtil
 
 import Parser
-import ParserConfig
+import CompilerConfig
 import Tokenizer
 import FileSys
 import Lexer
 import Encoding
 
-cfg = ParserConfig 
+cfg = CompilerConfig 
 	{ lambdaSymbol  = "->"
 	, parseComments = True
 	, parseQuotes   = True

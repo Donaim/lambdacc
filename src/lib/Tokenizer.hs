@@ -2,7 +2,7 @@ module Tokenizer where
 
 -- This module will split text into dumb context unaware tokens
 
-import ParserConfig
+import CompilerConfig
 import Exept
 import Utils
 
@@ -25,7 +25,7 @@ data Token =
 
 type TokenizeResponce  = Maybe (TokenType, Int)
 type TokenizeTransform = String -> TokenizeResponce
-type TokenizeFulltype  = ParserConfig -> TokenizeTransform
+type TokenizeFulltype  = CompilerConfig -> TokenizeTransform
 
 tokenizeLambdaSymbol :: TokenizeFulltype
 tokenizeLambdaSymbol cfg s =
@@ -92,7 +92,7 @@ transformer (charno, lineno, str) (Just (kind, split)) =
 
 sometokenizers = [tokenizeOpenBracket, tokenizeCloseBracket, tokenizeSpace, tokenizeLambdaSymbol, tokenizeNewline]
 
-tokenize :: ParserConfig -> String -> [Token]
+tokenize :: CompilerConfig -> String -> [Token]
 tokenize cfg str =
 	cycle 0 0 "" str
 	where

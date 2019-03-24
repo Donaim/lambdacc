@@ -5,7 +5,7 @@ import Utils
 import Parser
 import Tokenizer
 import Exept
-import ParserConfig
+import CompilerConfig
 
 import Debug.Trace
 import Data.List
@@ -21,7 +21,7 @@ data Leaf =
 
 type Scope = [String]
 
-lexString :: ParserConfig -> String -> Leaf
+lexString :: CompilerConfig -> String -> Leaf
 lexString cfg s = s |> tokenize cfg |> stripUseless |> lexGroup
 
 lexGroup :: [Token] -> Leaf

@@ -5,7 +5,7 @@ import Utils
 import Parser
 import Tokenizer
 import Exept
-import ParserConfig
+import CompilerConfig
 import Lexer
 
 import Debug.Trace

@@ -1,7 +1,7 @@
 
-module ParserConfig where
+module CompilerConfig where
 
-data ParserConfig = ParserConfig 
+data CompilerConfig = CompilerConfig 
 	{ lambdaSymbol  :: String
 	, parseComments :: Bool
 	, parseQuotes   :: Bool

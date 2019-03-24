@@ -3,11 +3,11 @@ module Main where
 import Lib
 
 import Tokenizer
-import ParserConfig
+import CompilerConfig
 import FileSys
 import Parser
 
-cfg = ParserConfig 
+cfg = CompilerConfig 
 	{ lambdaSymbol  = "->"
 	, parseComments = True
 	, parseQuotes   = True

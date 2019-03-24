@@ -5,6 +5,7 @@ import ParserConfig
 import Tokenizer
 import FileSys
 import Lexer
+import Encoding
 
 cfg = ParserConfig 
 	{ lambdaSymbol  = "->"
@@ -16,7 +17,8 @@ main :: IO ()
 main = do
 	-- showGroup
 	-- showTopLevel
-	showLeafs
+	-- showLeafs
+	showUniqueNames
 	putBox "Test suite not yet implemented"
 
 getText :: IO String
@@ -63,3 +65,23 @@ showLeafs = do
 	print $ sum $ map countVariables leafs
 
 	return ()
+
+showUniqueNames :: IO ()
+showUniqueNames = do
+	s <- getText
+	let toks       = tokenize cfg s
+	let groups     = groupTokens cfg toks
+	let classified = map classifyGroup groups
+	let leafs      = map lexClassified classified
+	let uniqs      = map getUnique leafs
+
+	print uniqs
+
+	where
+		lexClassified :: Toplevel -> (String, Leaf)
+		lexClassified (Binding name toks) = (name , lexGroup toks)
+		lexClassified (Expr toks)         = ([],    lexGroup toks)
+
+		getUnique :: (String, Leaf) -> (String, String)
+		getUnique (name, leaf) = (name, getUniqueName [leaf])
+

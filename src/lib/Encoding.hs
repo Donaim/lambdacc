@@ -11,41 +11,32 @@ import Lexer
 import Debug.Trace
 import Data.List
 
-encodedBegin    = 2
-encodedVariable = 3
-encodedLambda   = 4
-encodedSubExpr  = 5
-encodedEnd      = 6
-
-encodedLift :: Int -> Int
-encodedLift = (encodedEnd +)
-
-encodeBodyAsVector :: [Leaf] -> [Int]
-encodeBodyAsVector leafs = encodedBegin : (concat $ encode leafs) ++ [encodedEnd]
+encodeBodyAsVector :: [Leaf] -> [Char]
+encodeBodyAsVector leafs = (concat $ encode leafs) ++ ['_']
 	where
-	encode :: [Leaf] -> [[Int]]
+	encode :: [Leaf] -> [[Char]]
 	encode []       = []
 	encode (x : xs) = current : encode xs
 		where
-		current :: [Int]
+		current :: [Char]
 		current = case x of
 			Variable scope id ->
 				getVariableInt scope id
 			Lambda scope arg leafs ->
-				encodedLambda : encodeBodyAsVector leafs
+				'_' : 'L' : encodeBodyAsVector leafs
 			SubExpr scope leafs ->
-				encodedSubExpr : encodeBodyAsVector leafs
+				'_' : 'S' : encodeBodyAsVector leafs
 
-getVariableInt :: Scope -> Identifier -> [Int]
+getVariableInt :: Scope -> Identifier -> [Char]
 getVariableInt scope (Argument name) =
 	case elemIndex name scope of
-		Just index -> [encodedVariable, encodedLift index]
+		Just index -> undefined
 		Nothing    -> error "Not found index"
 getVariableInt scope (BindingTok name _) =
-	0 : (stringToVector name) ++ [0]
+	undefined
 
-stringToVector :: String -> [Int]
-stringToVector = undefined
-
-vectorToString :: [Int] -> String
-vectorToString = undefined
+charbump :: [Char] -> [Char]
+charbump ('9' : xs) = 'a' : xs
+charbump ('z' : xs) = 'A' : xs
+charbump ('Z' : xs) = '0' : charbump xs
+charbump (x : xs) = (succ x) : xs

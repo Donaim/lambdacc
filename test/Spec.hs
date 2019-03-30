@@ -23,7 +23,7 @@ main = do
 
 getText :: IO String
 getText = do
-	text <- getFileText "example/script.ini"
+	text <- getFileText "test/.test.ini"
 	case text of
 		Just text -> do
 			return text

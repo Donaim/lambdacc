@@ -15,11 +15,12 @@ cfg = CompilerConfig
 
 main :: IO ()
 main = do
+	text <- getText
+	putBox "Test suite not yet implemented"
 	-- showGroup
 	-- showTopLevel
 	-- showLeafs
-	showUniqueNames
-	putBox "Test suite not yet implemented"
+	putBox $ showUniqueNames text
 
 getText :: IO String
 getText = do
@@ -30,54 +31,49 @@ getText = do
 		Nothing ->
 			error "Could not read text"
 
-showGroup :: IO ()
-showGroup = do
-	s <- getText
-	let toks   = tokenize cfg s
-	let groups = groupTokens cfg toks
-	let out    = (map (\t -> foldr (++) "" $ map text t) groups) :: [String]
-	let prefix = (take 20 $ repeat '-') ++ "\n"                  :: String
-	let fout   = foldr (++) "" $ map ('\n' :) $ map (prefix ++) $ out
+type VisualFunc = String -> String
 
-	putStrLn fout
-
-	return ()
-
-showTopLevel :: IO ()
-showTopLevel = do
-	s <- getText
-	let toks   = tokenize cfg s
-	let tops   = parse cfg toks
-
-	sequence $ map print tops
-	-- let out    = (map (\t -> foldr (++) "" $ map text t) groups) :: [String]
-
-	return ()
-
-showLeafs :: IO ()
-showLeafs = do
-	s <- getText
-	let toks   = tokenize cfg s
-	let groups = groupTokens cfg toks
-	let leafs  = map lexGroup groups
-
-	-- sequence $ map print leafs
-	print $ sum $ map countVariables leafs
-
-	return ()
-
-showUniqueNames :: IO ()
-showUniqueNames = do
-	s <- getText
-	let toks       = tokenize cfg s
-	let groups     = groupTokens cfg toks
-	let classified = map classifyGroup groups
-	let leafs      = map lexClassified classified
-	let uniqs      = map getUnique leafs
-
-	print uniqs
-
+showGroup :: VisualFunc
+showGroup s =
+	fout
 	where
+		toks   = tokenize cfg s
+		groups = groupTokens cfg toks
+		out    = (map (\t -> foldr (++) "" $ map text t) groups) :: [String]
+		prefix = (take 20 $ repeat '-') ++ "\n"                  :: String
+		fout   = foldr (++) "" $ map ('\n' :) $ map (prefix ++) $ out
+
+showTopLevel :: VisualFunc
+showTopLevel s =
+	undefined
+	where
+		toks   = tokenize cfg s
+		tops   = parse cfg toks
+
+		-- sequence $ map print tops
+		-- let out    = (map (\t -> foldr (++) "" $ map text t) groups) :: [String]
+
+showLeafs :: VisualFunc
+showLeafs s =
+	show $ ss
+	where
+		toks   = tokenize cfg s
+		groups = groupTokens cfg toks
+		leafs  = map lexGroup groups
+
+		ss     =  sum $ map countVariables leafs
+		-- sequence $ map print leafs
+
+showUniqueNames :: VisualFunc
+showUniqueNames s =
+	show uniqs
+	where
+		toks       = tokenize cfg s
+		groups     = groupTokens cfg toks
+		classified = map classifyGroup groups
+		leafs      = map lexClassified classified
+		uniqs      = map getUnique leafs
+
 		lexClassified :: Toplevel -> (String, Leaf)
 		lexClassified (Binding name toks) = (name , lexGroup toks)
 		lexClassified (Expr toks)         = ([],    lexGroup toks)

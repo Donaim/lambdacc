@@ -14,11 +14,11 @@ defineS = (++) "#define "
 
 genFlags :: CompilerConfig -> [String]
 genFlags cfg =
-	pairs |> filter filt |> map snd |> map defineS
+	pairs |> filter applyfst |> map snd |> map defineS
 	where
 		pairs = [ (countTotalExecs, "COUNT_TOTAL_EXEC")
 		        , (trackAllocs,     "TRACK_ALLOCS")
 		        , (trackPoolAllocs, "TRACK_POOL_ALLOCS")
 		        ]
-		filt (f, _) = f cfg
+		applyfst (f, _) = f cfg
 

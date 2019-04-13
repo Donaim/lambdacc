@@ -35,6 +35,20 @@ getText = do
 		Nothing ->
 			error "Could not read text"
 
+simpleText :: String
+simpleText =
+	unlines
+	[ "; comment"
+	, "# also comment"
+	, ""
+	, "# defition of identity"
+	, "id = x -> x"
+	, ""
+	, "# lambda calculus booleans"
+	, "true = a -> b -> a"
+	, "false = a -> b -> b"
+	]
+
 type VisualFunc = String -> String
 
 showGroup :: VisualFunc

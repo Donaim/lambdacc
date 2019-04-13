@@ -8,5 +8,6 @@ data CompilerConfig = CompilerConfig
 	, countTotalExecs :: Bool
 	, trackAllocs     :: Bool
 	, trackPoolAllocs :: Bool
+	, useTypeid       :: Bool
 	}
 	deriving (Show, Eq)

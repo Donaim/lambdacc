@@ -8,9 +8,13 @@ import Lexer
 import Encoding
 
 cfg = CompilerConfig 
-	{ lambdaSymbol  = "->"
+	{ lambdaSymbol = "->"
 	, parseComments = True
-	, parseQuotes   = True
+	, parseQuotes = True
+	, countTotalExecs = True
+	, trackAllocs = True
+	, trackPoolAllocs = True
+	, useTypeid  = True
 	}
 
 main :: IO ()

@@ -153,9 +153,13 @@ genExecReturnStatement cfg lambda uniqueName =
 
 genExecFunc :: CompilerConfig -> Leaf -> String -> [String]
 genExecFunc cfg lambda uniqueName =
-	undefined
+	[ decl ++ "{"
+	, returnStatement
+	, "}"
+	]
 	where
 		execName = getExecName uniqueName
 		decl = getExecDecl execName
+		returnStatement = genExecReturnStatement cfg lambda uniqueName
 
 

@@ -107,9 +107,9 @@ showUniqueNames s =
 		leafs      = map lexClassified classified
 		uniqs      = map getUnique leafs
 
-		lexClassified :: Toplevel -> (String, Leaf)
-		lexClassified (Binding name toks) = (name , lexGroup toks)
-		lexClassified (Expr toks)         = ([],    lexGroup toks)
+		lexClassified :: RTopLevel -> (String, Leaf)
+		lexClassified (RBinding name toks) = (name , lexGroup toks)
+		lexClassified (RExpr toks)         = ([],    lexGroup toks)
 
 		getUnique :: (String, Leaf) -> (String, String)
 		getUnique (name, leaf) = (name, getUniqueName leaf)

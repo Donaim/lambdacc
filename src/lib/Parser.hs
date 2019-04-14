@@ -8,22 +8,22 @@ import Tokenizer
 
 import Debug.Trace
 
-data Toplevel = Binding String [Token] | Expr [Token]
+data RTopLevel = RBinding String [Token] | RExpr [Token]
 	deriving (Eq)
 
-instance Show Toplevel where
-	show (Binding name toks) = "{ Binding '" ++ name ++ "' " ++ (foldr (++) "" $ map (' ' :) $ map text toks) ++ " }"
-	show (Expr toks)         = "{ Expr " ++ (foldr (++) "" $ map (' ' :) $ map text toks) ++ " }"
+instance Show RTopLevel where
+	show (RBinding name toks) = "{ RBinding '" ++ name ++ "' " ++ (foldr (++) "" $ map (' ' :) $ map text toks) ++ " }"
+	show (RExpr toks)         = "{ RExpr " ++ (foldr (++) "" $ map (' ' :) $ map text toks) ++ " }"
 
-parse :: CompilerConfig -> [Token] -> [Toplevel]
+parse :: CompilerConfig -> [Token] -> [RTopLevel]
 parse cfg toks = groupTokens cfg toks |> map classifyGroup
 
-classifyGroup :: [Token] -> Toplevel
+classifyGroup :: [Token] -> RTopLevel
 classifyGroup all@(x : y : xs) =
 	if text y == "="
-	then Binding (text x) xs
-	else Expr all
-classifyGroup all = Expr all
+	then RBinding (text x) xs
+	else RExpr all
+classifyGroup all = RExpr all
 
 -- Also strips off spaces and newlines and comments
 groupTokens :: CompilerConfig -> [Token] -> [[Token]]

@@ -160,8 +160,14 @@ genExecFunc cfg lambda uniqueName =
 		decl = getExecDecl execName
 		returnStatement = genExecReturnStatement cfg lambda uniqueName
 
+getDeclsHelper :: (String -> String) -> [String] -> [String]
+getDeclsHelper f uniqueNames =
+	map ((flip (++) ";") . f) uniqueNames
+
 genInitDecls :: CompilerConfig -> [String] -> [String]
-genInitDecls cfg uniqueNames =
-	map ((flip (++) ";") . getInitDecl) uniqueNames
+genInitDecls cfg uniqueNames = getDeclsHelper (getInitDecl . getInitName) uniqueNames
+
+genExecDecls :: CompilerConfig -> [String] -> [String]
+genExecDecls cfg uniqueNames = getDeclsHelper (getExecDecl . getExecName) uniqueNames
 
 

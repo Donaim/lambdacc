@@ -99,32 +99,42 @@ genInitFunc cfg lambda uniqueName =
 		       , "}"
 		       ]
 
-getArgNameByParents :: CompilerConfig -> Leaf -> String
-getArgNameByParents cfg (Variable scope id) =
-	case id of
-		Argument name ->
-			case elemIndex name scope of
-				Just n ->
-					"me->" ++ (repeat "parent->" |> take n |> foldl (++) "") ++ "x"
-				Nothing ->
-					error "Argument not found by parents"
+getArgNameByParents :: CompilerConfig -> Scope -> String -> String
+getArgNameByParents cfg scope name =
+	case elemIndex name scope of
+		Just n ->
+			"me->" ++ (repeat "parent->" |> take n |> foldl (++) "") ++ "x"
+		Nothing ->
+			error "Argument not found by parents"
+
+getArgName :: CompilerConfig -> Leaf -> String
+getArgName cfg lambda =
+	case lambda of
+		(Variable scope id) ->
+			case id of
+				(Argument name) ->
+					getArgNameByParents cfg scope name
+				(BindingTok name body) ->
+					getInitName (getUniqueName lambda) ++ "(me)"
 		_ ->
-			error "Wrong variable type in getArgNameByParents"
-getArgNameByParents cfg _ =
-	error "Wrong type in getArgNameByParents"
+			getInitName (getUniqueName lambda) ++ "(me)"
 
 genExecReturnPart :: CompilerConfig -> Leaf -> String -> String
-genExecReturnPart cfg lambda =
-	undefined
+genExecReturnPart cfg lambda uniqueName =
+	forfield fields
 	where
 		fields :: [StructField]
 		fields = getFields lambda
 
-		forfield (x : xs) buf =
-			undefined
+		forfield :: [StructField] -> String
+		forfield list =
+			case list of
+				[last] ->
+					name
+				(x : xs) ->
+					"eval(" ++ name ++ ", " ++ (forfield xs) ++ ")"
 			where
-				name = getUniqueName (leaf x)
-				initName = getInitName name
+				name = getArgName cfg (leaf (head list))
 
 genExecReturnStatement :: CompilerConfig -> Leaf -> String -> String
 genExecReturnStatement cfg lambda uniqueName =

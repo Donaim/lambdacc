@@ -62,16 +62,15 @@ getFields l =
 			StructField { leaf = l, index = index } : collect xs (index + 1)
 
 genTypeuuid :: CompilerConfig -> Leaf -> String -> [String]
-genTypeuuid cfg lambda lambdaName =
+genTypeuuid cfg lambda uniqueName =
 	if useTypeid cfg then
 		undefined
 	else []
 
 genInitFunc :: CompilerConfig -> Leaf -> String -> [String]
-genInitFunc cfg lambda lambdaName =
+genInitFunc cfg lambda uniqueName =
 	body
 	where
-		uniqueName = getUniqueName lambda
 		initName = getInitName uniqueName
 		execName = getExecName uniqueName
 		decl = getInitDecl initName

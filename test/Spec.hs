@@ -49,6 +49,16 @@ simpleText =
 	, "false = a -> b -> b"
 	]
 
+simpleExprs :: [String]
+simpleExprs =
+	[ "x -> x"
+	, "a b -> a"
+	, "a b -> b"
+	, "a b -> b a"
+	, "a b -> a (b b)"
+	, "a b -> a (x -> x) b"
+	]
+
 type VisualFunc = String -> String
 
 showGroup :: VisualFunc

@@ -73,7 +73,15 @@ genTypeuuid cfg lambda uniqueName =
 
 genInitFunc :: CompilerConfig -> Leaf -> String -> [String]
 genInitFunc cfg lambda uniqueName =
-	body
+	[ decl ++ " {"
+	, "\tff me = ALLOC_GET(sizeof(struct fun));"
+	, "\tme->parent = parent;"
+	, "\tme->eval_now = " ++ execName ++ ";"
+	, "\tme->customsize = 0;"
+	, typeuuid
+	, "\treturn me"
+	, "}"
+	]
 	where
 		initName = getInitName uniqueName
 		execName = getExecName uniqueName
@@ -88,16 +96,6 @@ genInitFunc cfg lambda uniqueName =
 				let typeidName = getTypeid uniqueName
 				in "\tme->typeuuid = " ++ typeidName ++ ";"
 			else []
-
-		body = [ decl ++ " {"
-		       , "\tff me = ALLOC_GET(sizeof(struct fun));"
-		       , "\tme->parent = parent;"
-		       , "\tme->eval_now = " ++ execName ++ ";"
-		       , "\tme->customsize = 0;"
-		       , typeuuid
-		       , "\treturn me"
-		       , "}"
-		       ]
 
 getArgNameByParents :: CompilerConfig -> Scope -> String -> String
 getArgNameByParents cfg scope name =

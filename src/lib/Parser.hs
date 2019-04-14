@@ -23,8 +23,8 @@ instance Show TopLevel where
 	show (Binding name leaf) = "{ Binding \'" ++ name ++ "':\n" ++ show leaf ++ "}"
 	show (Expr leaf)         = "{ Expr " ++ "':\n" ++ show leaf  ++ "}"
 
-parse :: CompilerConfig -> [Token] -> [RTopLevel]
-parse cfg toks = groupTokens cfg toks |> map classifyGroup
+rparse :: CompilerConfig -> [Token] -> [RTopLevel]
+rparse cfg toks = groupTokens cfg toks |> map classifyGroup
 
 classifyGroup :: [Token] -> RTopLevel
 classifyGroup all@(x : y : xs) =

@@ -81,7 +81,7 @@ showTopLevel s =
 	undefined
 	where
 		toks   = tokenize cfg s
-		tops   = parse cfg toks
+		tops   = rparse cfg toks
 
 		-- sequence $ map print tops
 		-- let out    = (map (\t -> foldr (++) "" $ map text t) groups) :: [String]

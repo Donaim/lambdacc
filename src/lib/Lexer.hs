@@ -105,9 +105,12 @@ makeTree nodesBuff toks =
 
 		close :: Tree
 		close =
-			if null $ tail nodesBuff
-			then head $ reverse nodesBuff
-			else Branch $ reverse nodesBuff
+			if null nodesBuff
+			then Branch []
+			else
+				if null $ tail nodesBuff
+				then head $ reverse nodesBuff
+				else Branch $ reverse nodesBuff
 
 
 -- UTILITY --

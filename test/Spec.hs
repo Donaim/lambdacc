@@ -57,6 +57,7 @@ simpleExprs =
 	, "a b -> b a"
 	, "a b -> a (b b)"
 	, "a b -> a (x -> x) b"
+	, "a -> a (a SomeB++inding a)"
 	]
 
 type VisualFunc = String -> String

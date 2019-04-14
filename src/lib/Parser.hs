@@ -12,8 +12,8 @@ data Toplevel = Binding String [Token] | Expr [Token]
 	deriving (Eq)
 
 instance Show Toplevel where
-	show (Binding name toks) = "{ Binding '" ++ name ++ "' \n\t" ++ (foldr (++) "" $ map (' ' :) $ map text toks) ++ " }"
-	show (Expr toks)         = "{ Expr \n\t" ++ (foldr (++) "" $ map (' ' :) $ map text toks) ++ " }"
+	show (Binding name toks) = "{ Binding '" ++ name ++ "' " ++ (foldr (++) "" $ map (' ' :) $ map text toks) ++ " }"
+	show (Expr toks)         = "{ Expr " ++ (foldr (++) "" $ map (' ' :) $ map text toks) ++ " }"
 
 parse :: CompilerConfig -> [Token] -> [Toplevel]
 parse cfg toks = groupTokens cfg toks |> map classifyGroup

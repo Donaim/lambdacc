@@ -68,7 +68,7 @@ getFields l =
 genTypeuuid :: CompilerConfig -> Leaf -> String -> [String]
 genTypeuuid cfg lambda uniqueName =
 	if useTypeid cfg then
-		undefined
+		["const int " ++ (getTypeid uniqueName) ++ " = __COUNTER__;"]
 	else []
 
 genInitFunc :: CompilerConfig -> Leaf -> String -> [String]

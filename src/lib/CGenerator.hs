@@ -75,7 +75,7 @@ genInitFunc cfg lambda uniqueName =
 		execName = getExecName uniqueName
 		decl = getInitDecl initName
 
-		fields = getFields lambda
+		-- fields = getFields lambda
 		-- numLeafs = 1 + (foldl max (-1) $ map index fields)
 
 		typeuuid :: String

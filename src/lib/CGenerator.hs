@@ -138,9 +138,18 @@ genExecReturnPart cfg lambda uniqueName =
 
 genExecReturnStatement :: CompilerConfig -> Leaf -> String -> String
 genExecReturnStatement cfg lambda uniqueName =
-	undefined
-	where
-		x = 2
+	let ret = genExecReturnPart cfg lambda uniqueName
+	in case lambda of
+		(Lambda scope argname leafs) ->
+			"\treturn " ++ ret ++ ";"
+		(SubExpr scope leafs) ->
+			"\treturn eval(" ++ ret ++ ", x);"
+		(Variable scope id) ->
+			case id of
+				(Argument name) ->
+					error "Unexpected type Argument"
+				(BindingTok name body) ->
+					"\treturn eval(" ++ ret ++ ", x);"
 
 genExecFunc :: CompilerConfig -> Leaf -> String -> [String]
 genExecFunc cfg lambda uniqueName =

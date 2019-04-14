@@ -5,6 +5,7 @@ import Utils
 import Exept
 import CompilerConfig
 import Tokenizer
+import Lexer
 
 import Debug.Trace
 
@@ -14,6 +15,13 @@ data RTopLevel = RBinding String [Token] | RExpr [Token]
 instance Show RTopLevel where
 	show (RBinding name toks) = "{ RBinding '" ++ name ++ "' " ++ (foldr (++) "" $ map (' ' :) $ map text toks) ++ " }"
 	show (RExpr toks)         = "{ RExpr " ++ (foldr (++) "" $ map (' ' :) $ map text toks) ++ " }"
+
+data TopLevel = Binding String Leaf | Expr Leaf
+	deriving (Eq)
+
+instance Show TopLevel where
+	show (Binding name leaf) = "{ Binding \'" ++ name ++ "':\n" ++ show leaf ++ "}"
+	show (Expr leaf)         = "{ Expr " ++ "':\n" ++ show leaf  ++ "}"
 
 parse :: CompilerConfig -> [Token] -> [RTopLevel]
 parse cfg toks = groupTokens cfg toks |> map classifyGroup

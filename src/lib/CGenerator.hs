@@ -62,7 +62,7 @@ getFields l =
 		collect [] index = []
 		collect (v@(Variable scope id) : xs) index =
 			StructField { leaf = v, index = -1 } : collect xs index
-		collcet (l : xs) index =
+		collect (l : xs) index =
 			StructField { leaf = l, index = index } : collect xs (index + 1)
 
 genTypeuuid :: CompilerConfig -> Leaf -> String -> [String]

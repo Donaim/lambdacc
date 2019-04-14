@@ -2,7 +2,6 @@
 module Lexer where
 
 import Utils
-import Parser
 import Tokenizer
 import Exept
 import CompilerConfig
@@ -21,9 +20,6 @@ data Leaf =
 	deriving (Eq)
 
 type Scope = [String]
-
-lexString :: CompilerConfig -> String -> Leaf
-lexString cfg s = s |> tokenize cfg |> stripUseless |> lexGroup
 
 lexGroup :: [Token] -> Leaf
 lexGroup toks = toks |> makeTree [] |> fst |> lexTree []

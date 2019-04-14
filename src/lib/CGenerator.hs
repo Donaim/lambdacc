@@ -76,21 +76,23 @@ genInitFunc cfg lambda uniqueName =
 		decl = getInitDecl initName
 
 		fields = getFields lambda
-		numLeafs = 1 + (foldl max (-1) $ map index fields)
+		-- numLeafs = 1 + (foldl max (-1) $ map index fields)
 
 		typeuuid :: String
 		typeuuid =
 			if useTypeid cfg then
 				let typeidName = getTypeid uniqueName
-				in "me->typeuuid = " ++ typeidName ++ ";"
+				in "\tme->typeuuid = " ++ typeidName ++ ";"
 			else []
 
-		body = [ "ff me = ALLOC_GET(sizeof(struct fun));"
-		       , "me->parent = parent;"
-		       , "me->eval_now = " ++ execName ++ ";"
-		       , "me->customsize = 0;"
+		body = [ decl ++ " {"
+		       , "\tff me = ALLOC_GET(sizeof(struct fun));"
+		       , "\tme->parent = parent;"
+		       , "\tme->eval_now = " ++ execName ++ ";"
+		       , "\tme->customsize = 0;"
 		       , typeuuid
-		       , "return me"
+		       , "\treturn me"
+		       , "}"
 		       ]
 
 

@@ -8,6 +8,7 @@ import FileSys
 import Lexer
 import Encoding
 
+import Data.List
 
 defineS :: String -> String
 defineS = (++) "#define "
@@ -37,6 +38,9 @@ getTypeid uniqueName = getPrefix "typeid_" ++ uniqueName
 
 getInitDecl :: String -> String
 getInitDecl initName = "ff " ++ initName ++ " (ff parent)"
+
+getExecDecl :: String -> String
+getExecDecl execName = "ff " ++ execName ++ " (ff me, ff x)"
 
 data StructField = 
 	StructField
@@ -94,5 +98,45 @@ genInitFunc cfg lambda uniqueName =
 		       , "\treturn me"
 		       , "}"
 		       ]
+
+getArgNameByParents :: CompilerConfig -> Leaf -> String
+getArgNameByParents cfg (Variable scope id) =
+	case id of
+		Argument name ->
+			case elemIndex name scope of
+				Just n ->
+					"me->" ++ (repeat "parent->" |> take n |> foldl (++) "") ++ "x"
+				Nothing ->
+					error "Argument not found by parents"
+		_ ->
+			error "Wrong variable type in getArgNameByParents"
+getArgNameByParents cfg _ =
+	error "Wrong type in getArgNameByParents"
+
+genExecReturnPart :: CompilerConfig -> Leaf -> String -> String
+genExecReturnPart cfg lambda =
+	undefined
+	where
+		fields :: [StructField]
+		fields = getFields lambda
+
+		forfield (x : xs) buf =
+			undefined
+			where
+				name = getUniqueName (leaf x)
+				initName = getInitName name
+
+genExecReturnStatement :: CompilerConfig -> Leaf -> String -> String
+genExecReturnStatement cfg lambda uniqueName =
+	undefined
+	where
+		x = 2
+
+genExecFunc :: CompilerConfig -> Leaf -> String -> [String]
+genExecFunc cfg lambda uniqueName =
+	undefined
+	where
+		execName = getExecName uniqueName
+		decl = getExecDecl execName
 
 

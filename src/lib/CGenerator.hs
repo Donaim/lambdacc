@@ -69,7 +69,7 @@ genTypeuuid cfg lambda lambdaName =
 
 genInitFunc :: CompilerConfig -> Leaf -> String -> [String]
 genInitFunc cfg lambda lambdaName =
-	undefined
+	body
 	where
 		uniqueName = getUniqueName lambda
 		initName = getInitName uniqueName
@@ -85,3 +85,13 @@ genInitFunc cfg lambda lambdaName =
 				let typeidName = getTypeid uniqueName
 				in "me->typeuuid = " ++ typeidName ++ ";"
 			else []
+
+		body = [ "ff me = ALLOC_GET(sizeof(struct fun));"
+		       , "me->parent = parent;"
+		       , "me->eval_now = " ++ execName ++ ";"
+		       , "me->customsize = 0;"
+		       , typeuuid
+		       , "return me"
+		       ]
+
+

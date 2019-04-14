@@ -6,6 +6,7 @@ import Tokenizer
 import FileSys
 import Lexer
 import Encoding
+import Utils
 
 cfg = CompilerConfig 
 	{ lambdaSymbol = "->"
@@ -59,6 +60,9 @@ simpleExprs =
 	, "a b -> a (x -> x) b"
 	, "a -> a (a SomeB++inding a)"
 	]
+
+lexString :: CompilerConfig -> String -> Leaf
+lexString cfg s = s |> tokenize cfg |> stripUseless |> lexGroup
 
 type VisualFunc = String -> String
 

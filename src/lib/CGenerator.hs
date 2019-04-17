@@ -183,23 +183,22 @@ genExecDecl cfg uniqueName = getDeclsHelper (getExecDecl . getExecName) uniqueNa
 
 genToplevel :: CompilerConfig -> TopLevel -> [[[String]]]
 genToplevel cfg top =
-	[[headerString cfg]] :
 	case top of
 		(Expr leaf) ->
 			map
 			($ leaf)
-			[ leafInitDecls
+			[ leafTypeids
+			, leafInitDecls
 			, leafExecDecls
-			, leafTypeids
 			, leafInits
 			, leafExecs
 			]
 		(Binding name leaf) ->
 			map
 			($ leaf)
-			[ leafInitDecls
+			[ leafTypeids
+			, leafInitDecls
 			, leafExecDecls
-			, leafTypeids
 			, leafInits
 			, leafExecs
 			]
@@ -237,14 +236,17 @@ genToplevel cfg top =
 		leafExecDecls leaf = genAllF f leafIsArgument leaf
 			where f leaf = genExecDecl cfg (getUniqueName leaf)
 
-writeAll :: String -> [[[String]]] -> IO ()
-writeAll destination arr = do
+writeAll :: CompilerConfig -> String -> [[[String]]] -> IO ()
+writeAll cfg destination arr = do
 	file <- openFile destination WriteMode
+	hPutStrLn file (headerString cfg)
 	mapM_ (write2 file) arr
 	hClose file
 	where
 		write2 :: Handle -> [[String]] -> IO ()
-		write2 file blocks = mapM_ (write1 file) blocks
+		write2 file blocks = do
+			mapM_ (write1 file) blocks
+			hPutStr file "\n"
 
 		write1 :: Handle -> [String] -> IO ()
 		write1 file lines = mapM_ (hPutStrLn file) lines
@@ -254,7 +256,7 @@ showAll xs = xs |> concat |> concat |> unlines
 
 writeFull :: CompilerConfig -> String -> [TopLevel] -> IO ()
 writeFull cfg destination tops =
-	writeAll destination flatten
+	writeAll cfg destination flatten
 	where
 		generated = map (genToplevel cfg) tops
 		flatten = concat generated

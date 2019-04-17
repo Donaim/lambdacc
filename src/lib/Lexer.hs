@@ -155,3 +155,10 @@ countVariables :: Leaf -> Int
 countVariables (Variable _ _)     = 1
 countVariables (Lambda _ _ leafs) = 1 + (sum $ map countVariables leafs)
 countVariables (SubExpr _ leafs)  = sum $ map countVariables leafs
+
+foldLeaf :: (Leaf -> a -> a) -> a -> Leaf -> a
+foldLeaf f acc v@(Variable scope id) = f v acc
+foldLeaf f acc l@(Lambda scope argname leafs) = foldr (foldLeafFlip f) (f l acc) leafs
+foldLeaf f acc s@(SubExpr scope leafs) = foldr (foldLeafFlip f) (f s acc) leafs
+
+foldLeafFlip f a b = foldLeaf f b a

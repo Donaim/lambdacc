@@ -169,3 +169,9 @@ leafIsArgument (Variable scope id) =
 		(Argument name) -> True
 		_ -> False
 leafIsArgument _ = False
+
+leafIsVariable :: Leaf -> Bool
+leafIsVariable x =
+	case x of
+		(Variable scope id) -> True
+		_                   -> False

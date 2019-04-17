@@ -130,7 +130,7 @@ genExecReturnPart cfg lambda uniqueName =
 						Just leaf ->
 							"eval(" ++ getArgName cfg leaf ++ ")"
 						Nothing ->
-							"UNDEFINED"
+							error "Attempt to generate undefined binding"
 		_ -> forfield fields
 	where
 		fields :: [StructField]
@@ -207,34 +207,34 @@ genToplevel cfg top =
 		x = 2
 		uniqueNames = undefined
 
-		genAllF :: (Leaf -> [String]) -> Leaf -> [[String]]
-		genAllF f leaf =
+		genAllF :: (Leaf -> [String]) -> (Leaf -> Bool) -> Leaf -> [[String]]
+		genAllF f filterF leaf =
 			foldLeaf
 				(\x acc ->
-					if leafIsArgument x
+					if filterF x
 					then acc
 					else (f x) : acc)
 				[]
 				leaf
 
 		leafInits :: Leaf -> [[String]]
-		leafInits leaf = genAllF f leaf
+		leafInits leaf = genAllF f leafIsVariable leaf
 			where f leaf = genInitFunc cfg leaf (getUniqueName leaf)
 
 		leafExecs :: Leaf -> [[String]]
-		leafExecs leaf = genAllF f leaf
+		leafExecs leaf = genAllF f leafIsVariable leaf
 			where f leaf = genExecFunc cfg leaf (getUniqueName leaf)
 
 		leafTypeids :: Leaf -> [[String]]
-		leafTypeids leaf = genAllF f leaf
+		leafTypeids leaf = genAllF f leafIsVariable leaf
 			where f leaf = genTypeuuid cfg leaf (getUniqueName leaf)
 
 		leafInitDecls :: Leaf -> [[String]]
-		leafInitDecls leaf = genAllF f leaf
+		leafInitDecls leaf = genAllF f leafIsArgument leaf
 			where f leaf = genInitDecl cfg (getUniqueName leaf)
 
 		leafExecDecls :: Leaf -> [[String]]
-		leafExecDecls leaf = genAllF f leaf
+		leafExecDecls leaf = genAllF f leafIsArgument leaf
 			where f leaf = genExecDecl cfg (getUniqueName leaf)
 
 writeAll :: String -> [[[String]]] -> IO ()

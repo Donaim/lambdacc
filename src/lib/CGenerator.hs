@@ -16,14 +16,12 @@ defineS = (++) "#define "
 
 genFlags :: CompilerConfig -> [String]
 genFlags cfg =
-	pairs |> filter applyfst |> map snd |> map defineS
+	pairs |> filter (($ cfg) . fst) |> map (defineS . snd)
 	where
 		pairs = [ (countTotalExecs, "COUNT_TOTAL_EXEC")
 		        , (trackAllocs,     "TRACK_ALLOCS")
 		        , (trackPoolAllocs, "TRACK_POOL_ALLOCS")
 		        ]
-		applyfst (f, _) = f cfg
-
 
 getPrefix :: String -> String
 getPrefix = (++) "lambdacc_"

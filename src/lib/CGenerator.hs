@@ -124,17 +124,19 @@ genExecReturnPart cfg lambda uniqueName =
 		(Variable scope id) ->
 			case id of
 				(Argument name) ->
-					forfield fields
+					ret
 				(BindingTok name body) ->
 					case body of
 						Just leaf ->
 							"eval(" ++ getArgName cfg leaf ++ ")"
 						Nothing ->
 							error "Attempt to generate undefined binding"
-		_ -> forfield fields
+		_ -> ret
 	where
 		fields :: [StructField]
 		fields = getFields lambda
+
+		ret = forfield $ reverse fields
 
 		forfield :: [StructField] -> String
 		forfield list =
@@ -142,7 +144,7 @@ genExecReturnPart cfg lambda uniqueName =
 				[last] ->
 					name
 				(x : xs) ->
-					"eval(" ++ name ++ ", " ++ (forfield xs) ++ ")"
+					"eval(" ++ (forfield xs) ++ ", " ++ name ++ ")"
 			where
 				name = getArgName cfg (leaf (head list))
 

@@ -233,7 +233,7 @@ genToplevel cfg top =
 			where f leaf = genInitDecl cfg (getUniqueName leaf)
 
 		leafExecDecls :: Leaf -> [[String]]
-		leafExecDecls leaf = genAllF f leafIsArgument leaf
+		leafExecDecls leaf = genAllF f leafIsVariable leaf
 			where f leaf = genExecDecl cfg (getUniqueName leaf)
 
 writeAll :: CompilerConfig -> String -> [[[String]]] -> IO ()

@@ -21,6 +21,5 @@ getFileTextCont filepath conts = do
 	case mtext of
 		Nothing ->
 			return False
-		Just text -> do
-			return $ map (\c -> c text) conts
-			return True
+		Just text ->
+			return $ map ($ text) conts `seq` True

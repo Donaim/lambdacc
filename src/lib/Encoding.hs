@@ -15,9 +15,9 @@ getUniqueName :: Leaf -> [Char]
 getUniqueName (Variable scope id) =
 	getVariableName scope id
 getUniqueName (Lambda scope arg leafs) =
-	'_' : 'L' : (foldl (++) "" $ map getUniqueName leafs) ++ "_E"
+	'_' : 'L' : (concatMap getUniqueName leafs) ++ "_E"
 getUniqueName (SubExpr scope leafs) =
-	'_' : 'S' : (foldl (++) "" $ map getUniqueName leafs) ++ "_E"
+	'_' : 'S' : (concatMap getUniqueName leafs) ++ "_E"
 
 getVariableName :: Scope -> Identifier -> [Char]
 getVariableName scope (Argument name) =
@@ -33,7 +33,7 @@ getVariableName scope (Argument name) =
 getVariableName scope (BindingTok name _) =
 	if all (`elem` allowedChars) name
 	then '_' : 'B' : '_' : name
-	else '_' : 'B' : 'I' : (concat $ map countDownEnd name)
+	else '_' : 'B' : 'I' : (concatMap countDownEnd name)
 	where
 		countDown :: Char -> [Char]
 		countDown x = if x == '\NUL' then "0"  else charBump $ countDown (pred x)

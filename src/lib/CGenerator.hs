@@ -100,7 +100,7 @@ getArgNameByParents :: CompilerConfig -> Scope -> String -> String
 getArgNameByParents cfg scope name =
 	case elemIndex name scope of
 		Just n ->
-			"me->" ++ (repeat "parent->" |> take n |> foldl (++) "") ++ "x"
+			"me->" ++ (repeat "parent->" |> take n |> concat) ++ "x"
 		Nothing ->
 			error "Argument not found by parents"
 
@@ -217,23 +217,23 @@ genToplevel cfg top =
 				leaf
 
 		leafInits :: Leaf -> [[String]]
-		leafInits leaf = genAllF f leafIsVariable leaf
+		leafInits = genAllF f leafIsVariable
 			where f leaf = genInitFunc cfg leaf (getUniqueName leaf)
 
 		leafExecs :: Leaf -> [[String]]
-		leafExecs leaf = genAllF f leafIsVariable leaf
+		leafExecs = genAllF f leafIsVariable
 			where f leaf = genExecFunc cfg leaf (getUniqueName leaf)
 
 		leafTypeids :: Leaf -> [[String]]
-		leafTypeids leaf = genAllF f leafIsVariable leaf
+		leafTypeids = genAllF f leafIsVariable
 			where f leaf = genTypeuuid cfg leaf (getUniqueName leaf)
 
 		leafInitDecls :: Leaf -> [[String]]
-		leafInitDecls leaf = genAllF f leafIsArgument leaf
+		leafInitDecls = genAllF f leafIsArgument
 			where f leaf = genInitDecl cfg (getUniqueName leaf)
 
 		leafExecDecls :: Leaf -> [[String]]
-		leafExecDecls leaf = genAllF f leafIsVariable leaf
+		leafExecDecls = genAllF f leafIsVariable
 			where f leaf = genExecDecl cfg (getUniqueName leaf)
 
 writeAll :: CompilerConfig -> String -> [[[String]]] -> IO ()

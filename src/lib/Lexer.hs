@@ -105,27 +105,27 @@ makeTree nodesBuff toks =
 			then Branch []
 			else
 				if null $ tail nodesBuff
-				then head $ reverse nodesBuff
+				then last nodesBuff
 				else Branch $ reverse nodesBuff
 
 
 -- UTILITY --
 
 instance Show Tree where
-	show t = showTree 0 t
+	show = showTree 0
 
 showTree :: Int -> Tree -> String
 showTree tabs (Node t)  = 
-	'\n' : (take tabs $ repeat '\t')  ++ text t
+	'\n' : (replicate tabs '\t')  ++ text t
 
 showTree tabs (Branch []) = []
 showTree tabs (Branch ((Node t) : ts)) =
-	'\n' : (take tabs $ repeat '\t')  ++ text t ++ (showTree tabs $ Branch ts)
+	'\n' : (replicate tabs '\t')  ++ text t ++ (showTree tabs $ Branch ts)
 showTree tabs (Branch ((Branch ts) : tss)) =
-	'\n' : (take tabs $ repeat '\t') ++ (showTree (tabs + 1) (Branch ts)) ++ (showTree tabs (Branch tss))
+	'\n' : (replicate tabs '\t') ++ (showTree (tabs + 1) (Branch ts)) ++ (showTree tabs (Branch tss))
 
 instance Show Leaf where
-	show t = showLeaf 0 t
+	show = showLeaf 0
 
 showLeaf :: Int -> Leaf -> String
 showLeaf tabs (Variable _ t)  = 
@@ -139,17 +139,17 @@ showLeaf tabs (Variable _ t)  =
 				Nothing ->
 					prefixed $ "{" ++ name ++ " (?)}"
 	where
-		prefixed name = (take tabs $ repeat '\t') ++ name ++ "\n"
+		prefixed name = (replicate tabs '\t') ++ name ++ "\n"
 
 showLeaf tabs (SubExpr _ ts) =
-	foldr (++) "" $ map (showLeaf (tabs + 1)) ts
+	concatMap (showLeaf (tabs + 1)) ts
 	where
-		prefixed name = (take tabs $ repeat '\t') ++ name ++ "\n"
+		prefixed name = (replicate tabs '\t') ++ name ++ "\n"
 
 showLeaf tabs (Lambda _ arg ts) =
-	prefixed ("Lambda of [" ++ arg ++ "]:\n" ++ (foldr (++) "" $ map (showLeaf (tabs + 1)) ts))
+	prefixed ("Lambda of [" ++ arg ++ "]:\n" ++ (concatMap (showLeaf (tabs + 1)) ts))
 	where
-		prefixed name = (take tabs $ repeat '\t') ++ name
+		prefixed name = (replicate tabs '\t') ++ name
 
 countVariables :: Leaf -> Int
 countVariables (Variable _ _)     = 1

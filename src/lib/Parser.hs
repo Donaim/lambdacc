@@ -13,8 +13,8 @@ data RTopLevel = RBinding String [Token] | RExpr [Token]
 	deriving (Eq)
 
 instance Show RTopLevel where
-	show (RBinding name toks) = "{ RBinding '" ++ name ++ "' " ++ (foldr (++) "" $ map (' ' :) $ map text toks) ++ " }"
-	show (RExpr toks)         = "{ RExpr " ++ (foldr (++) "" $ map (' ' :) $ map text toks) ++ " }"
+	show (RBinding name toks) = "{ RBinding '" ++ name ++ "' " ++ (concatMap (' ' :) $ map text toks) ++ " }"
+	show (RExpr toks)         = "{ RExpr " ++ (concatMap (' ' :) $ map text toks) ++ " }"
 
 data TopLevel = Binding String Leaf | Expr Leaf
 	deriving (Eq)
@@ -54,7 +54,7 @@ groupTokens cfg toks =
 		recur   = drop curLen toks
 
 stripUseless :: [Token] -> [Token]
-stripUseless toks = filter (isUseful . kind) toks
+stripUseless = filter (isUseful . kind)
 	where
 		isUseful :: TokenType -> Bool
 		isUseful Space   = False

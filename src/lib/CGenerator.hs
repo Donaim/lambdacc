@@ -80,7 +80,7 @@ genInitFunc cfg lambda uniqueName =
 	, "\tme->eval_now = " ++ execName ++ ";"
 	, "\tme->customsize = 0;"
 	, typeuuid
-	, "\treturn me"
+	, "\treturn me;"
 	, "}"
 	]
 	where

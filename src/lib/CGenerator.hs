@@ -9,6 +9,7 @@ import Lexer
 import Encoding
 
 import Data.List
+import System.IO
 
 defineS :: String -> String
 defineS = (++) "#define "
@@ -170,4 +171,52 @@ genInitDecls cfg uniqueNames = getDeclsHelper (getInitDecl . getInitName) unique
 genExecDecls :: CompilerConfig -> [String] -> [String]
 genExecDecls cfg uniqueNames = getDeclsHelper (getExecDecl . getExecName) uniqueNames
 
+genToplevel :: CompilerConfig -> TopLevel -> [[[String]]]
+genToplevel cfg top =
+	case top of
+		(Expr leaf) ->
+			map
+			($ leaf)
+			[ leafTypeids
+			, leafInits
+			, leafExecs
+			]
+		(Binding name leaf) ->
+			undefined
+	where
+		x = 2
+		uniqueNames = undefined
 
+		genAllF :: (Leaf -> [String]) -> Leaf -> [[String]]
+		genAllF f leaf =
+			foldLeaf
+				(\x acc -> (f leaf) : acc)
+				[]
+				leaf
+
+		leafInits :: Leaf -> [[String]]
+		leafInits leaf = genAllF f leaf
+			where f leaf = genInitFunc cfg leaf (getUniqueName leaf)
+
+		leafExecs :: Leaf -> [[String]]
+		leafExecs leaf = genAllF f leaf
+			where f leaf = genExecFunc cfg leaf (getUniqueName leaf)
+
+		leafTypeids :: Leaf -> [[String]]
+		leafTypeids leaf = genAllF f leaf
+			where f leaf = genTypeuuid cfg leaf (getUniqueName leaf)
+
+writeAll :: String -> [[[String]]] -> IO ()
+writeAll destination arr = do
+	file <- openFile destination WriteMode
+	mapM_ (write2 file) arr
+	hClose file
+	where
+		write2 :: Handle -> [[String]] -> IO ()
+		write2 file blocks = mapM_ (write1 file) blocks
+
+		write1 :: Handle -> [String] -> IO ()
+		write1 file lines = mapM_ (hPutStrLn file) lines
+
+showAll :: [[[String]]] -> String
+showAll xs = xs |> concat |> concat |> unlines

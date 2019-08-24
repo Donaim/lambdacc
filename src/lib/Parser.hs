@@ -21,7 +21,7 @@ data TopLevel = Binding String Leaf | Expr Leaf
 
 instance Show TopLevel where
 	show (Binding name leaf) = "{ Binding \'" ++ name ++ "':\n" ++ show leaf ++ "}"
-	show (Expr leaf)         = "{ Expr " ++ "':\n" ++ show leaf  ++ "}"
+	show (Expr leaf)         = "{ Expr:\n" ++ show leaf  ++ "}"
 
 parse :: CompilerConfig -> [Token] -> [TopLevel]
 parse cfg toks = rparse cfg toks |> map transformRaw

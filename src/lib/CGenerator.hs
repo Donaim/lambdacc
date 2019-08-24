@@ -190,7 +190,7 @@ genToplevel cfg top =
 		genAllF :: (Leaf -> [String]) -> Leaf -> [[String]]
 		genAllF f leaf =
 			foldLeaf
-				(\x acc -> (f leaf) : acc)
+				(\x acc -> (f x) : acc)
 				[]
 				leaf
 

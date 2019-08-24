@@ -251,3 +251,20 @@ writeAll destination arr = do
 
 showAll :: [[[String]]] -> String
 showAll xs = xs |> concat |> concat |> unlines
+
+writeFull :: CompilerConfig -> String -> [TopLevel] -> IO ()
+writeFull cfg destination tops =
+	writeAll destination flatten
+	where
+		generated = map (genToplevel cfg) tops
+		flatten = concat generated
+
+fullCycle :: CompilerConfig -> String -> String -> IO ()
+fullCycle cfg source destination = do
+	text <- getFileText source
+	case text of
+		Just text ->
+			tokenize cfg text |> parse cfg |> writeFull cfg destination
+		Nothing ->
+			undefined
+

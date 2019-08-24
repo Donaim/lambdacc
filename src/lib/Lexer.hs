@@ -162,3 +162,10 @@ foldLeaf f acc l@(Lambda scope argname leafs) = foldr (foldLeafFlip f) (f l acc)
 foldLeaf f acc s@(SubExpr scope leafs) = foldr (foldLeafFlip f) (f s acc) leafs
 
 foldLeafFlip f a b = foldLeaf f b a
+
+leafIsArgument :: Leaf -> Bool
+leafIsArgument (Variable scope id) =
+	case id of
+		(Argument name) -> True
+		_ -> False
+leafIsArgument _ = False

@@ -120,7 +120,18 @@ getArgName cfg lambda =
 
 genExecReturnPart :: CompilerConfig -> Leaf -> String -> String
 genExecReturnPart cfg lambda uniqueName =
-	forfield fields
+	case lambda of
+		(Variable scope id) ->
+			case id of
+				(Argument name) ->
+					forfield fields
+				(BindingTok name body) ->
+					case body of
+						Just leaf ->
+							"eval(" ++ getArgName cfg leaf ++ ")"
+						Nothing ->
+							"UNDEFINED"
+		_ -> forfield fields
 	where
 		fields :: [StructField]
 		fields = getFields lambda
@@ -184,7 +195,14 @@ genToplevel cfg top =
 			, leafExecs
 			]
 		(Binding name leaf) ->
-			undefined
+			map
+			($ leaf)
+			[ leafInitDecls
+			, leafExecDecls
+			, leafTypeids
+			, leafInits
+			, leafExecs
+			]
 	where
 		x = 2
 		uniqueNames = undefined

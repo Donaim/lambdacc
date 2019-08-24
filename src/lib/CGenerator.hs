@@ -161,15 +161,14 @@ genExecFunc cfg lambda uniqueName =
 		decl = getExecDecl execName
 		returnStatement = genExecReturnStatement cfg lambda uniqueName
 
-getDeclsHelper :: (String -> String) -> [String] -> [String]
-getDeclsHelper f uniqueNames =
-	map ((flip (++) ";") . f) uniqueNames
+getDeclsHelper :: (String -> String) -> String -> [String]
+getDeclsHelper f uniqueName = [f uniqueName ++ ";"]
 
-genInitDecls :: CompilerConfig -> [String] -> [String]
-genInitDecls cfg uniqueNames = getDeclsHelper (getInitDecl . getInitName) uniqueNames
+genInitDecl :: CompilerConfig -> String -> [String]
+genInitDecl cfg uniqueName = getDeclsHelper (getInitDecl . getInitName) uniqueName
 
-genExecDecls :: CompilerConfig -> [String] -> [String]
-genExecDecls cfg uniqueNames = getDeclsHelper (getExecDecl . getExecName) uniqueNames
+genExecDecl :: CompilerConfig -> String -> [String]
+genExecDecl cfg uniqueName = getDeclsHelper (getExecDecl . getExecName) uniqueName
 
 genToplevel :: CompilerConfig -> TopLevel -> [[[String]]]
 genToplevel cfg top =
@@ -177,7 +176,9 @@ genToplevel cfg top =
 		(Expr leaf) ->
 			map
 			($ leaf)
-			[ leafTypeids
+			[ leafInitDecls
+			, leafExecDecls
+			, leafTypeids
 			, leafInits
 			, leafExecs
 			]
@@ -208,6 +209,14 @@ genToplevel cfg top =
 		leafTypeids :: Leaf -> [[String]]
 		leafTypeids leaf = genAllF f leaf
 			where f leaf = genTypeuuid cfg leaf (getUniqueName leaf)
+
+		leafInitDecls :: Leaf -> [[String]]
+		leafInitDecls leaf = genAllF f leaf
+			where f leaf = genInitDecl cfg (getUniqueName leaf)
+
+		leafExecDecls :: Leaf -> [[String]]
+		leafExecDecls leaf = genAllF f leaf
+			where f leaf = genExecDecl cfg (getUniqueName leaf)
 
 writeAll :: String -> [[[String]]] -> IO ()
 writeAll destination arr = do

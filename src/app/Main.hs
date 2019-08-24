@@ -15,6 +15,7 @@ cfg = CompilerConfig
 	, trackAllocs = True
 	, trackPoolAllocs = True
 	, useTypeid  = True
+	, headerString = "#include \"example/header.h\""
 	}
 
 main :: IO ()

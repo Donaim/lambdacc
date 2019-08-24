@@ -172,6 +172,7 @@ genExecDecl cfg uniqueName = getDeclsHelper (getExecDecl . getExecName) uniqueNa
 
 genToplevel :: CompilerConfig -> TopLevel -> [[[String]]]
 genToplevel cfg top =
+	[[headerString cfg]] :
 	case top of
 		(Expr leaf) ->
 			map

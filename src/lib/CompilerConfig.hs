@@ -9,5 +9,6 @@ data CompilerConfig = CompilerConfig
 	, trackAllocs     :: Bool
 	, trackPoolAllocs :: Bool
 	, useTypeid       :: Bool
+	, headerString    :: String
 	}
 	deriving (Show, Eq)

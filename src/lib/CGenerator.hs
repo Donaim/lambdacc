@@ -41,7 +41,7 @@ getInitDecl initName = "ff " ++ initName ++ " (ff parent)"
 getExecDecl :: String -> String
 getExecDecl execName = "ff " ++ execName ++ " (ff me, ff x)"
 
-data StructField = 
+data StructField =
 	StructField
 	{ leaf :: Leaf
 	, index :: Int

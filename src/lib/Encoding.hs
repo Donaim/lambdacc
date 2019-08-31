@@ -11,6 +11,7 @@ import Lexer
 import Debug.Trace
 import Data.List
 
+-- TODO: make this more efficient
 getUniqueName :: Leaf -> [Char]
 getUniqueName (Variable scope id) =
 	getVariableName scope id

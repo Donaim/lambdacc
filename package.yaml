@@ -18,6 +18,17 @@ description:         Please see the README on GitHub at <https://github.com/Dona
 dependencies:
 - base >= 4.7 && < 5
 
+ghc-options:
+- -Wall
+- -Wincomplete-patterns
+- -Wno-tabs
+- -Wno-unused-imports
+- -Wno-unused-matches
+- -Wno-unused-local-binds
+- -Wno-name-shadowing
+- -Wno-type-defaults
+- -O3
+
 library:
   source-dirs: src/lib
   ghc-options:
@@ -29,9 +40,9 @@ executables:
     source-dirs:         src/app
     ghc-options:
     - -Wno-tabs
-    - -threaded
-    - -rtsopts
-    - -with-rtsopts=-N
+    # - -threaded -- TODO make use of threads Pog
+    # - -rtsopts
+    # - -with-rtsopts=-N
     - -O3
     dependencies:
     - lambdacc

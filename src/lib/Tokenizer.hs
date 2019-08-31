@@ -96,8 +96,8 @@ tokenize :: CompilerConfig -> String -> [Token]
 tokenize cfg str =
 	cycle 0 0 "" str
 	where
-		tokersRaw    =
-			sometokenizers ++ 
+		tokersRaw =
+			sometokenizers ++
 			(if parseQuotes cfg then [tokenizeQuote] else []) ++
 			(if parseComments cfg then [tokenizeComment] else [])
 
@@ -122,7 +122,7 @@ tokenize cfg str =
 				else [nameTok]
 			else
 				case tok of
-					Just t  ->
+					Just t ->
 						if null carryStr
 						then t : cycle newcharno newlineno "" newstr
 						else nameTok : t : cycle newcharno newlineno "" newstr

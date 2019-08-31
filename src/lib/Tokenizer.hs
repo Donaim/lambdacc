@@ -90,6 +90,7 @@ transformer (charno, lineno, str) (Just (kind, split)) =
 					Newline -> lineno + 1
 					_       -> lineno
 
+sometokenizers :: [TokenizeFulltype]
 sometokenizers = [tokenizeOpenBracket, tokenizeCloseBracket, tokenizeSpace, tokenizeLambdaSymbol, tokenizeNewline]
 
 tokenize :: CompilerConfig -> String -> [Token]

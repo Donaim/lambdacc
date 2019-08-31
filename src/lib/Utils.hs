@@ -9,9 +9,6 @@ import Debug.Trace
 (|>) x f = f x
 infixl 0 |>
 
-mhead []     = Nothing
-mhead (x:xs) = Just x
-
 mapPart :: ([a] -> b) -> [a] -> [b]
 mapPart f all@(_:xs) =
 	(f all) : (mapPart f xs)
@@ -27,6 +24,7 @@ padWith :: Char -> Int -> String -> String
 padWith padS padN str =
 	str ++ (replicate (max 0 $ padN - length str) padS)
 
+trim :: String -> String
 trim xs = dropSpaceTail "" $ dropWhile C.isSpace xs
 	where
 		dropSpaceTail maybeStuff "" = ""

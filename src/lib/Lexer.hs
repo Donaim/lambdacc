@@ -53,6 +53,7 @@ getLambda scope all argIndex =
 		rest = all |> drop (argIndex + 1)
 
 		collectLambdas :: [String] -> Leaf
+		collectLambdas [] = error "Impossible"
 		collectLambdas [x] =
 			Lambda scope x $ map (lexTree newscope) rest
 		collectLambdas (x : xs) =
@@ -161,6 +162,7 @@ foldLeaf f acc v@(Variable scope id) = f v acc
 foldLeaf f acc l@(Lambda scope argname leafs) = foldr (foldLeafFlip f) (f l acc) leafs
 foldLeaf f acc s@(SubExpr scope leafs) = foldr (foldLeafFlip f) (f s acc) leafs
 
+foldLeafFlip :: (Leaf -> a -> a) -> Leaf -> a -> a
 foldLeafFlip f a b = foldLeaf f b a
 
 leafIsArgument :: Leaf -> Bool

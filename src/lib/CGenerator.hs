@@ -139,6 +139,8 @@ genExecReturnPart cfg lambda uniqueName =
 		forfield :: [StructField] -> String
 		forfield list =
 			case list of
+				[] ->
+					error "Impossible"
 				[last] ->
 					name
 				(x : xs) ->

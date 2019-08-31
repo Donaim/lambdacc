@@ -2,9 +2,9 @@ name:                lambdacc
 version:             0.1.0.0
 github:              "Donaim/lambdacc"
 license:             BSD3
-author:              "Vitaliy Mysak"
+author:              "Donaim"
 maintainer:          "3Donaim@gmail.com"
-copyright:           "2019 Vitaliy Mysak"
+copyright:           "2019 Donaim"
 
 extra-source-files:
 - README.md

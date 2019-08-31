@@ -205,9 +205,6 @@ genToplevel cfg top =
 			, leafExecs
 			]
 	where
-		x = 2
-		uniqueNames = undefined
-
 		genAllF :: (Leaf -> [String]) -> (Leaf -> Bool) -> Leaf -> [[String]]
 		genAllF f filterF leaf =
 			foldLeaf

@@ -82,23 +82,20 @@ data Tree =
 -- Tree and left-overs
 makeTree :: [Tree] -> [Token] -> (Tree, [Token])
 makeTree nodesBuff toks =
-	if null toks
-	then (close, [])
-	else
-		case kind t of
+	case toks of
+		[] -> (close, [])
+		(t : ts) -> withTandTs t ts
+	where
+		withTandTs t ts = case kind t of
 			CloseBracket ->
 				(close, ts)
 			OpenBracket  ->
 				makeTree (childNode : nodesBuff) childRight
 			_            ->
 				makeTree (curNode : nodesBuff) ts
-
-	where
-		t  = head toks
-		ts = tail toks
-
-		curNode = Node t
-		(childNode, childRight) = makeTree [] ts
+			where
+			curNode = Node t
+			(childNode, childRight) = makeTree [] ts
 
 		close :: Tree
 		close =

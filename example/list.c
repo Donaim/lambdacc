@@ -13,7 +13,7 @@ struct list {
 
 struct list * list_alloc() {
 	struct list * re = ALLOC_GET(sizeof(struct list));
-	re->next = NULL;
+	re->next = NULL; /* FIXME: empty_list->next == itself ! This is checked in list_to_int() */
 	return re;
 }
 

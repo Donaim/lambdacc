@@ -22,6 +22,7 @@ repl/repl.ini
 repl/repl.inline.ini
 
 .stack-work/
+*.lock
 *.cabal
 *~
 

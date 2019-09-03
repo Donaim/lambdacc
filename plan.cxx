@@ -16,15 +16,15 @@ struct abs {
 		int application_index_in_scope;
 		child_constructor_t application_constructor;
 	} application;
-	enum BODYPART_TYPE application_type;
+	enum BODYPART_TYPE application_type;                                /* TODO: use single type variable (reuse application_index_in_scope) */
 
 	union {
 		int variable_index_in_scope;
 		child_constructor_t variable_constructor;
 	} variable;
-	enum BODYPART_TYPE variable_type;
+	enum BODYPART_TYPE variable_type;                                   /* TODO: use single type variable (reuse application_index_in_scope) */
 
-	struct abs *scope[];
+	absp_t *scope;                                                      /* TODO: allocate together with struct */
 };
 
 absp_t reduce(absp_t me0, absp_t x0) {

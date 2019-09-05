@@ -30,11 +30,12 @@ lexTree scope (Node t) =
 lexTree scope (Branch all) =
 	case maybeLambdaIndex of
 		Just argIndex ->
-			getAbstraction scope (take argIndex all) (drop (argIndex + 1) all)
+			getAbstraction scope (reverse $ drop (argIndex + 1) reversed) (reverse $ take argIndex reversed)
 		Nothing ->
 			Application scope $ map (lexTree scope) all
 	where
-		maybeLambdaIndex = findIndex isLambdaTree (reverse all)
+		maybeLambdaIndex = findIndex isLambdaTree reversed
+		reversed = reverse all
 
 		isLambdaTree :: Tree -> Bool
 		isLambdaTree (Branch b) =

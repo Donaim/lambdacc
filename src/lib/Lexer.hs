@@ -28,36 +28,32 @@ lexTree :: Scope -> Tree -> Leaf
 lexTree scope (Node t) =
 	lexName scope (text t)
 lexTree scope (Branch all) =
-	case maybeArgIndex of
+	case maybeLambdaIndex of
 		Just argIndex ->
-			getLambda scope all (length all - argIndex - 1)
+			getAbstraction scope (take argIndex all) (drop (argIndex + 1) all)
 		Nothing ->
-			Application scope $ map (lexTree ([] : scope)) all
+			Application scope $ map (lexTree scope) all
 	where
-		maybeArgIndex = findIndex isArg (reverse all)
+		maybeLambdaIndex = findIndex isLambdaTree (reverse all)
 
-		isArg :: Tree -> Bool
-		isArg (Branch b) =
+		isLambdaTree :: Tree -> Bool
+		isLambdaTree (Branch b) =
 			False
-		isArg (Node t) =
+		isLambdaTree (Node t) =
 			kind t == LambdaSymbol
 
-getLambda :: Scope -> [Tree] -> Int -> Leaf
-getLambda scope all argIndex =
-	collectLambdas args
+getAbstraction :: Scope -> [Tree] -> [Tree] -> Leaf
+getAbstraction scope argsLeafs rest =
+	collectArguments args
 	where
-		args :: [String]
-		args = all |> take argIndex |> map castToName |> catMaybes
+		args = argsLeafs |> map castToName |> catMaybes
 
-		rest :: [Tree]
-		rest = all |> drop (argIndex + 1)
-
-		collectLambdas :: [String] -> Leaf
-		collectLambdas [] = error "Impossible"
-		collectLambdas [x] =
+		collectArguments :: [String] -> Leaf
+		collectArguments [] = error "Zero arguments in lambda"
+		collectArguments [x] =
 			Abstraction scope x $ map (lexTree newscope) rest
-		collectLambdas (x : xs) =
-			Abstraction scope x [collectLambdas xs]
+		collectArguments (x : xs) =
+			Abstraction scope x [collectArguments xs]
 
 		newscope :: Scope
 		newscope = (reverse args) ++ scope

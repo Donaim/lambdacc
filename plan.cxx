@@ -17,6 +17,8 @@ union child {
 	child_constructor_t constructor;
 };
 
+typedef void stack;
+
 struct term {
 	union child left;
 	enum BODYPART_TYPE left_type;                                /* TODO: use single type right (reuse index_in_scope) */

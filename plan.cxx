@@ -43,33 +43,42 @@ struct term {
 	termp_t *scope;                                                      /* TODO: allocate together with struct */
 };
 
-/* (x . ((y . y) x) x) 3
+/* (x . (((y . y) x) x)) (x . x)
+
+id = (x . x)
+stack:
+	id
+	-
+	id
+	id id
+
  */
 
-termp_t reduce(termp_t me0, termp_t x0) {
-	termp_t me = me0;
-	termp_t right = x0;
+termp_t reduce(termp_t me) {
 	stack_t stack = stack_new();
 
 	loop: {
 		if (me->is_abstraction) {
+			termp_t right = stack_pop(stack);
+			if (right == NULL) {
+				return me;
+			}
+
 			switch (me->body.abstraction.btype) {
 				case BODYPART_TYPE_IN_SCOPE:
 					me = me->scope[me->body.abstraction.b.index_in_scope];
-					goto maybeend;
+					break;
 				case BODYPART_TYPE_CONSTRUCTIBLE:
 					me = me->body.abstraction.b.constructor(me->scope, right);
 					break;
 			}
 		} else {
-			stack_push(stack, right);
-
 			switch (me->body.application.right_type) {
 				case BODYPART_TYPE_IN_SCOPE:
-					right = me->scope[me->body.application.right.index_in_scope];
+					stack_push(stack, me->scope[me->body.application.right.index_in_scope]);
 					break;
 				case BODYPART_TYPE_CONSTRUCTIBLE:
-					right = me->body.application.right.constructor(me->scope, NULL);
+					stack_push(stack, me->body.application.right.constructor(me->scope, NULL));
 					break;
 			}
 			switch (me->body.application.left_type) {
@@ -82,12 +91,6 @@ termp_t reduce(termp_t me0, termp_t x0) {
 			}
 		}
 
-		goto loop;
-	}
-
-maybeend:
-	right = stack_pop(stack);
-	if (right) {
 		goto loop;
 	}
 

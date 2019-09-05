@@ -25,7 +25,7 @@ lexGroup :: [Token] -> Term
 lexGroup toks = toks |> makeTree [] |> fst |> lexTree []
 
 lexTree :: Scope -> Tree -> Term
-lexTree scope (Node t) =
+lexTree scope (Leaf t) =
 	lexName scope (text t)
 lexTree scope (Branch all) =
 	case maybeLambdaIndex of
@@ -56,7 +56,7 @@ getAbstraction scope argsLeafs rest =
 
 		castToName :: Tree -> Maybe String
 		castToName (Branch bs) = error "Branch as a lambda argument"
-		castToName (Node t)    =
+		castToName (Leaf t)    =
 			case kind t of
 				LambdaSymbol -> Nothing
 				_            -> Just $ text t
@@ -68,7 +68,7 @@ lexName scope tex =
 	else Variable scope $ BindingTok tex Nothing
 
 data Tree =
-	Branch [Tree] | Node Token
+	Branch [Tree] | Leaf Token
 	deriving (Eq, Show, Read)
 
 -- Tree and left-overs
@@ -86,7 +86,7 @@ makeTree nodesBuff toks =
 			_            ->
 				makeTree (curNode : nodesBuff) ts
 			where
-			curNode = Node t
+			curNode = Leaf t
 			(childNode, childRight) = makeTree [] ts
 
 		close :: Tree
@@ -104,18 +104,18 @@ makeTree nodesBuff toks =
 isLambdaTree :: Tree -> Bool
 isLambdaTree (Branch b) =
 	False
-isLambdaTree (Node t) =
+isLambdaTree (Leaf t) =
 	kind t == LambdaSymbol
 
 stringifyTree :: Tree -> String
 stringifyTree = showTree 0
 
 showTree :: Int -> Tree -> String
-showTree tabs (Node t)  = 
+showTree tabs (Leaf t)  = 
 	'\n' : (replicate tabs '\t')  ++ text t
 
 showTree tabs (Branch []) = []
-showTree tabs (Branch ((Node t) : ts)) =
+showTree tabs (Branch ((Leaf t) : ts)) =
 	'\n' : (replicate tabs '\t')  ++ text t ++ (showTree tabs $ Branch ts)
 showTree tabs (Branch ((Branch ts) : tss)) =
 	'\n' : (replicate tabs '\t') ++ (showTree (tabs + 1) (Branch ts)) ++ (showTree tabs (Branch tss))

@@ -10,18 +10,18 @@ import Lexer
 import Debug.Trace
 
 data RTopLevel = RBinding String [Token] | RExpr [Token]
-	deriving (Eq)
+	deriving (Eq, Show, Read)
 
-instance Show RTopLevel where
-	show (RBinding name toks) = "{ RBinding '" ++ name ++ "' " ++ (concatMap (' ' :) $ map text toks) ++ " }"
-	show (RExpr toks)         = "{ RExpr " ++ (concatMap (' ' :) $ map text toks) ++ " }"
+stringifyRTopLevel :: RTopLevel -> String
+stringifyRTopLevel (RBinding name toks) = "{ RBinding '" ++ name ++ "' " ++ (concatMap (' ' :) $ map text toks) ++ " }"
+stringifyRTopLevel (RExpr toks)         = "{ RExpr " ++ (concatMap (' ' :) $ map text toks) ++ " }"
 
 data TopLevel = Binding String Leaf | Expr Leaf
-	deriving (Eq)
+	deriving (Eq, Show, Read)
 
-instance Show TopLevel where
-	show (Binding name leaf) = "{ Binding \'" ++ name ++ "':\n" ++ show leaf ++ "}"
-	show (Expr leaf)         = "{ Expr:\n" ++ show leaf  ++ "}"
+stringifyTopLevel :: TopLevel -> String
+stringifyTopLevel (Binding name leaf) = "{ Binding \'" ++ name ++ "':\n" ++ show leaf ++ "}"
+stringifyTopLevel (Expr leaf)         = "{ Expr:\n" ++ show leaf  ++ "}"
 
 parse :: CompilerConfig -> [Token] -> [TopLevel]
 parse cfg toks = rparse cfg toks |> map transformRaw

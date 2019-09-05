@@ -12,7 +12,7 @@ import Data.Maybe
 
 data TokenType =
 	OpenBracket | CloseBracket | LambdaSymbol | Name | Newline | Space | Comment | Quote
-	deriving (Show, Eq)
+	deriving (Eq, Show, Read)
 
 data Token =
 	Token
@@ -21,7 +21,7 @@ data Token =
 	, lineno     :: Int
 	, charno     :: Int
 	}
-	deriving (Show, Eq)
+	deriving (Eq, Show, Read)
 
 type TokenizeResponce  = Maybe (TokenType, Int)
 type TokenizeTransform = String -> TokenizeResponce

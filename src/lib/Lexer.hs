@@ -11,13 +11,13 @@ import Data.List
 import Data.Maybe
 
 data Identifier = Argument String | BindingTok String (Maybe Leaf)
-	deriving (Show, Eq)
+	deriving (Eq, Show, Read)
 
 data Leaf =
 	Abstraction Scope String [Leaf] |
 	Application Scope [Leaf] |
 	Variable Scope Identifier
-	deriving (Eq)
+	deriving (Eq, Show, Read)
 
 type Scope = [String]
 
@@ -73,7 +73,7 @@ lexName scope tex =
 
 data Tree =
 	Branch [Tree] | Node Token
-	deriving (Eq)
+	deriving (Eq, Show, Read)
 
 -- Tree and left-overs
 makeTree :: [Tree] -> [Token] -> (Tree, [Token])
@@ -105,8 +105,8 @@ makeTree nodesBuff toks =
 
 -- UTILITY --
 
-instance Show Tree where
-	show = showTree 0
+stringifyTree :: Tree -> String
+stringifyTree = showTree 0
 
 showTree :: Int -> Tree -> String
 showTree tabs (Node t)  = 
@@ -118,8 +118,8 @@ showTree tabs (Branch ((Node t) : ts)) =
 showTree tabs (Branch ((Branch ts) : tss)) =
 	'\n' : (replicate tabs '\t') ++ (showTree (tabs + 1) (Branch ts)) ++ (showTree tabs (Branch tss))
 
-instance Show Leaf where
-	show = showLeaf 0
+stringifyLeaf :: Leaf -> String
+stringifyLeaf = showLeaf 0
 
 showLeaf :: Int -> Leaf -> String
 showLeaf tabs (Variable _ t)  = 

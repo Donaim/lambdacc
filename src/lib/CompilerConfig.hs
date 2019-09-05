@@ -11,4 +11,4 @@ data CompilerConfig = CompilerConfig
 	, useTypeid       :: Bool
 	, headerString    :: String
 	}
-	deriving (Show, Eq)
+	deriving (Eq, Show, Read)

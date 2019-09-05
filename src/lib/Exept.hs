@@ -5,10 +5,10 @@ import Control.Applicative
 import Control.Monad
 
 data ParseError = SyntaxError String | LogicError String
-	deriving (Show, Eq)
+	deriving (Eq, Show, Read)
 
 data ParseResult a = Ok a | Bad ParseError
-	deriving (Show, Eq)
+	deriving (Eq, Show, Read)
 
 instance Functor ParseResult where
 	fmap = liftM

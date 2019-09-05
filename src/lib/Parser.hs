@@ -20,8 +20,8 @@ data TopLevel = Binding String Leaf | Expr Leaf
 	deriving (Eq, Show, Read)
 
 stringifyTopLevel :: TopLevel -> String
-stringifyTopLevel (Binding name leaf) = "{ Binding \'" ++ name ++ "':\n" ++ show leaf ++ "}"
-stringifyTopLevel (Expr leaf)         = "{ Expr:\n" ++ show leaf  ++ "}"
+stringifyTopLevel (Binding name leaf) = "{ Binding \'" ++ name ++ "':\n" ++ stringifyLeaf leaf ++ "}"
+stringifyTopLevel (Expr leaf)         = "{ Expr:\n" ++ stringifyLeaf leaf  ++ "}"
 
 parse :: CompilerConfig -> [Token] -> [TopLevel]
 parse cfg toks = rparse cfg toks |> map transformRaw

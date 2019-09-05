@@ -84,7 +84,7 @@ showLexed s = concatMap ('\n' :) out
 		toks   = tokenize cfg s
 		groups = groupTokens cfg toks
 		parsed = map (parse cfg) groups
-		out    = (map (\t -> foldr (++) "" $ map show t) parsed) :: [String]
+		out    = (map (\t -> foldr (++) "" $ map stringifyTopLevel t) parsed) :: [String]
 		-- prefix = (take 20 $ repeat '-') ++ "\n"                  :: String
 		-- fout   = foldr (++) "" $ map ('\n' :) $ map (prefix ++) $ out
 

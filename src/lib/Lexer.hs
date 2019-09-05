@@ -38,12 +38,6 @@ lexTree scope (Branch all) =
 		maybeLambdaIndex = findIndex isLambdaTree reversed
 		reversed = reverse all
 
-		isLambdaTree :: Tree -> Bool
-		isLambdaTree (Branch b) =
-			False
-		isLambdaTree (Node t) =
-			kind t == LambdaSymbol
-
 getAbstraction :: Scope -> [Tree] -> [Tree] -> Leaf
 getAbstraction scope argsLeafs rest =
 	collectArguments args
@@ -106,6 +100,12 @@ makeTree nodesBuff toks =
 
 
 -- UTILITY --
+
+isLambdaTree :: Tree -> Bool
+isLambdaTree (Branch b) =
+	False
+isLambdaTree (Node t) =
+	kind t == LambdaSymbol
 
 stringifyTree :: Tree -> String
 stringifyTree = showTree 0

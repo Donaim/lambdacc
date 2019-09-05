@@ -43,11 +43,11 @@ getExecDecl execName = "ff " ++ execName ++ " (ff me, ff x)"
 
 data StructField =
 	StructField
-	{ leaf :: Leaf
+	{ leaf :: Term
 	, index :: Int
 	}
 
-getFields :: Leaf -> [StructField]
+getFields :: Term -> [StructField]
 getFields l =
 	case l of
 		(Abstraction scope argname leafs) ->
@@ -57,20 +57,20 @@ getFields l =
 		(Variable scope id) ->
 			error "Getting field of argument"
 	where
-		collect :: [Leaf] -> Int -> [StructField]
+		collect :: [Term] -> Int -> [StructField]
 		collect [] index = []
 		collect (v@(Variable scope id) : xs) index =
 			StructField { leaf = v, index = -1 } : collect xs index
 		collect (l : xs) index =
 			StructField { leaf = l, index = index } : collect xs (index + 1)
 
-genTypeuuid :: CompilerConfig -> Leaf -> String -> [String]
+genTypeuuid :: CompilerConfig -> Term -> String -> [String]
 genTypeuuid cfg lambda uniqueName =
 	if useTypeid cfg then
 		["const int " ++ (getTypeid uniqueName) ++ " = __COUNTER__;"]
 	else []
 
-genInitFunc :: CompilerConfig -> Leaf -> String -> [String]
+genInitFunc :: CompilerConfig -> Term -> String -> [String]
 genInitFunc cfg lambda uniqueName =
 	[ decl ++ " {"
 	, "\tff me = ALLOC_GET(sizeof(struct fun));"
@@ -104,7 +104,7 @@ getArgNameByParents cfg scope name =
 		Nothing ->
 			error "Argument not found by parents"
 
-getArgName :: CompilerConfig -> Leaf -> String
+getArgName :: CompilerConfig -> Term -> String
 getArgName cfg lambda =
 	case lambda of
 		(Variable scope id) ->
@@ -116,7 +116,7 @@ getArgName cfg lambda =
 		_ ->
 			getInitName (getUniqueName lambda) ++ "(me)"
 
-genExecReturnPart :: CompilerConfig -> Leaf -> String -> String
+genExecReturnPart :: CompilerConfig -> Term -> String -> String
 genExecReturnPart cfg lambda uniqueName =
 	case lambda of
 		(Variable scope id) ->
@@ -148,7 +148,7 @@ genExecReturnPart cfg lambda uniqueName =
 			where
 				name = getArgName cfg (leaf (head list))
 
-genExecReturnStatement :: CompilerConfig -> Leaf -> String -> String
+genExecReturnStatement :: CompilerConfig -> Term -> String -> String
 genExecReturnStatement cfg lambda uniqueName =
 	let ret = genExecReturnPart cfg lambda uniqueName
 	in case lambda of
@@ -163,7 +163,7 @@ genExecReturnStatement cfg lambda uniqueName =
 				(BindingTok name body) ->
 					"\treturn eval(" ++ ret ++ ", x);"
 
-genExecFunc :: CompilerConfig -> Leaf -> String -> [String]
+genExecFunc :: CompilerConfig -> Term -> String -> [String]
 genExecFunc cfg lambda uniqueName =
 	[ decl ++ "{"
 	, returnStatement
@@ -205,7 +205,7 @@ genToplevel cfg top =
 			, leafExecs
 			]
 	where
-		genAllF :: (Leaf -> [String]) -> (Leaf -> Bool) -> Leaf -> [[String]]
+		genAllF :: (Term -> [String]) -> (Term -> Bool) -> Term -> [[String]]
 		genAllF f filterF leaf =
 			foldLeaf
 				(\x acc ->
@@ -215,23 +215,23 @@ genToplevel cfg top =
 				[]
 				leaf
 
-		leafInits :: Leaf -> [[String]]
+		leafInits :: Term -> [[String]]
 		leafInits = genAllF f leafIsVariable
 			where f leaf = genInitFunc cfg leaf (getUniqueName leaf)
 
-		leafExecs :: Leaf -> [[String]]
+		leafExecs :: Term -> [[String]]
 		leafExecs = genAllF f leafIsVariable
 			where f leaf = genExecFunc cfg leaf (getUniqueName leaf)
 
-		leafTypeids :: Leaf -> [[String]]
+		leafTypeids :: Term -> [[String]]
 		leafTypeids = genAllF f leafIsVariable
 			where f leaf = genTypeuuid cfg leaf (getUniqueName leaf)
 
-		leafInitDecls :: Leaf -> [[String]]
+		leafInitDecls :: Term -> [[String]]
 		leafInitDecls = genAllF f leafIsArgument
 			where f leaf = genInitDecl cfg (getUniqueName leaf)
 
-		leafExecDecls :: Leaf -> [[String]]
+		leafExecDecls :: Term -> [[String]]
 		leafExecDecls = genAllF f leafIsVariable
 			where f leaf = genExecDecl cfg (getUniqueName leaf)
 

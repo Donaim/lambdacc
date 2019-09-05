@@ -63,7 +63,7 @@ simpleExprs =
 	, "a -> a (a SomeB++inding a)"
 	]
 
-lexString :: CompilerConfig -> String -> Leaf
+lexString :: CompilerConfig -> String -> Term
 lexString cfg s = s |> tokenize cfg |> stripUseless |> lexGroup
 
 type VisualFunc = String -> String
@@ -119,10 +119,10 @@ showUniqueNames s =
 		leafs      = map lexClassified classified
 		uniqs      = map getUnique leafs
 
-		lexClassified :: RTopLevel -> (String, Leaf)
+		lexClassified :: RTopLevel -> (String, Term)
 		lexClassified (RBinding name toks) = (name , lexGroup toks)
 		lexClassified (RExpr toks)         = ([],    lexGroup toks)
 
-		getUnique :: (String, Leaf) -> (String, String)
+		getUnique :: (String, Term) -> (String, String)
 		getUnique (name, leaf) = (name, getUniqueName leaf)
 

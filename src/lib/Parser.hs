@@ -16,7 +16,7 @@ stringifyRTopLevel :: RTopLevel -> String
 stringifyRTopLevel (RBinding name toks) = "{ RBinding '" ++ name ++ "' " ++ (concatMap (' ' :) $ map text toks) ++ " }"
 stringifyRTopLevel (RExpr toks)         = "{ RExpr " ++ (concatMap (' ' :) $ map text toks) ++ " }"
 
-data TopLevel = Binding String Leaf | Expr Leaf
+data TopLevel = Binding String Term | Expr Term
 	deriving (Eq, Show, Read)
 
 stringifyTopLevel :: TopLevel -> String

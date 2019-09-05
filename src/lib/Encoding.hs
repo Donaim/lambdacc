@@ -12,7 +12,7 @@ import Debug.Trace
 import Data.List
 
 -- TODO: make this more efficient
-getUniqueName :: Leaf -> [Char]
+getUniqueName :: Term -> [Char]
 getUniqueName (Variable scope id) =
 	getVariableName scope id
 getUniqueName (Abstraction scope arg leafs) =

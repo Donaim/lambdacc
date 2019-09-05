@@ -10,21 +10,21 @@ import Debug.Trace
 import Data.List
 import Data.Maybe
 
-data Identifier = Argument String | BindingTok String (Maybe Leaf)
+data Identifier = Argument String | BindingTok String (Maybe Term)
 	deriving (Eq, Show, Read)
 
-data Leaf =
-	Abstraction Scope String [Leaf] |
-	Application Scope [Leaf] |
+data Term =
+	Abstraction Scope String [Term] |
+	Application Scope [Term] |
 	Variable Scope Identifier
 	deriving (Eq, Show, Read)
 
 type Scope = [String]
 
-lexGroup :: [Token] -> Leaf
+lexGroup :: [Token] -> Term
 lexGroup toks = toks |> makeTree [] |> fst |> lexTree []
 
-lexTree :: Scope -> Tree -> Leaf
+lexTree :: Scope -> Tree -> Term
 lexTree scope (Node t) =
 	lexName scope (text t)
 lexTree scope (Branch all) =
@@ -38,13 +38,13 @@ lexTree scope (Branch all) =
 		maybeLambdaIndex = findIndex isLambdaTree reversed
 		reversed = reverse all
 
-getAbstraction :: Scope -> [Tree] -> [Tree] -> Leaf
+getAbstraction :: Scope -> [Tree] -> [Tree] -> Term
 getAbstraction scope argsLeafs rest =
 	collectArguments args
 	where
 		args = argsLeafs |> map castToName |> catMaybes
 
-		collectArguments :: [String] -> Leaf
+		collectArguments :: [String] -> Term
 		collectArguments [] = error "Zero arguments in lambda"
 		collectArguments [x] =
 			Abstraction scope x $ map (lexTree newscope) rest
@@ -61,7 +61,7 @@ getAbstraction scope argsLeafs rest =
 				LambdaSymbol -> Nothing
 				_            -> Just $ text t
 
-lexName :: Scope -> String -> Leaf
+lexName :: Scope -> String -> Term
 lexName scope tex =
 	if tex `elem` scope
 	then Variable scope $ Argument tex
@@ -120,10 +120,10 @@ showTree tabs (Branch ((Node t) : ts)) =
 showTree tabs (Branch ((Branch ts) : tss)) =
 	'\n' : (replicate tabs '\t') ++ (showTree (tabs + 1) (Branch ts)) ++ (showTree tabs (Branch tss))
 
-stringifyLeaf :: Leaf -> String
+stringifyLeaf :: Term -> String
 stringifyLeaf = showLeaf 0
 
-showLeaf :: Int -> Leaf -> String
+showLeaf :: Int -> Term -> String
 showLeaf tabs (Variable _ t)  = 
 	case t of
 		Argument name ->
@@ -147,27 +147,27 @@ showLeaf tabs (Abstraction _ arg ts) =
 	where
 		prefixed name = (replicate tabs '\t') ++ name
 
-countVariables :: Leaf -> Int
+countVariables :: Term -> Int
 countVariables (Variable _ _)     = 1
 countVariables (Abstraction _ _ leafs) = 1 + (sum $ map countVariables leafs)
 countVariables (Application _ leafs)  = sum $ map countVariables leafs
 
-foldLeaf :: (Leaf -> a -> a) -> a -> Leaf -> a
+foldLeaf :: (Term -> a -> a) -> a -> Term -> a
 foldLeaf f acc v@(Variable scope id) = f v acc
 foldLeaf f acc l@(Abstraction scope argname leafs) = foldr (foldLeafFlip f) (f l acc) leafs
 foldLeaf f acc s@(Application scope leafs) = foldr (foldLeafFlip f) (f s acc) leafs
 
-foldLeafFlip :: (Leaf -> a -> a) -> Leaf -> a -> a
+foldLeafFlip :: (Term -> a -> a) -> Term -> a -> a
 foldLeafFlip f a b = foldLeaf f b a
 
-leafIsArgument :: Leaf -> Bool
+leafIsArgument :: Term -> Bool
 leafIsArgument (Variable scope id) =
 	case id of
 		(Argument name) -> True
 		_ -> False
 leafIsArgument _ = False
 
-leafIsVariable :: Leaf -> Bool
+leafIsVariable :: Term -> Bool
 leafIsVariable x =
 	case x of
 		(Variable scope id) -> True

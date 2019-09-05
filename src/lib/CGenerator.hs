@@ -50,8 +50,8 @@ data StructField =
 getFields :: Term -> [StructField]
 getFields l =
 	case l of
-		(Abstraction scope argname leafs) ->
-			collect leafs 0
+		(Abstraction scope argname body) ->
+			collect [body] 0 -- FIXME: does not make sense
 		(Application scope a b) ->
 			collect [a, b] 0
 		(Variable scope id) ->

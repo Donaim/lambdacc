@@ -15,8 +15,8 @@ import Data.List
 getUniqueName :: Term -> [Char]
 getUniqueName (Variable scope id) =
 	getVariableName scope id
-getUniqueName (Abstraction scope arg leafs) =
-	'_' : 'L' : (concatMap getUniqueName leafs) ++ "_E"
+getUniqueName (Abstraction scope arg body) =
+	'_' : 'L' : (getUniqueName body) ++ "_E"
 getUniqueName (Application scope a b) =
 	'_' : 'S' : (concatMap getUniqueName [a, b]) ++ "_E"        -- TODO: better getUniqueName
 

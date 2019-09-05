@@ -14,7 +14,7 @@ data Identifier = Argument String | BindingTok String (Maybe Term)
 	deriving (Eq, Show, Read)
 
 data Term =
-	Abstraction Scope String [Term] |
+	Abstraction Scope String Term |
 	Application Scope Term Term |
 	Variable Scope Identifier
 	deriving (Eq, Show, Read)
@@ -41,7 +41,7 @@ lexTree scope (Branch all) =
 getApplication :: Scope -> [Tree] -> Term
 getApplication scope trees = case trees of
 	[] -> error "Empty application"
-	[x] -> error "Single application"
+	[x] -> lexTree scope x
 	(x : xs) -> foldl f (lexTree scope x) xs
 	where f left current = Application scope left (lexTree scope current)
 
@@ -54,9 +54,9 @@ getAbstraction scope argsLeafs rest =
 		collectArguments :: [String] -> Term
 		collectArguments [] = error "Zero arguments in lambda"
 		collectArguments [x] =
-			Abstraction scope x $ map (lexTree newscope) rest
+			Abstraction scope x $ getApplication newscope rest
 		collectArguments (x : xs) =
-			Abstraction scope x [collectArguments xs]
+			Abstraction scope x (collectArguments xs)
 
 		newscope :: Scope
 		newscope = (reverse args) ++ scope
@@ -147,19 +147,19 @@ showLeaf tabs (Variable _ t)  =
 showLeaf tabs (Application _ a b) =
 	concatMap (showLeaf (tabs + 1)) [a, b]
 
-showLeaf tabs (Abstraction _ arg ts) =
-	prefixed ("Abstraction of [" ++ arg ++ "]:\n" ++ (concatMap (showLeaf (tabs + 1)) ts))
+showLeaf tabs (Abstraction _ arg body) =
+	prefixed ("Abstraction of [" ++ arg ++ "]:\n" ++ (showLeaf (tabs + 1)) body)
 	where
 		prefixed name = (replicate tabs '\t') ++ name
 
 countVariables :: Term -> Int
 countVariables (Variable _ _)     = 1
-countVariables (Abstraction _ _ leafs) = 1 + (sum $ map countVariables leafs)
-countVariables (Application _ a b)  = sum $ map countVariables [a, b]
+countVariables (Abstraction _ _ body) = 1 + (countVariables body)
+countVariables (Application _ a b)  = countVariables a + countVariables b
 
 foldLeaf :: (Term -> a -> a) -> a -> Term -> a
 foldLeaf f acc v@(Variable scope id) = f v acc
-foldLeaf f acc l@(Abstraction scope argname leafs) = foldr (foldLeafFlip f) (f l acc) leafs
+foldLeaf f acc l@(Abstraction scope argname body) = foldLeaf f acc body
 foldLeaf f acc s@(Application scope a b) = foldr (foldLeafFlip f) (f s acc) [a, b]
 
 foldLeafFlip :: (Term -> a -> a) -> Term -> a -> a

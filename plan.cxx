@@ -47,11 +47,13 @@ struct term {
 
 id = (x . x)
 stack:
-	id
-	-
-	id
-	id id
-
+	-                   (x . (((y . y) x) x)) (x . x)
+	id                  (x . (((y . y) x) x))
+	-                   ((y . y) x) x
+	id                  (y . y) x
+	id id               (y . y)
+	id                  (x . x)
+	-                   (x . x)
  */
 
 termp_t reduce(termp_t me) {

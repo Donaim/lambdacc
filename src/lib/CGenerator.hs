@@ -50,9 +50,9 @@ data StructField =
 getFields :: Leaf -> [StructField]
 getFields l =
 	case l of
-		(Lambda scope argname leafs) ->
+		(Abstraction scope argname leafs) ->
 			collect leafs 0
-		(SubExpr scope leafs) ->
+		(Application scope leafs) ->
 			collect leafs 0
 		(Variable scope id) ->
 			error "Getting field of argument"
@@ -152,9 +152,9 @@ genExecReturnStatement :: CompilerConfig -> Leaf -> String -> String
 genExecReturnStatement cfg lambda uniqueName =
 	let ret = genExecReturnPart cfg lambda uniqueName
 	in case lambda of
-		(Lambda scope argname leafs) ->
+		(Abstraction scope argname leafs) ->
 			"\treturn " ++ ret ++ ";"
-		(SubExpr scope leafs) ->
+		(Application scope leafs) ->
 			"\treturn eval(" ++ ret ++ ", x);"
 		(Variable scope id) ->
 			case id of

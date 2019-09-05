@@ -14,8 +14,8 @@ data Identifier = Argument String | BindingTok String (Maybe Leaf)
 	deriving (Show, Eq)
 
 data Leaf =
-	Lambda Scope String [Leaf] |
-	SubExpr Scope [Leaf] |
+	Abstraction Scope String [Leaf] |
+	Application Scope [Leaf] |
 	Variable Scope Identifier
 	deriving (Eq)
 
@@ -32,7 +32,7 @@ lexTree scope (Branch all) =
 		Just argIndex ->
 			getLambda scope all (length all - argIndex - 1)
 		Nothing ->
-			SubExpr scope $ map (lexTree ([] : scope)) all
+			Application scope $ map (lexTree ([] : scope)) all
 	where
 		maybeArgIndex = findIndex isArg (reverse all)
 
@@ -55,9 +55,9 @@ getLambda scope all argIndex =
 		collectLambdas :: [String] -> Leaf
 		collectLambdas [] = error "Impossible"
 		collectLambdas [x] =
-			Lambda scope x $ map (lexTree newscope) rest
+			Abstraction scope x $ map (lexTree newscope) rest
 		collectLambdas (x : xs) =
-			Lambda scope x [collectLambdas xs]
+			Abstraction scope x [collectLambdas xs]
 
 		newscope :: Scope
 		newscope = (reverse args) ++ scope
@@ -139,25 +139,25 @@ showLeaf tabs (Variable _ t)  =
 	where
 		prefixed name = (replicate tabs '\t') ++ name ++ "\n"
 
-showLeaf tabs (SubExpr _ ts) =
+showLeaf tabs (Application _ ts) =
 	concatMap (showLeaf (tabs + 1)) ts
 	where
 		prefixed name = (replicate tabs '\t') ++ name ++ "\n"
 
-showLeaf tabs (Lambda _ arg ts) =
-	prefixed ("Lambda of [" ++ arg ++ "]:\n" ++ (concatMap (showLeaf (tabs + 1)) ts))
+showLeaf tabs (Abstraction _ arg ts) =
+	prefixed ("Abstraction of [" ++ arg ++ "]:\n" ++ (concatMap (showLeaf (tabs + 1)) ts))
 	where
 		prefixed name = (replicate tabs '\t') ++ name
 
 countVariables :: Leaf -> Int
 countVariables (Variable _ _)     = 1
-countVariables (Lambda _ _ leafs) = 1 + (sum $ map countVariables leafs)
-countVariables (SubExpr _ leafs)  = sum $ map countVariables leafs
+countVariables (Abstraction _ _ leafs) = 1 + (sum $ map countVariables leafs)
+countVariables (Application _ leafs)  = sum $ map countVariables leafs
 
 foldLeaf :: (Leaf -> a -> a) -> a -> Leaf -> a
 foldLeaf f acc v@(Variable scope id) = f v acc
-foldLeaf f acc l@(Lambda scope argname leafs) = foldr (foldLeafFlip f) (f l acc) leafs
-foldLeaf f acc s@(SubExpr scope leafs) = foldr (foldLeafFlip f) (f s acc) leafs
+foldLeaf f acc l@(Abstraction scope argname leafs) = foldr (foldLeafFlip f) (f l acc) leafs
+foldLeaf f acc s@(Application scope leafs) = foldr (foldLeafFlip f) (f s acc) leafs
 
 foldLeafFlip :: (Leaf -> a -> a) -> Leaf -> a -> a
 foldLeafFlip f a b = foldLeaf f b a

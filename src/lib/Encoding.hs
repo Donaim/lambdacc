@@ -15,9 +15,9 @@ import Data.List
 getUniqueName :: Leaf -> [Char]
 getUniqueName (Variable scope id) =
 	getVariableName scope id
-getUniqueName (Lambda scope arg leafs) =
+getUniqueName (Abstraction scope arg leafs) =
 	'_' : 'L' : (concatMap getUniqueName leafs) ++ "_E"
-getUniqueName (SubExpr scope leafs) =
+getUniqueName (Application scope leafs) =
 	'_' : 'S' : (concatMap getUniqueName leafs) ++ "_E"
 
 getVariableName :: Scope -> Identifier -> [Char]

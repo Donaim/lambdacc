@@ -1,69 +1,69 @@
 
-struct abs;
+typedef unsigned char bool;
+struct term;
 
-typedef struct abs* absp_t;
-typedef absp_t (*child_constructor_t)(absp_t, absp_t); /* accepts parent and parent argument to copy to scope */
+typedef struct term* termp_t;
+typedef termp_t (*child_constructor_t)(termp_t, termp_t); /* accepts parent and parent argument to copy to scope */
 
 enum BODYPART_TYPE {
 	BODYPART_TYPE_IN_SCOPE,
 	BODYPART_TYPE_IS_ABSTRACTION_ARGUMENT,
 	BODYPART_TYPE_CONSTRUCTIBLE,
-	BODYPART_TYPE_NOT_APPLICATION,
+	BODYPART_TYPE_EMPTY,
 };
 
-struct abs {
-	union {
-		int application_index_in_scope;
-		child_constructor_t application_constructor;
-	} application;
-	enum BODYPART_TYPE application_type;                                /* TODO: use single type variable (reuse application_index_in_scope) */
-
-	union {
-		int variable_index_in_scope;
-		child_constructor_t variable_constructor;
-	} variable;
-	enum BODYPART_TYPE variable_type;                                   /* TODO: use single type variable (reuse application_index_in_scope) */
-
-	absp_t *scope;                                                      /* TODO: allocate together with struct */
+union child {
+	int index_in_scope;
+	child_constructor_t constructor;
 };
 
-absp_t reduce(absp_t me0, absp_t x0) {
-	absp_t me = me0;
-	absp_t x = x0;
+struct term {
+	union child left;
+	enum BODYPART_TYPE left_type;                                /* TODO: use single type right (reuse index_in_scope) */
+
+	union child right;
+	enum BODYPART_TYPE right_type;                               /* TODO: use single type right (reuse index_in_scope) */
+
+	termp_t *scope;                                              /* TODO: allocate together with struct */
+};
+
+termp_t reduce(termp_t me0, termp_t x0) {
+	termp_t me = me0;
+	termp_t x = x0;
 
 	while (1) {
-		absp_t variable;
-		absp_t application;
+		termp_t right;
+		termp_t left;
 
-		switch (me->application_type) {
+		switch (me->left_type) {
 			case BODYPART_TYPE_IN_SCOPE:
-				application = me->scope[me->application.application_index_in_scope];
+				left = me->scope[me->left.index_in_scope];
 				break;
 			case BODYPART_TYPE_IS_ABSTRACTION_ARGUMENT:
-				application = x;
+				left = x;
 				break;
 			case BODYPART_TYPE_CONSTRUCTIBLE:
-				application = me->application.application_constructor(me, x);
+				left = me->left.constructor(me, x);
 				break;
 		}
-		switch (me->variable_type) {
+		switch (me->right_type) {
 			case BODYPART_TYPE_IN_SCOPE:
-				variable = me->scope[me->variable.variable_index_in_scope];
+				right = me->scope[me->right.index_in_scope];
 				break;
 			case BODYPART_TYPE_IS_ABSTRACTION_ARGUMENT:
-				variable = x;
+				right = x;
 				break;
 			case BODYPART_TYPE_CONSTRUCTIBLE:
-				variable = me->variable.variable_constructor(me, x);
+				right = me->right.constructor(me, x);
 				break;
 		}
 
-		if (me->application_type == BODYPART_TYPE_NOT_APPLICATION) {
-			me = variable;
+		if (me->right_type == BODYPART_TYPE_EMPTY) {
+			me = left;
 			break;
 		} else {
-			me = application;
-			x = variable;
+			me = left;
+			x = right;
 		}
 	}
 

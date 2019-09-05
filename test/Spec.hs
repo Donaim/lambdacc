@@ -23,9 +23,10 @@ main :: IO ()
 main = do
 	text <- getText
 	putBox "Test suite not yet implemented"
-	-- showGroup
+	putBox $ showGroup text
 	-- showTopLevel
 	-- showLeafs
+	putBox $ showLexed text
 	putBox $ showUniqueNames text
 
 getText :: IO String
@@ -76,6 +77,16 @@ showGroup s =
 		out    = (map (\t -> foldr (++) "" $ map text t) groups) :: [String]
 		prefix = (take 20 $ repeat '-') ++ "\n"                  :: String
 		fout   = foldr (++) "" $ map ('\n' :) $ map (prefix ++) $ out
+
+showLexed :: VisualFunc
+showLexed s = concatMap ('\n' :) out
+	where
+		toks   = tokenize cfg s
+		groups = groupTokens cfg toks
+		parsed = map (parse cfg) groups
+		out    = (map (\t -> foldr (++) "" $ map show t) parsed) :: [String]
+		-- prefix = (take 20 $ repeat '-') ++ "\n"                  :: String
+		-- fout   = foldr (++) "" $ map ('\n' :) $ map (prefix ++) $ out
 
 showTopLevel :: VisualFunc
 showTopLevel s =

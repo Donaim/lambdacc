@@ -15,7 +15,7 @@ data Identifier = Argument String | BindingTok String (Maybe Term)
 
 data Term =
 	Abstraction Scope String [Term] |
-	Application Scope [Term] |
+	Application Scope Term Term |
 	Variable Scope Identifier
 	deriving (Eq, Show, Read)
 
@@ -33,10 +33,17 @@ lexTree scope (Branch all) =
 			getAbstraction scope (reverse droped) (reverse taken)
 			where (taken, droped) = splitAt argIndex reversed
 		Nothing ->
-			Application scope $ map (lexTree scope) all
+			getApplication scope all
 	where
 		maybeLambdaIndex = findIndex isLambdaTree reversed
 		reversed = reverse all
+
+getApplication :: Scope -> [Tree] -> Term
+getApplication scope trees = case trees of
+	[] -> error "Empty application"
+	[x] -> error "Single application"
+	(x : xs) -> foldl f (lexTree scope x) xs
+	where f left current = Application scope left (lexTree scope current)
 
 getAbstraction :: Scope -> [Tree] -> [Tree] -> Term
 getAbstraction scope argsLeafs rest =
@@ -137,10 +144,8 @@ showLeaf tabs (Variable _ t)  =
 	where
 		prefixed name = (replicate tabs '\t') ++ name ++ "\n"
 
-showLeaf tabs (Application _ ts) =
-	concatMap (showLeaf (tabs + 1)) ts
-	where
-		prefixed name = (replicate tabs '\t') ++ name ++ "\n"
+showLeaf tabs (Application _ a b) =
+	concatMap (showLeaf (tabs + 1)) [a, b]
 
 showLeaf tabs (Abstraction _ arg ts) =
 	prefixed ("Abstraction of [" ++ arg ++ "]:\n" ++ (concatMap (showLeaf (tabs + 1)) ts))
@@ -150,12 +155,12 @@ showLeaf tabs (Abstraction _ arg ts) =
 countVariables :: Term -> Int
 countVariables (Variable _ _)     = 1
 countVariables (Abstraction _ _ leafs) = 1 + (sum $ map countVariables leafs)
-countVariables (Application _ leafs)  = sum $ map countVariables leafs
+countVariables (Application _ a b)  = sum $ map countVariables [a, b]
 
 foldLeaf :: (Term -> a -> a) -> a -> Term -> a
 foldLeaf f acc v@(Variable scope id) = f v acc
 foldLeaf f acc l@(Abstraction scope argname leafs) = foldr (foldLeafFlip f) (f l acc) leafs
-foldLeaf f acc s@(Application scope leafs) = foldr (foldLeafFlip f) (f s acc) leafs
+foldLeaf f acc s@(Application scope a b) = foldr (foldLeafFlip f) (f s acc) [a, b]
 
 foldLeafFlip :: (Term -> a -> a) -> Term -> a -> a
 foldLeafFlip f a b = foldLeaf f b a

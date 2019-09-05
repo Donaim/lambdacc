@@ -52,8 +52,8 @@ getFields l =
 	case l of
 		(Abstraction scope argname leafs) ->
 			collect leafs 0
-		(Application scope leafs) ->
-			collect leafs 0
+		(Application scope a b) ->
+			collect [a, b] 0
 		(Variable scope id) ->
 			error "Getting field of argument"
 	where
@@ -152,9 +152,9 @@ genExecReturnStatement :: CompilerConfig -> Term -> String -> String
 genExecReturnStatement cfg lambda uniqueName =
 	let ret = genExecReturnPart cfg lambda uniqueName
 	in case lambda of
-		(Abstraction scope argname leafs) ->
+		Abstraction {} ->
 			"\treturn " ++ ret ++ ";"
-		(Application scope leafs) ->
+		Application {} ->
 			"\treturn eval(" ++ ret ++ ", x);"
 		(Variable scope id) ->
 			case id of

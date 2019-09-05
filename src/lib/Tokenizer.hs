@@ -25,45 +25,44 @@ data Token =
 
 type TokenizeResponce  = Maybe (TokenType, Int)
 type TokenizeTransform = String -> TokenizeResponce
-type TokenizeFulltype  = CompilerConfig -> TokenizeTransform
 
-tokenizeLambdaSymbol :: TokenizeFulltype
-tokenizeLambdaSymbol cfg s =
-	if (lambdaSymbol cfg) `isPrefixOf` s
+tokenizeLambdaSymbol :: String -> TokenizeTransform
+tokenizeLambdaSymbol lambdaSymbol s =
+	if lambdaSymbol `isPrefixOf` s
 	then Just (LambdaSymbol, split)
 	else Nothing
-	where split = length (lambdaSymbol cfg)
+	where split = length lambdaSymbol
 
-tokenizeOpenBracket :: TokenizeFulltype
-tokenizeOpenBracket _ ('(' : xs ) = Just ( OpenBracket, 1 )
-tokenizeOpenBracket _ _ = Nothing
+tokenizeOpenBracket :: TokenizeTransform
+tokenizeOpenBracket ('(' : xs ) = Just ( OpenBracket, 1 )
+tokenizeOpenBracket _ = Nothing
 
-tokenizeCloseBracket :: TokenizeFulltype
-tokenizeCloseBracket _ (')' : xs ) = Just ( CloseBracket, 1 )
-tokenizeCloseBracket _ _ = Nothing
+tokenizeCloseBracket :: TokenizeTransform
+tokenizeCloseBracket (')' : xs ) = Just ( CloseBracket, 1 )
+tokenizeCloseBracket _ = Nothing
 
-tokenizeNewline :: TokenizeFulltype
-tokenizeNewline _ ('\n' : xs ) = Just ( Newline, 1 )
-tokenizeNewline _ _ = Nothing
+tokenizeNewline :: TokenizeTransform
+tokenizeNewline ('\n' : xs ) = Just ( Newline, 1 )
+tokenizeNewline _ = Nothing
 
 isSpace :: Char -> Bool
 isSpace ' '  = True
 isSpace '\t' = True
 isSpace _    = False
 
-tokenizeSpace :: TokenizeFulltype
-tokenizeSpace _ (' '  : xs) = Just ( Space, 1 + countWhile isSpace xs)
-tokenizeSpace _ ('\t' : xs) = Just ( Space, 1 + countWhile isSpace xs)
-tokenizeSpace _ _ = Nothing
+tokenizeSpace :: TokenizeTransform
+tokenizeSpace (' '  : xs) = Just ( Space, 1 + countWhile isSpace xs)
+tokenizeSpace ('\t' : xs) = Just ( Space, 1 + countWhile isSpace xs)
+tokenizeSpace _ = Nothing
 
-tokenizeQuote :: TokenizeFulltype
-tokenizeQuote _ ('\'' : xs ) = Just (Quote, 1 + lenQuote xs False)
-tokenizeQuote _ _            = Nothing
+tokenizeQuote :: TokenizeTransform
+tokenizeQuote ('\'' : xs ) = Just (Quote, 1 + lenQuote xs False)
+tokenizeQuote _            = Nothing
 
-tokenizeComment :: TokenizeFulltype
-tokenizeComment _ ('#' : xs ) = Just ( Comment, 1 + countWhile (/= '\n') xs)
-tokenizeComment _ (';' : xs ) = Just ( Comment, 1 + countWhile (/= '\n') xs)
-tokenizeComment _ _ = Nothing
+tokenizeComment :: TokenizeTransform
+tokenizeComment ('#' : xs ) = Just ( Comment, 1 + countWhile (/= '\n') xs)
+tokenizeComment (';' : xs ) = Just ( Comment, 1 + countWhile (/= '\n') xs)
+tokenizeComment _ = Nothing
 
 type TransformerState = (Int, Int, String)
 
@@ -90,19 +89,18 @@ transformer (charno, lineno, str) (Just (kind, split)) =
 					Newline -> lineno + 1
 					_       -> lineno
 
-sometokenizers :: [TokenizeFulltype]
-sometokenizers = [tokenizeOpenBracket, tokenizeCloseBracket, tokenizeSpace, tokenizeLambdaSymbol, tokenizeNewline]
+sometokenizers :: [TokenizeTransform]
+sometokenizers = [tokenizeOpenBracket, tokenizeCloseBracket, tokenizeSpace, tokenizeNewline]
 
 tokenize :: CompilerConfig -> String -> [Token]
 tokenize cfg str =
 	cycle 0 0 "" str
 	where
-		tokersRaw =
+		tokers =
+			(tokenizeLambdaSymbol $ lambdaSymbol cfg) :
 			sometokenizers ++
 			(if parseQuotes cfg then [tokenizeQuote] else []) ++
 			(if parseComments cfg then [tokenizeComment] else [])
-
-		tokers = map (\f -> f cfg) tokersRaw
 
 		folder :: TransformerState -> [TokenizeTransform] -> (Maybe Token, TransformerState)
 		folder state [] = (Nothing, state)

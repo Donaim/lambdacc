@@ -3,8 +3,9 @@
 typedef unsigned char bool;
 
 struct term;
+struct term_instance;
 
-typedef struct term* termp_t;
+typedef struct term_instance* termp_t;
 typedef termp_t (*child_constructor_t)(termp_t*, termp_t); /* accepts parent scope and parent argument to copy to childs scope */
 
 enum BODYPART_TYPE {
@@ -39,8 +40,11 @@ struct term {
 		} abstraction;
 	} body;
 	bool is_abstraction;
+};
 
-	termp_t *scope;                                                      /* TODO: allocate together with struct */
+struct term_instance {
+	struct term *t;
+	struct term_instance **scope;
 };
 
 /* (x . (((y . y) x) x)) (x . x)
@@ -60,35 +64,35 @@ termp_t reduce(termp_t me) {
 	stack_t stack = stack_new();
 
 	loop: {
-		if (me->is_abstraction) {
+		if (me->t->is_abstraction) {
 			termp_t right = stack_pop(stack);
 			if (right == NULL) {
 				return me;
 			}
 
-			switch (me->body.abstraction.btype) {
+			switch (me->t->body.abstraction.btype) {
 				case BODYPART_TYPE_IN_SCOPE:
-					me = me->scope[me->body.abstraction.b.index_in_scope];
+					me = me->scope[me->t->body.abstraction.b.index_in_scope];
 					break;
 				case BODYPART_TYPE_CONSTRUCTIBLE:
-					me = me->body.abstraction.b.constructor(me->scope, right);
+					me = me->t->body.abstraction.b.constructor(me->scope, right);
 					break;
 			}
 		} else {
-			switch (me->body.application.right_type) {
+			switch (me->t->body.application.right_type) {
 				case BODYPART_TYPE_IN_SCOPE:
-					stack_push(stack, me->scope[me->body.application.right.index_in_scope]);
+					stack_push(stack, me->scope[me->t->body.application.right.index_in_scope]);
 					break;
 				case BODYPART_TYPE_CONSTRUCTIBLE:
-					stack_push(stack, me->body.application.right.constructor(me->scope, NULL));
+					stack_push(stack, me->t->body.application.right.constructor(me->scope, NULL));
 					break;
 			}
-			switch (me->body.application.left_type) {
+			switch (me->t->body.application.left_type) {
 				case BODYPART_TYPE_IN_SCOPE:
-					me = me->scope[me->body.application.left.index_in_scope];
+					me = me->scope[me->t->body.application.left.index_in_scope];
 					break;
 				case BODYPART_TYPE_CONSTRUCTIBLE:
-					me = me->body.application.left.constructor(me->scope, NULL);
+					me = me->t->body.application.left.constructor(me->scope, NULL);
 					break;
 			}
 		}

@@ -43,9 +43,43 @@ struct term {
 };
 
 struct term_instance {
-	struct term *t;
+	const struct term *t;
 	struct term_instance **scope;
 };
+
+void *ALLOC_GET(int size);
+
+const struct term e1 = {
+	.body.abstraction = {
+		.b = 0,
+		.btype = BODYPART_TYPE_CONSTRUCTIBLE,
+	},
+	.is_abstraction = 1,
+};
+
+termp_t e0_construct_e1(termp_t *scope, termp_t argument) {
+	termp_t re = ALLOC_GET(sizeof(struct term_instance));
+
+	re->t = &e1;
+	re->scope = ALLOC_GET(sizeof(int));
+
+	return re;
+}
+
+termp_t e0_construct_id(termp_t *scope, termp_t argument) {
+	
+}
+
+const struct term e0 = {
+	.body.application = {
+		.left.constructor = e0_construct_e1,
+		.left_type = BODYPART_TYPE_CONSTRUCTIBLE,
+		.right.constructor = e0_construct_id,
+		.right_type = BODYPART_TYPE_CONSTRUCTIBLE,
+	},
+	.is_abstraction = 0,
+};
+
 
 /* (x . (((y . y) x) x)) (x . x)
 
